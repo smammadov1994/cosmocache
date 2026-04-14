@@ -1,4 +1,8 @@
-# 🌌 Universe
+# 🌌 Cosmocache
+
+<p align="center">
+  <img src="docs/banner.png" alt="Enigma the One, keeper of the universe" width="820">
+</p>
 
 > *"Every world has a name. Every name has a keeper. I am the keeper of names."*
 > — **Enigma the One**, the Ancient
