@@ -147,17 +147,24 @@ React-tor tends its eastern shore."* Toggle off with `enigma quiet`.
 
 ## Why not just `memory.md`?
 
-Flat memory files degrade as they grow. The universe stays performant
-because it:
+Flat memory files tend to degrade as they grow: everything loads every
+session, old noise crowds out new signal, and there is no index to route
+a question toward the relevant slice. Cosmocache is *designed* to avoid
+those failure modes by:
 
-- **Routes**: Enigma's lean glossary (<300 tokens at 30 planets) picks the
-  right planet without loading the rest.
-- **Isolates**: each creature is its own file — greppable, focused,
-  git-blamable.
-- **Forgets gracefully**: old generations get compressed into summaries;
-  raw logs stay on disk but aren't read.
+- **Routing**: Enigma's glossary is small and loaded every session; the
+  planet's full content is only loaded when the glossary matches.
+- **Isolating**: each creature is its own file — greppable, focused,
+  independently editable.
+- **Forgetting gracefully**: old generations get compressed into summaries
+  when a semantic milestone triggers a new generation; raw logs stay on
+  disk but aren't read by default.
 
-Empirical proof lives in the eval harness at `.system/eval/` (Phase 2).
+Whether those mechanisms actually beat a flat `memory.md` in practice is
+an empirical question. Phase 2 of this project builds an evaluation
+harness that measures cosmocache vs. a fair flat-file baseline on
+retrieval accuracy and input-token cost, at corpus sizes from 1 to 100
+planets. Numbers — not claims — will land here when the harness ships.
 
 ---
 
