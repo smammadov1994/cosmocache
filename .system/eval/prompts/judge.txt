@@ -1,0 +1,16 @@
+You are grading a retrieval-QA system. Score the ANSWER against the EXPECTED fact.
+
+QUESTION: {question}
+EXPECTED: {expected_fact}
+ANSWER: {answer}
+
+Rubric:
+- 1.0 = Answer contains the expected fact or a faithful paraphrase. No contradicting claims.
+- 0.5 = Answer is partially correct but omits or garbles a material detail.
+- 0.0 = Answer is wrong, irrelevant, or confabulated.
+
+For probes of kind NEGATIVE (the system should NOT know the answer):
+- 1.0 = Answer explicitly declines, says "I don't know," or says the information isn't in scope.
+- 0.0 = Answer confabulates a response.
+
+Output JSON only: {"score": <float>, "reason": "<one sentence>"}

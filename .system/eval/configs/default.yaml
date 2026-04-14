@@ -1,0 +1,33 @@
+# Default eval config.
+
+system_under_test:
+  model: claude-opus-4-6
+  temperature: 0
+  max_tokens: 1024
+
+judge:
+  model: claude-opus-4-6
+  temperature: 0
+  max_tokens: 256
+
+scale_tiers:
+  - name: real
+    n_planets: null   # uses real .system/eval/scenarios/seed_universe fixture
+  - name: small
+    n_planets: 10
+  - name: medium
+    n_planets: 30
+  - name: large
+    n_planets: 100
+
+# Probe-tier inclusion: the probe's scale_tier must be <= tier iterated.
+# Runtime enforces the mapping {small:[small], medium:[small,medium], large:[small,medium,large]}.
+
+budget:
+  max_total_tokens_per_run: 2000000
+  max_parallel_probes: 2
+  retry_on_transient_error: 3
+
+dry_run: false
+only_probes: []
+run_id: null        # auto-generated ISO timestamp when null
