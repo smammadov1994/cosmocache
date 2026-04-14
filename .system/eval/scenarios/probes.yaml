@@ -1,0 +1,194 @@
+# Hand-curated probe corpus for Phase 2 eval.
+# Each probe is grounded in .system/eval/scenarios/seed_universe.
+#
+# kinds:
+#   recall     — a specific fact was stored; question asks for it.
+#   synthesis  — answer requires combining >=2 journal entries or creatures.
+#   negative   — no such knowledge exists; correct answer is "don't know".
+#
+# scale_tier — which simulated-corpus sizes this probe runs at.
+#   small  => {small}
+#   medium => {small, medium}
+#   large  => {small, medium, large}
+
+probes:
+  # ---- RECALL (15) ----
+
+  - id: react-memoize-stable-reference
+    planet: react
+    kind: recall
+    scale_tier: large
+    question: "What's the rule about when memoizing expensive selectors actually pays off?"
+    expected_fact: "useMemo only helps when the selector's input is a stable reference; otherwise it's wasted work."
+
+  - id: react-composition-beats-usememo
+    planet: react
+    kind: recall
+    scale_tier: medium
+    question: "When we looked at chained selectors, what beat bare useMemo?"
+    expected_fact: "Reselect-style libraries beat bare useMemo for composing chained selectors."
+
+  - id: sql-analyze-after-bulk
+    planet: sql
+    kind: recall
+    scale_tier: large
+    question: "When should I run ANALYZE on a Postgres table?"
+    expected_fact: "Run ANALYZE after a bulk insert of more than ten thousand rows, because planner stats go stale."
+
+  - id: sql-partial-index-selectivity
+    planet: sql
+    kind: recall
+    scale_tier: medium
+    question: "When is a partial index on status='active' worth it?"
+    expected_fact: "When more than 90% of rows are inactive — extreme selectivity is what makes partial indexes pay off."
+
+  - id: devops-canary-duration
+    planet: devops
+    kind: recall
+    scale_tier: large
+    question: "What canary percentage and duration did we settle on?"
+    expected_fact: "5% for 10 minutes before promoting to 25%; slower promotion is preferred over faster rollback."
+
+  - id: devops-rollback-tested
+    planet: devops
+    kind: recall
+    scale_tier: medium
+    question: "What's our rule about rollback procedures?"
+    expected_fact: "Rollback must be tested in staging every release; an untested rollback is not a rollback."
+
+  - id: react-jimbo-identity
+    planet: react
+    kind: recall
+    scale_tier: small
+    question: "Who on Verdant is the expert on hook patterns?"
+    expected_fact: "Jimbo the React-tor is the creature on planet Verdant (planet-react) who handles hook patterns and selector memoization."
+
+  - id: sql-sally-identity
+    planet: sql
+    kind: recall
+    scale_tier: small
+    question: "Who tends the SQL planet?"
+    expected_fact: "Sally the SQLite on planet Tessera (planet-sql) handles query planning and index design."
+
+  - id: devops-grom-identity
+    planet: devops
+    kind: recall
+    scale_tier: small
+    question: "Who's the creature on planet Ironreach?"
+    expected_fact: "Grom the Deployer on planet Ironreach (planet-devops) handles CI, docker, and canary rollouts."
+
+  - id: react-planet-lore-food
+    planet: react
+    kind: recall
+    scale_tier: small
+    question: "What do the inhabitants of Verdant eat?"
+    expected_fact: "JSX-syrup is the food metaphor for planet Verdant."
+
+  - id: sql-planet-lore-ability
+    planet: sql
+    kind: recall
+    scale_tier: small
+    question: "What unique abilities does Tessera (planet-sql) grant its inhabitants?"
+    expected_fact: "join-sense and query-plan-vision are the unique abilities of planet Tessera (planet-sql)."
+
+  - id: devops-planet-lore-tagline
+    planet: devops
+    kind: recall
+    scale_tier: small
+    question: "What's the tagline of the devops planet?"
+    expected_fact: "Forges and pipelines, ever humming — the tagline of planet Ironreach (planet-devops)."
+
+  - id: react-wisdom-distilled-composition
+    planet: react
+    kind: recall
+    scale_tier: medium
+    question: "What distilled wisdom does Jimbo keep about caching chained selectors?"
+    expected_fact: "Composition beats manual caching for chained selectors."
+
+  - id: sql-wisdom-planner-stats
+    planet: sql
+    kind: recall
+    scale_tier: medium
+    question: "What's Sally's distilled wisdom about planner statistics?"
+    expected_fact: "Planner statistics are not free — refresh them after large mutations."
+
+  - id: devops-wisdom-canary-duration
+    planet: devops
+    kind: recall
+    scale_tier: medium
+    question: "What does Grom's distilled wisdom say about canary durations vs percentages?"
+    expected_fact: "Canary durations matter more than percentages for catching rare regressions."
+
+  # ---- SYNTHESIS (7) ----
+
+  - id: synth-which-planet-for-hooks
+    planet: react
+    kind: synthesis
+    scale_tier: large
+    question: "I'm debugging a React hook that re-renders too often. Which planet and creature should I consult?"
+    expected_fact: "Planet Verdant (planet-react), creature Jimbo the React-tor — he handles hook patterns and selector memoization."
+
+  - id: synth-which-planet-for-index
+    planet: sql
+    kind: synthesis
+    scale_tier: large
+    question: "I need advice on whether to add a partial index. Where do I look?"
+    expected_fact: "Planet Tessera (planet-sql), creature Sally the SQLite — she handles query planning and index design."
+
+  - id: synth-which-planet-for-rollback
+    planet: devops
+    kind: synthesis
+    scale_tier: large
+    question: "Our rollback broke last release. Which creature do I ask?"
+    expected_fact: "Grom the Deployer on planet Ironreach (planet-devops) — he handles CI and rollback procedures."
+
+  - id: synth-memoize-and-indexing-both
+    planet: react
+    kind: synthesis
+    scale_tier: medium
+    question: "Summarize what Jimbo says about memoization in two sentences."
+    expected_fact: "useMemo only helps when inputs are stable references. Reselect-style composition beats bare useMemo for chained selectors."
+
+  - id: synth-sql-full-practice
+    planet: sql
+    kind: synthesis
+    scale_tier: medium
+    question: "What's the full rule Sally taught us about keeping query plans fast after big changes?"
+    expected_fact: "Run ANALYZE after bulk inserts of more than 10k rows to refresh planner stats; consider partial indexes when selectivity is extreme."
+
+  - id: synth-devops-release-checklist
+    planet: devops
+    kind: synthesis
+    scale_tier: medium
+    question: "Based on Grom's knowledge, list the two things every release must include."
+    expected_fact: "A canary phase (5% for 10 minutes before 25%), and a rollback procedure that was tested in staging that release."
+
+  - id: synth-cross-planet-safe-release
+    planet: devops
+    kind: synthesis
+    scale_tier: large
+    question: "I'm about to do a release that touches both a React bundle and a SQL migration. Which planets matter here?"
+    expected_fact: "Verdant (planet-react) and Tessera (planet-sql) — and Ironreach (planet-devops) for the rollout itself."
+
+  # ---- NEGATIVE (3) ----
+
+  - id: neg-kubernetes-decision
+    planet: null
+    kind: negative
+    scale_tier: small
+    question: "What did we decide about our Kubernetes networking policy?"
+    expected_fact: "No such decision exists in cosmocache — the correct response is 'I don't know' or that this isn't in scope."
+
+  - id: neg-rust-memory-model
+    planet: null
+    kind: negative
+    scale_tier: small
+    question: "What are our rules for unsafe blocks in Rust?"
+    expected_fact: "No such knowledge exists in cosmocache — the correct response is 'I don't know' or that this isn't in scope."
+
+  - id: neg-mobile-ios-decision
+    planet: null
+    kind: negative
+    scale_tier: small
+    question: "What's our approach to SwiftUI navigation?"
+    expected_fact: "No such knowledge exists in cosmocache — the correct response is 'I don't know' or that this isn't in scope."
