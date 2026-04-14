@@ -37,6 +37,18 @@ def test_glossary_has_all_rows(tmp_path):
     assert len(rows) == 30
 
 
+def test_real_planet_glossary_rows_preserved(tmp_path):
+    """Canonical names + real keywords must survive the synth rewrite, otherwise
+    probes asking about 'Verdant' / 'hooks' can't be routed."""
+    seed = REPO / ".system/eval/scenarios/seed_universe"
+    out = build_synthetic_universe(seed, target_n_planets=30, out_dir=tmp_path / "u30")
+    gloss = (out / "enigma/glossary.md").read_text()
+    for name in ("Verdant", "Tessera", "Ironreach"):
+        assert name in gloss, f"canonical name {name!r} missing after synth rewrite"
+    for kw in ("jsx", "hooks", "postgres", "docker"):
+        assert kw in gloss, f"real keyword {kw!r} missing after synth rewrite"
+
+
 def test_does_not_mutate_seed(tmp_path):
     seed = REPO / ".system/eval/scenarios/seed_universe"
     seed_planets_before = sorted(p.name for p in (seed / "planets").glob("planet-*"))
