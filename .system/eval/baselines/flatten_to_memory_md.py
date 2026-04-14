@@ -115,7 +115,7 @@ def flatten(universe: Path, now: str | None = None) -> str:
                 return int(m.group(1)) if m else -1
 
             if active_candidates:
-                active = max(active_candidates, key=_gen_sort_key)
+                active = max(active_candidates, key=lambda f: (_gen_sort_key(f), f.name))
                 content = _read(active)
                 parts.append(f"\n\n### active generation: {active.stem}")
                 if content:
@@ -149,6 +149,13 @@ def main() -> None:
         help="Output file path. Defaults to stdout.",
     )
     args = parser.parse_args()
+
+    if not (args.universe.is_dir() and (args.universe / "planets").is_dir()):
+        print(
+            f"error: --universe {args.universe} is not a directory or lacks a planets/ subdir",
+            file=sys.stderr,
+        )
+        sys.exit(2)
 
     now = os.environ.get("COSMOCACHE_FLATTEN_NOW") or None
     result = flatten(args.universe, now=now)

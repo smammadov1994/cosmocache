@@ -53,3 +53,25 @@ def test_flatten_deterministic_ordering():
     idx_react = out.find("planet-react")
     idx_sql = out.find("planet-sql")
     assert idx_devops < idx_react < idx_sql
+
+
+def test_flatten_out_file_matches_stdout(tmp_path):
+    env = os.environ.copy()
+    env["COSMOCACHE_FLATTEN_NOW"] = "2026-04-13T00:00:00Z"
+    out_file = tmp_path / "out.md"
+    subprocess.check_call(
+        ["python3", str(SCRIPT), "--universe", str(SEED), "--out", str(out_file)],
+        env=env,
+    )
+    stdout_capture = subprocess.check_output(
+        ["python3", str(SCRIPT), "--universe", str(SEED)], env=env,
+    ).decode()
+    assert out_file.read_text() == stdout_capture
+
+
+def test_flatten_cli_errors_on_missing_universe():
+    result = subprocess.run(
+        ["python3", str(SCRIPT), "--universe", "/tmp/does-not-exist-xxx"],
+        capture_output=True,
+    )
+    assert result.returncode != 0
