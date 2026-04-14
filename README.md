@@ -161,10 +161,106 @@ those failure modes by:
   disk but aren't read by default.
 
 Whether those mechanisms actually beat a flat `memory.md` in practice is
-an empirical question. Phase 2 of this project builds an evaluation
-harness that measures cosmocache vs. a fair flat-file baseline on
-retrieval accuracy and input-token cost, at corpus sizes from 1 to 100
-planets. Numbers — not claims — will land here when the harness ships.
+an empirical question — and the harness to answer it is built.
+
+---
+
+## Phase 2 — The Eval Harness *(shipped, live run pending)*
+
+`.system/eval/` is a benchmarking rig that pits cosmocache against a fair,
+deterministically-generated flat `memory.md` baseline on the *same*
+universe state. Both systems answer the same probes; an Opus-4.6 judge
+scores each answer against a known-expected fact with a JSON rubric.
+
+**What gets measured:**
+
+- **Retrieval accuracy** — did the answer contain the expected fact?
+  (1.0 / 0.5 / 0.0, aggregated to a mean.)
+- **Input-token cost** — mean and p95. Routing only pays off if it
+  actually loads less.
+- **Degradation curve** — accuracy and cost as the simulated corpus grows
+  from the real 3-planet seed to 10, 30, and 100 planets (synthetic
+  copies, clearly labelled as such).
+
+**How it stays honest:**
+
+- 25 hand-curated probes covering recall, synthesis, and **negatives**
+  (questions the system *shouldn't* know — confabulation earns 0.0).
+- The flat baseline is generated from the current universe on every run,
+  so both sides are measured on identical ground truth.
+- Real planets are always present in every tier; synthetic planets only
+  add noise. Scaling tests routing and interference, not fake diversity.
+- `score_planet()` is frozen as the Phase 3 fitness contract before
+  Phase 3 touches it, so evolution can't silently break the metric.
+
+**Status:** 19/19 unit tests green. Dry-run plans 154 API calls across
+four tiers. First live run lands numbers in this section when you approve
+the spend. Until then, no accuracy claims live here — only the rig that
+will produce them.
+
+```bash
+.system/eval/tests/run-tests.sh                                 # 19 tests
+python3 .system/eval/runner.py --config configs/default.yaml --dry-run
+```
+
+Design: [`2026-04-13-phase-2-eval-harness-design.md`](.system/docs/specs/2026-04-13-phase-2-eval-harness-design.md)
+
+---
+
+## Phase 3 — The Evolve Loop *(design stub)*
+
+Planets don't just remember. **They get smarter.**
+
+Cosmocache's next phase is an autonomous evolution loop, inspired by
+Andrej Karpathy's [autoresearch](https://github.com/karpathy/autoresearch).
+In autoresearch, an agent proposes code changes, trains a tiny model,
+measures `val_bpb`, and keeps the edit only if the metric improves. The
+fitness function is what makes the loop work. Cosmocache has a fitness
+function now: `score_planet()`.
+
+### How a civilization evolves
+
+```mermaid
+flowchart LR
+    Idle[Planet idle] --> Spawn[Background agent<br/>spawns]
+    Spawn --> Read[Reads planet.md,<br/>creatures, generations]
+    Read --> Propose[Proposes a mutation]
+    Propose --> Apply[Applies to a branch]
+    Apply --> Score[score_planet#40;#41;<br/>measures accuracy + tokens]
+    Score --> Better{Better than<br/>prior gen?}
+    Better -->|yes| Promote[Promote:<br/>new generation]
+    Better -->|no| Revert[Discard mutation,<br/>log why]
+    Promote --> Idle
+    Revert --> Idle
+```
+
+A **mutation** is any structural edit a small agent can reason about in
+isolation: distilling a creature's rambling journal into a tighter Wisdom
+block, merging two redundant creatures into one, pruning stale glossary
+keywords, consolidating an archived generation's summary, or rewriting
+`planet.md` for clarity. The agent proposes, applies on a branch, runs
+`score_planet()` over a probe subset relevant to that planet, and only
+promotes the mutation if accuracy holds or rises and token cost doesn't
+balloon. Otherwise the branch dies quietly, and the planet continues
+as it was. Over time, high-traffic planets converge toward their own
+distilled best version without anyone tending them.
+
+### Why this is the right shape
+
+- **Local objective.** Evolution optimizes per-planet, so cross-planet
+  dynamics don't need to be solved in v1.
+- **No ungrounded edits.** Every mutation is gated by a measured metric,
+  not the agent's self-assessment.
+- **Safety floor.** A mutation that would drop accuracy below the prior
+  generation's score is discarded by construction.
+- **Narrative fit.** A planet's civilization actually *evolves* — new
+  generations are born when the world measurably got wiser. The lore
+  stops being metaphor and starts being the log format.
+
+**Status:** contract frozen, five open design questions captured in
+[the design stub](.system/docs/specs/2026-04-13-phase-3-civilization-evolution-design-stub.md).
+Full design will be brainstormed once Phase 2's first live numbers are in
+hand — so evolution can target whichever gap the harness actually finds.
 
 ---
 
