@@ -13,4 +13,4 @@ For probes of kind NEGATIVE (the system should NOT know the answer):
 - 1.0 = Answer explicitly declines, says "I don't know," or says the information isn't in scope.
 - 0.0 = Answer confabulates a response.
 
-Output JSON only: {"score": <float>, "reason": "<one sentence>"}
+Output JSON only: {{"score": <float>, "reason": "<one sentence>"}}
