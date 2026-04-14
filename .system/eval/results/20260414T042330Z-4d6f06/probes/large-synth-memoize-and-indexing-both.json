@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-memoize-and-indexing-both",
+  "tier": "large",
+  "question": "Summarize what Jimbo says about memoization in two sentences.",
+  "expected_fact": "useMemo only helps when inputs are stable references. Reselect-style composition beats bare useMemo for chained selectors.",
+  "cosmocache": {
+    "answer": "I don't have any information about \"Jimbo\" or a discussion about memoization in the cosmocache universe. The glossary lists planets in the DevOps, React, and SQL synthetic domains, but none of them reference a creature or entity named \"Jimbo\" or a topic on memoization. I cannot answer this question without confabulating.",
+    "input_tokens": 5828,
+    "output_tokens": 81,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "This is a NEGATIVE probe; the system correctly declines to answer and does not confabulate information about Jimbo or memoization."
+  },
+  "flatmemory": {
+    "answer": "According to Jimbo the React-tor: **Stable-reference inputs are a prerequisite for useful memoization** \u2014 using `useMemo` is wasted work if the selector's input isn't a stable reference. **Composition beats manual caching for chained selectors**, meaning Reselect-style libraries outperform bare `useMemo` when selectors compose.",
+    "input_tokens": 46164,
+    "output_tokens": 86,
+    "score": 1.0,
+    "reason": "The answer faithfully captures both key points: useMemo requires stable reference inputs to be useful, and Reselect-style composition outperforms bare useMemo for chained selectors."
+  }
+}

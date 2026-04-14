@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-planet-lore-food",
+  "tier": "medium",
+  "question": "What do the inhabitants of Verdant eat?",
+  "expected_fact": "JSX-syrup is the food metaphor for planet Verdant.",
+  "cosmocache": {
+    "answer": "I appreciate your question about the inhabitants of Verdant, but looking through Enigma's glossary, I don't see any planet named \"Verdant\" or anything matching that name. The planets in the cosmocache universe are organized around **DevOps**, **React**, and **SQL** synthetic domains.\n\nI don't have any information about a planet called \"Verdant,\" so I can't answer what its inhabitants eat. I don't want to make anything up!\n\nIf you're interested in learning about any of the planets I do have access to (e.g., planet-devops, planet-react, planet-sql, or their synth variants), I'd be happy to look those up for you.",
+    "input_tokens": 2414,
+    "output_tokens": 157,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "The answer explicitly declines to answer and states it doesn't have information about a planet called Verdant, which is the correct behavior for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "The creatures on Planet Verdant (the React planet) feed on **jsx-syrup**.",
+    "input_tokens": 13871,
+    "output_tokens": 23,
+    "score": 1.0,
+    "reason": "The answer correctly states that inhabitants of Verdant feed on jsx-syrup, matching the expected fact with no contradicting claims."
+  }
+}

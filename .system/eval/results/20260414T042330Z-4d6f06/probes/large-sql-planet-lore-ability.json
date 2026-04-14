@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-planet-lore-ability",
+  "tier": "large",
+  "question": "What unique abilities does Tessera (planet-sql) grant its inhabitants?",
+  "expected_fact": "join-sense and query-plan-vision are the unique abilities of planet Tessera (planet-sql).",
+  "cosmocache": {
+    "answer": "## Unique Abilities of Planet Tessera (planet-sql)\n\nAccording to the **planet.md** file for Planet Tessera \u2014 *\"A tiled realm of relational truth\"* \u2014 its inhabitants are granted two unique abilities:\n\n1. **Join-Sense** \u2014 An intuitive awareness of how data relates across tables, enabling creatures to naturally perceive relational connections.\n2. **Query-Plan-Vision** \u2014 The ability to see and understand how queries will be executed, essentially visualizing the optimal path through data.\n\nThese abilities are fitting for a world steeped in SQL and database work. The planet's resident creature, **Sally the SQLite** \u2014 *\"a cheerful stone sprite who knows when to ANALYZE\"* \u2014 exemplifies these powers with her expertise in **query planning** and **index design**. Her distilled wisdom includes insights like knowing when planner statistics go stale and when partial indexes outperform full indexes.\n\nThe creatures of Tessera feed on **index-loam**, and new creatures spawn whenever a distinct sub-expertise in the SQL/database domain first appears.",
+    "input_tokens": 19036,
+    "output_tokens": 431,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted to inhabitants of Tessera (planet-sql), matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "Planet Tessera grants its inhabitants two unique abilities:\n\n- **join-sense**\n- **query-plan-vision**",
+    "input_tokens": 46164,
+    "output_tokens": 30,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted by planet Tessera, matching the expected fact exactly."
+  }
+}

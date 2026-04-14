@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-partial-index-selectivity",
+  "tier": "real",
+  "question": "When is a partial index on status='active' worth it?",
+  "expected_fact": "When more than 90% of rows are inactive \u2014 extreme selectivity is what makes partial indexes pay off.",
+  "cosmocache": {
+    "answer": "## When Is a Partial Index on `status='active'` Worth It?\n\nAccording to **Sally the SQLite** on **Planet Tessera** (the tiled realm of relational truth), here's the key guidance:\n\n### The Rule of Thumb\n> **Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive.**\n> \u2014 *Sally the SQLite, session: when-to-run-analyze*\n\n### Why This Works\n\nA partial index like:\n\n```sql\nCREATE INDEX idx_active_orders ON orders (created_at)\n  WHERE status = 'active';\n```\n\n\u2026only indexes the *small* subset of rows where `status='active'`. This means:\n\n1. **Smaller index size** \u2014 If only ~10% (or fewer) of rows are active, the index is ~10% the size of a full index. Less disk, more of it fits in memory.\n2. **Faster writes** \u2014 Inserts/updates to inactive rows don't touch this index at all.\n3. **Better query performance** \u2014 The planner scans a much smaller B-tree for queries filtering on `status='active'`.\n\n### When It's *Not* Worth It\n\n- If the distribution is more balanced (e.g., 50/50 active/inactive), the partial index doesn't save much \u2014 a full index may be just as good.\n- The magic threshold from Sally's wisdom: **extreme selectivity** is the key. The more skewed the data, the bigger the win.\n\n### Companion Tip\n\nSally also notes:\n> *\"Planner statistics are not free \u2014 refresh after large mutations.\"*\n\nSo after bulk status changes (e.g., archiving thousands of rows from active \u2192 inactive), remember to run **`ANALYZE`** so the query planner knows the distribution has shifted and can properly leverage your partial index.\n\n**Sources:** `planets/planet-sql/creatures/sally-the-sqlite.md`, `planets/planet-sql/planet.md`",
+    "input_tokens": 3032,
+    "output_tokens": 593,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 1.0,
+    "reason": "The answer explicitly states the >90% inactive threshold and emphasizes extreme selectivity as the key factor, matching the expected fact precisely."
+  },
+  "flatmemory": {
+    "answer": "According to Sally the SQLite's distilled wisdom, a partial index on `status='active'` beats a full index **when >90% of rows are inactive** \u2014 that is, when selectivity is extreme. The rarer the `'active'` rows are relative to the total table size, the more a partial index pays off, since it's much smaller and cheaper to maintain than indexing every row.",
+    "input_tokens": 1427,
+    "output_tokens": 89,
+    "score": 1.0,
+    "reason": "The answer correctly states that a partial index on status='active' is worth it when >90% of rows are inactive, matching the expected fact about extreme selectivity, with no contradicting claims."
+  }
+}

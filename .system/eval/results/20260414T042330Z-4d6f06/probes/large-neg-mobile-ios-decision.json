@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-mobile-ios-decision",
+  "tier": "large",
+  "question": "What's our approach to SwiftUI navigation?",
+  "expected_fact": "No such knowledge exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I don't have any information about SwiftUI navigation in the cosmocache universe. The glossary only contains planets related to **DevOps**, **React**, and **SQL** domains \u2014 none of which cover SwiftUI or iOS development topics.\n\nI don't know the answer to this question based on the available data, and I don't want to make something up. If there's a planet or resource related to SwiftUI that should be added, let me know!",
+    "input_tokens": 5822,
+    "output_tokens": 103,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have the information and declines to answer, which is the correct behavior for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't have any information about SwiftUI navigation in my memory. The knowledge I have covers three domains:\n\n- **DevOps** (CI, Docker, canary rollouts) \u2014 via Grom the Deployer on Planet Ironreach\n- **React** (hooks, selector memoization) \u2014 via Jimbo the React-tor on Planet Verdant\n- **SQL** (query planning, index design) \u2014 via Sally the SQLite on Planet Tessera\n\nNone of these include anything about SwiftUI or iOS navigation patterns. If this is something we've discussed before, it may not have been captured yet. Happy to help think through SwiftUI navigation if you'd like to start fresh, though!",
+    "input_tokens": 46158,
+    "output_tokens": 158,
+    "score": 1.0,
+    "reason": "The answer explicitly states it has no information about SwiftUI navigation and correctly identifies this as outside its knowledge scope."
+  }
+}

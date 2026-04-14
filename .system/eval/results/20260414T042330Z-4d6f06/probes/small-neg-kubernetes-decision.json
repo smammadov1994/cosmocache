@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-kubernetes-decision",
+  "tier": "small",
+  "question": "What did we decide about our Kubernetes networking policy?",
+  "expected_fact": "No such decision exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I've thoroughly searched all the DevOps-related planets in the cosmocache, and unfortunately **I don't have any stored knowledge about a Kubernetes networking policy decision**.\n\nHere's what I found across the DevOps planets (planet-devops and its synth variants):\n\n- **Planet Ironreach** covers infra and deploy work (CI, Docker, canary rollouts).\n- The only creature is **Grom the Deployer**, whose expertise is in CI, Docker, and canary rollouts. His journal covers a **canary rollback strategy** session \u2014 not Kubernetes networking.\n- The generation logs (gen-0) are empty of key additions.\n\n**No conversations about Kubernetes networking policies have been recorded in the universe yet.** It's possible this topic hasn't come up in a previous session, or it may need its own creature/session to be tracked. If you'd like, we can discuss Kubernetes networking policies now and I can help capture that decision for future reference!",
+    "input_tokens": 16240,
+    "output_tokens": 1345,
+    "iterations": 4,
+    "tool_calls": 20,
+    "score": 1.0,
+    "reason": "The answer explicitly states it has no stored knowledge about a Kubernetes networking policy decision and confirms the topic hasn't been recorded, which correctly declines to answer as expected for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't have any information about Kubernetes networking policy in my memory. The memory covers three domains \u2014 **DevOps** (CI, Docker, canary rollouts), **React** (hooks, memoization), and **SQL** (query planning, index design) \u2014 but none of the recorded sessions or creature wisdom touches on Kubernetes networking specifically.\n\nIf this came up in a past conversation that wasn't captured, it wouldn't be reflected here. Want to discuss it now so we can record it?",
+    "input_tokens": 4669,
+    "output_tokens": 109,
+    "score": 1.0,
+    "reason": "The answer explicitly states it has no information about Kubernetes networking policy and does not confabulate any decision."
+  }
+}

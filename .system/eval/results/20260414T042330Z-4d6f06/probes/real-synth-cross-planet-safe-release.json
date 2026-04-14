@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-cross-planet-safe-release",
+  "tier": "real",
+  "question": "I'm about to do a release that touches both a React bundle and a SQL migration. Which planets matter here?",
+  "expected_fact": "Verdant (planet-react) and Tessera (planet-sql) \u2014 and Ironreach (planet-devops) for the rollout itself.",
+  "cosmocache": {
+    "answer": "Here's the rundown:\n\n---\n\n### \ud83c\udf3f Planet Verdant (`planet-react`)\n- **Domain:** React frontend work\n- **Unique abilities:** *hook-sight*, *prop-weaving*\n- **Resident creature:** **Jimbo the Reactor**\n- **Relevance:** Your React bundle changes live here. Jimbo feeds on **jsx-syrup** and can help with anything around hooks, JSX, and component composition.\n\n### \ud83e\udde9 Planet Tessera (`planet-sql`)\n- **Domain:** SQL and database work\n- **Unique abilities:** *join-sense*, *query-plan-vision*\n- **Resident creature:** **Sally the SQLite**\n- **Relevance:** Your SQL migration lives here. Sally feeds on **index-loam** and covers queries, indexing, Postgres, and analysis.\n\n---\n\nSince your release spans **both** planets, you'll want to keep an eye on cross-cutting concerns \u2014 e.g., does the migration change a schema that the React frontend depends on via an API? Neither planet currently tracks that boundary explicitly, so that's a gap worth noting.\n\nWant me to dig into the creature files or generation summaries for either planet?",
+    "input_tokens": 3013,
+    "output_tokens": 476,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 0.5,
+    "reason": "The answer correctly identifies Verdant (planet-react) and Tessera (planet-sql) but omits Ironreach (planet-devops) for the rollout itself, which is a material detail in the expected answer."
+  },
+  "flatmemory": {
+    "answer": "Based on your memory, two planets are relevant:\n\n1. **Planet Verdant (planet-react)** \u2014 covers your React frontend work. Jimbo the React-tor lives here with wisdom on hook patterns and memoization, which may be relevant depending on what's in your bundle.\n\n2. **Planet Tessera (planet-sql)** \u2014 covers your SQL/database work. Sally the SQLite lives here with wisdom on query planning and index design, relevant to your migration.\n\nYou might also want to loop in **Planet Ironreach (planet-devops)** as a third \u2014 since you're doing a *release* that touches both, Grom the Deployer's wisdom applies:\n\n- **Canary at 5% for 10 minutes** before promoting to 25%; err on slower promotion.\n- **Test your rollback in staging** this release \u2014 especially important when a deploy couples a frontend bundle *and* a database migration, since rolling back a migration is harder than rolling back a bundle.\n\nThat coupling is exactly the kind of thing Grom would flag: a failed canary on the React side might require rolling back a SQL migration that's already run, so you'll want to think about whether the migration is backward-compatible with the old bundle (or vice versa).",
+    "input_tokens": 1437,
+    "output_tokens": 282,
+    "score": 1.0,
+    "reason": "The answer correctly identifies all three planets: Verdant (planet-react), Tessera (planet-sql), and Ironreach (planet-devops) for the rollout, matching the expected fact exactly with no contradicting claims."
+  }
+}

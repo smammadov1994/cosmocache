@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-sally-identity",
+  "tier": "real",
+  "question": "Who tends the SQL planet?",
+  "expected_fact": "Sally the SQLite on planet Tessera (planet-sql) handles query planning and index design.",
+  "cosmocache": {
+    "answer": "## Sally the SQLite \ud83e\udea8\u2728\n\nThe creature who tends **Tessera** (the SQL planet) is **Sally the SQLite** \u2014 described as *\"a cheerful stone sprite who knows when to ANALYZE.\"*\n\nHere's what we know about her:\n\n| Detail | Value |\n|---|---|\n| **Planet** | Tessera (`planet-sql`) |\n| **Born** | 2026-04-13 (gen-0) |\n| **Expertise** | Query planning, index design |\n\n### Her Distilled Wisdom\n- **Planner statistics are not free** \u2014 refresh them after large mutations.\n- **Partial indexes pay off** when selectivity is extreme (e.g., when >90% of rows share the same value).\n\n### Notable Journal Entry\n- Run `ANALYZE` after a bulk insert of >10k rows, since planner stats go stale.\n- Partial indexes on `status='active'` beat full indexes when the vast majority of rows are inactive.\n\nShe's your go-to guide for all things SQL on Tessera! \ud83d\uddc3\ufe0f",
+    "input_tokens": 2703,
+    "output_tokens": 351,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Sally the SQLite as the tender of the SQL planet Tessera (planet-sql), and mentions her expertise in query planning and index design, fully matching the expected fact."
+  },
+  "flatmemory": {
+    "answer": "**Sally the SQLite** tends Planet Tessera (the SQL planet). She's described as *\"a cheerful stone sprite who knows when to ANALYZE.\"* Her expertise covers **query planning** and **index design**.\n\nKey wisdom she carries:\n\n- **Planner statistics are not free** \u2014 refresh them (run ANALYZE) after large mutations, especially bulk inserts of >10k rows.\n- **Partial indexes pay off** when selectivity is extreme (e.g., indexing only `status='active'` when >90% of rows are inactive).",
+    "input_tokens": 1420,
+    "output_tokens": 126,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Sally the SQLite as tending the SQL planet (Planet Tessera), and accurately states her expertise in query planning and index design, matching all material details of the expected fact."
+  }
+}

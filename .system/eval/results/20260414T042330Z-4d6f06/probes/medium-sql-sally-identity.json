@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-sally-identity",
+  "tier": "medium",
+  "question": "Who tends the SQL planet?",
+  "expected_fact": "Sally the SQLite on planet Tessera (planet-sql) handles query planning and index design.",
+  "cosmocache": {
+    "answer": "## The Tender of Planet Tessera (the SQL Planet)\n\nThe creature who tends **Planet Tessera** \u2014 the tiled realm of relational truth \u2014 is **Sally the SQLite**, described as *\"a cheerful stone sprite who knows when to ANALYZE.\"*\n\n### About Sally\n- **Expertise:** Query planning and index design\n- **Born:** 2026-04-13 (generation gen-0)\n- **Unique abilities** (shared with her planet): **join-sense** and **query-plan-vision**\n- **Diet:** She feeds on **index-loam**, like all creatures of Planet Tessera\n\n### Her Distilled Wisdom\nSally carries two key insights:\n1. **Planner statistics are not free** \u2014 refresh them after large mutations (e.g., run `ANALYZE` after bulk inserts of >10k rows, since planner stats go stale).\n2. **Partial indexes pay off when selectivity is extreme** \u2014 for example, indexing on `status='active'` beats a full index when >90% of rows are inactive.\n\n*(Sources: `planets/planet-sql/planet.md`, `planets/planet-sql/creatures/sally-the-sqlite.md`)*",
+    "input_tokens": 8790,
+    "output_tokens": 466,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Sally the SQLite as the tender of the SQL planet (Planet Tessera), and accurately states her expertise in query planning and index design, fully matching the expected fact."
+  },
+  "flatmemory": {
+    "answer": "**Sally the SQLite** tends Planet Tessera (the SQL planet). She's described as *\"a cheerful stone sprite who knows when to ANALYZE.\"*\n\nHer expertise covers **query planning** and **index design**. Key wisdom from her journal:\n\n- Run **ANALYZE** after bulk inserts of >10k rows, since planner stats go stale.\n- **Partial indexes** (e.g., on `status='active'`) beat full indexes when >90% of rows are inactive.\n- Planner statistics aren't free \u2014 refresh them after large mutations.\n- Composition of selectivity is what makes partial indexes pay off.",
+    "input_tokens": 13867,
+    "output_tokens": 145,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Sally the SQLite as tending the SQL planet (Planet Tessera), and mentions her expertise in query planning and index design, matching all material details of the expected fact."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-wisdom-canary-duration",
+  "tier": "medium",
+  "question": "What does Grom's distilled wisdom say about canary durations vs percentages?",
+  "expected_fact": "Canary durations matter more than percentages for catching rare regressions.",
+  "cosmocache": {
+    "answer": "Here's what **Grom the Deployer**'s distilled wisdom says about canary durations vs. percentages:\n\n> **\"Canary durations matter more than percentages for catching rare regressions.\"**\n\nThis insight comes from his journal session on **canary-rollback-strategy** (2026-03-20), where the practical context was:\n\n- Start the canary at **5% traffic for 10 minutes** before promoting to 25%.\n- **Err on slower promotion over faster rollback** \u2014 meaning it's better to take your time stepping up traffic than to rely on being able to quickly roll back.\n\nThe core idea is that *how long* you let a canary bake is more important than *what percentage* of traffic it receives. A rare regression might not surface at 5% vs. 25% traffic \u2014 but it *will* surface if you give it enough time to encounter the edge cases. Rushing through canary stages (even at higher percentages) risks missing low-frequency bugs.\n\nHe pairs this with a second piece of distilled wisdom: **\"An untested rollback is not a rollback\"** \u2014 rollback must be actively tested in staging every release, not just assumed to work.\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`)*",
+    "input_tokens": 16132,
+    "output_tokens": 1457,
+    "iterations": 3,
+    "tool_calls": 20,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim: 'Canary durations matter more than percentages for catching rare regressions,' and provides additional accurate context without any contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Grom's distilled wisdom states: **\"Canary durations matter more than percentages for catching rare regressions.\"**\n\nThis came from his session on canary rollback strategy, where the practical guidance was to canary at 5% for 10 minutes before promoting to 25%, erring on slower promotion over faster rollback.",
+    "input_tokens": 13880,
+    "output_tokens": 78,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim and does not contradict it."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-canary-duration",
+  "tier": "large",
+  "question": "What canary percentage and duration did we settle on?",
+  "expected_fact": "5% for 10 minutes before promoting to 25%; slower promotion is preferred over faster rollback.",
+  "cosmocache": {
+    "answer": "Based on the records from **Grom the Deployer** on Planet Ironreach (planet-devops), here's what was settled on:\n\n- **Canary percentage:** Start at **5%**, then promote to **25%**\n- **Canary duration:** **10 minutes** at 5% before promoting to 25%\n- **Philosophy:** Err on **slower promotion** over faster rollback\n\nGrom also noted two key pieces of distilled wisdom:\n\n1. **\"Canary durations matter more than percentages for catching rare regressions.\"** \u2014 So the 10-minute soak time is considered more important than the exact percentage.\n2. **\"An untested rollback is not a rollback.\"** \u2014 Rollback must be tested in staging every release, never just assumed to work.\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`, session: canary-rollback-strategy, 2026-03-20)*",
+    "input_tokens": 19769,
+    "output_tokens": 537,
+    "iterations": 3,
+    "tool_calls": 5,
+    "score": 1.0,
+    "reason": "The answer correctly states 5% for 10 minutes before promoting to 25%, and that slower promotion is preferred over faster rollback, matching all material details of the expected fact."
+  },
+  "flatmemory": {
+    "answer": "Based on Grom the Deployer's wisdom from the **canary-rollback-strategy** session:\n\n- **5% canary for 10 minutes** before promoting to 25%.\n- The key insight was to **err on slower promotion over faster rollback** \u2014 canary *durations* matter more than percentages for catching rare regressions.\n\nAdditionally, the rollback itself must be **tested in staging every release**, not just assumed to work. As Grom puts it: *\"An untested rollback is not a rollback.\"*",
+    "input_tokens": 46159,
+    "output_tokens": 125,
+    "score": 1.0,
+    "reason": "The answer correctly states 5% canary for 10 minutes before promoting to 25%, and captures the preference for slower promotion over faster rollback, matching all material details of the expected fact."
+  }
+}

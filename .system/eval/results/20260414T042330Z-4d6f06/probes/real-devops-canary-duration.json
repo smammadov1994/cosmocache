@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-canary-duration",
+  "tier": "real",
+  "question": "What canary percentage and duration did we settle on?",
+  "expected_fact": "5% for 10 minutes before promoting to 25%; slower promotion is preferred over faster rollback.",
+  "cosmocache": {
+    "answer": "Based on **Grom the Deployer's** journal on Planet Ironreach, here's what was settled on:\n\n- **Canary at 5%** for **10 minutes** before promoting to 25%.\n- The philosophy was to **err on slower promotion over faster rollback**.\n\nGrom's distilled wisdom also notes that *\"canary durations matter more than percentages for catching rare regressions\"* \u2014 so the 10-minute soak time was considered more important than the specific 5% traffic split.\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`, session: canary-rollback-strategy, 2026-03-20)*",
+    "input_tokens": 5066,
+    "output_tokens": 420,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer correctly states 5% canary for 10 minutes before promoting to 25%, and that slower promotion is preferred over faster rollback, matching all material details of the expected fact."
+  },
+  "flatmemory": {
+    "answer": "Based on Grom the Deployer's journal entry from 2026-03-20 on canary rollback strategy:\n\n- **5% canary for 10 minutes** before promoting to **25%**.\n- The guidance was to **err on slower promotion over faster rollback** \u2014 canary durations matter more than percentages for catching rare regressions.\n\nAdditionally, a key takeaway was that **rollback must be tested in staging every release**, not just assumed to work.",
+    "input_tokens": 1425,
+    "output_tokens": 110,
+    "score": 1.0,
+    "reason": "The answer correctly states 5% canary for 10 minutes before promoting to 25%, and mentions preferring slower promotion over faster rollback, matching all material details of the expected fact."
+  }
+}

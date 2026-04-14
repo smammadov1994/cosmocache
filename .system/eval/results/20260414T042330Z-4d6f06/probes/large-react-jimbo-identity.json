@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-jimbo-identity",
+  "tier": "large",
+  "question": "Who on Verdant is the expert on hook patterns?",
+  "expected_fact": "Jimbo the React-tor is the creature on planet Verdant (planet-react) who handles hook patterns and selector memoization.",
+  "cosmocache": {
+    "answer": "I don't have any information about a planet called \"Verdant\" in the cosmocache universe. The glossary I have access to contains planets in the **planet-devops**, **planet-react**, and **planet-sql** domains (along with their synthetic variants), but none named \"Verdant.\"\n\nI can't answer this question without making something up, so I'll be honest: **I don't know.** If you believe this planet exists under a different name or slug, feel free to share more details and I'll be happy to look it up!",
+    "input_tokens": 5824,
+    "output_tokens": 123,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 0.0,
+    "reason": "The answer fails to identify Jimbo the React-tor as the expert on hook patterns on Verdant (planet-react), despite the expected answer clearly linking Verdant to planet-react which the system claims to have access to."
+  },
+  "flatmemory": {
+    "answer": "**Jimbo the React-tor** \u2014 a frog in a lab coat on Planet Verdant \u2014 is the resident expert on **hook patterns** and **selector memoization**.\n\nHis distilled wisdom:\n\n- **Stable-reference inputs** are a prerequisite for useful memoization (don't bother with `useMemo` if the input isn't stable).\n- **Composition beats manual caching** for chained selectors \u2014 Reselect-style libraries outperform bare `useMemo` when selectors compose.",
+    "input_tokens": 46160,
+    "output_tokens": 121,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Jimbo the React-tor as the expert on hook patterns on Planet Verdant, consistent with the expected fact, with no contradicting claims."
+  }
+}

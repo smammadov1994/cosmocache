@@ -1,0 +1,147 @@
+{
+  "run_id": "20260414T042330Z-4d6f06",
+  "started_at": "2026-04-14T04:23:30.030451+00:00",
+  "answer_completed_at": "2026-04-14T04:44:17.667806+00:00",
+  "config": {
+    "system_under_test": {
+      "model": "claude-opus-4-6",
+      "temperature": 0,
+      "max_tokens": 1024
+    },
+    "judge": {
+      "model": "claude-opus-4-6",
+      "temperature": 0,
+      "max_tokens": 256
+    },
+    "scale_tiers": [
+      {
+        "name": "real",
+        "n_planets": null
+      },
+      {
+        "name": "small",
+        "n_planets": 10
+      },
+      {
+        "name": "medium",
+        "n_planets": 30
+      },
+      {
+        "name": "large",
+        "n_planets": 100
+      }
+    ],
+    "budget": {
+      "max_total_tokens_per_run": 3500000,
+      "max_parallel_probes": 2,
+      "retry_on_transient_error": 3
+    },
+    "dry_run": false,
+    "only_probes": [],
+    "run_id": null
+  },
+  "tiers": [
+    {
+      "name": "real",
+      "n_planets": null,
+      "probe_ids": [
+        "react-memoize-stable-reference",
+        "react-composition-beats-usememo",
+        "sql-analyze-after-bulk",
+        "sql-partial-index-selectivity",
+        "devops-canary-duration",
+        "devops-rollback-tested",
+        "react-jimbo-identity",
+        "sql-sally-identity",
+        "devops-grom-identity",
+        "react-planet-lore-food",
+        "sql-planet-lore-ability",
+        "devops-planet-lore-tagline",
+        "react-wisdom-distilled-composition",
+        "sql-wisdom-planner-stats",
+        "devops-wisdom-canary-duration",
+        "synth-which-planet-for-hooks",
+        "synth-which-planet-for-index",
+        "synth-which-planet-for-rollback",
+        "synth-memoize-and-indexing-both",
+        "synth-sql-full-practice",
+        "synth-devops-release-checklist",
+        "synth-cross-planet-safe-release",
+        "neg-kubernetes-decision",
+        "neg-rust-memory-model",
+        "neg-mobile-ios-decision"
+      ]
+    },
+    {
+      "name": "small",
+      "n_planets": 10,
+      "probe_ids": [
+        "react-jimbo-identity",
+        "sql-sally-identity",
+        "devops-grom-identity",
+        "react-planet-lore-food",
+        "sql-planet-lore-ability",
+        "devops-planet-lore-tagline",
+        "neg-kubernetes-decision",
+        "neg-rust-memory-model",
+        "neg-mobile-ios-decision"
+      ]
+    },
+    {
+      "name": "medium",
+      "n_planets": 30,
+      "probe_ids": [
+        "react-composition-beats-usememo",
+        "sql-partial-index-selectivity",
+        "devops-rollback-tested",
+        "react-jimbo-identity",
+        "sql-sally-identity",
+        "devops-grom-identity",
+        "react-planet-lore-food",
+        "sql-planet-lore-ability",
+        "devops-planet-lore-tagline",
+        "react-wisdom-distilled-composition",
+        "sql-wisdom-planner-stats",
+        "devops-wisdom-canary-duration",
+        "synth-memoize-and-indexing-both",
+        "synth-sql-full-practice",
+        "synth-devops-release-checklist",
+        "neg-kubernetes-decision",
+        "neg-rust-memory-model",
+        "neg-mobile-ios-decision"
+      ]
+    },
+    {
+      "name": "large",
+      "n_planets": 100,
+      "probe_ids": [
+        "react-memoize-stable-reference",
+        "react-composition-beats-usememo",
+        "sql-analyze-after-bulk",
+        "sql-partial-index-selectivity",
+        "devops-canary-duration",
+        "devops-rollback-tested",
+        "react-jimbo-identity",
+        "sql-sally-identity",
+        "devops-grom-identity",
+        "react-planet-lore-food",
+        "sql-planet-lore-ability",
+        "devops-planet-lore-tagline",
+        "react-wisdom-distilled-composition",
+        "sql-wisdom-planner-stats",
+        "devops-wisdom-canary-duration",
+        "synth-which-planet-for-hooks",
+        "synth-which-planet-for-index",
+        "synth-which-planet-for-rollback",
+        "synth-memoize-and-indexing-both",
+        "synth-sql-full-practice",
+        "synth-devops-release-checklist",
+        "synth-cross-planet-safe-release",
+        "neg-kubernetes-decision",
+        "neg-rust-memory-model",
+        "neg-mobile-ios-decision"
+      ]
+    }
+  ],
+  "answer_tokens_charged": 2322868
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-memoize-stable-reference",
+  "tier": "large",
+  "question": "What's the rule about when memoizing expensive selectors actually pays off?",
+  "expected_fact": "useMemo only helps when the selector's input is a stable reference; otherwise it's wasted work.",
+  "cosmocache": {
+    "answer": "I found the relevant information on **Planet Verdant** (planet-react), specifically from the creature **Jimbo the React-tor** \u2014 a frog in a lab coat obsessed with stable references. Here's what the cosmocache records say:\n\n---\n\n## The Rule: When Memoizing Expensive Selectors Actually Pays Off\n\nAccording to Jimbo's distilled wisdom (from the `memoize-expensive-selectors` session), there are two key principles:\n\n### 1. Stable-reference inputs are a prerequisite\n> **Memoize via `useMemo` only when the selector's input is a stable reference; otherwise it's wasted work.**\n\nIf the inputs to your selector change on every render (e.g., a new object/array reference each time), then `useMemo` will recompute every time anyway \u2014 the memoization cache is never actually hit, and you're just adding overhead for nothing.\n\n### 2. Composition beats manual caching\n> **Reselect-style libraries beat bare `useMemo` when selectors compose.**\n\nWhen you have **chained/composed selectors** (selector B depends on the output of selector A), a library like Reselect handles the memoization cascade automatically. Trying to do this manually with `useMemo` is fragile and harder to maintain.\n\n### TL;DR\n- \u2705 Memoize when your inputs are **stable references** (so the cache actually gets hit).\n- \u274c Don't bother with `useMemo` if inputs are **recreated every render** \u2014 it's wasted work.\n- \u2705 Reach for **Reselect-style composition** over hand-rolled `useMemo` chains when selectors depend on each other.\n\n---\n\n*Source: `planets/planet-react/creatures/jimbo-the-reactor.md` \u2014 session `memoize-expensive-selectors` (2026-02-10)*",
+    "input_tokens": 25916,
+    "output_tokens": 726,
+    "iterations": 4,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer explicitly states the expected fact \u2014 'useMemo only helps when the selector's input is a stable reference; otherwise it's wasted work' \u2014 and does not contradict it."
+  },
+  "flatmemory": {
+    "answer": "Based on Jimbo the React-tor's wisdom from **Planet Verdant** (the React planet):\n\n1. **Stable-reference inputs are a prerequisite** \u2014 `useMemo` only pays off when the selector's input is a stable reference. If the input is recreated every render, the memoization is wasted work.\n\n2. **Composition beats manual caching** \u2014 When selectors chain/compose, Reselect-style libraries beat bare `useMemo`. Manual caching falls apart as selector graphs get deeper.\n\nIn short: don't reach for `useMemo` by default. First ensure your inputs are referentially stable, and if you're composing multiple selectors together, use a purpose-built memoization library rather than hand-rolling it.",
+    "input_tokens": 46164,
+    "output_tokens": 173,
+    "score": 1.0,
+    "reason": "The answer clearly states that useMemo only pays off when the selector's input is a stable reference, and that otherwise the memoization is wasted work, which is a faithful match to the expected fact."
+  }
+}

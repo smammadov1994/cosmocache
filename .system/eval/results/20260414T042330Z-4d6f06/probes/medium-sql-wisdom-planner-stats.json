@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-wisdom-planner-stats",
+  "tier": "medium",
+  "question": "What's Sally's distilled wisdom about planner statistics?",
+  "expected_fact": "Planner statistics are not free \u2014 refresh them after large mutations.",
+  "cosmocache": {
+    "answer": "Here's what **Sally the SQLite** \u2014 a cheerful stone sprite from **Planet Tessera** (the SQL planet) \u2014 has distilled about planner statistics:\n\n---\n\n### Sally's Distilled Wisdom on Planner Statistics\n\n1. **\"Planner statistics are not free \u2014 refresh after large mutations.\"**\n   - Specifically, you should run `ANALYZE` after a bulk insert of **>10k rows**, because planner stats go stale.\n\n2. **\"Partial indexes pay off when selectivity is extreme.\"**\n   - For example, a partial index on `status='active'` beats a full index when **>90% of rows are inactive**.\n\n---\n\nThese insights come from her journal session *\"when-to-run-analyze\"* (2026-03-02), recorded in `planets/planet-sql/creatures/sally-the-sqlite.md`. Sally's expertise areas are **query planning** and **index design**, and she lives on Planet Tessera \u2014 *a tiled realm of relational truth* \u2014 where creatures feed on **index-loam** and possess abilities like *join-sense* and *query-plan-vision*.",
+    "input_tokens": 12282,
+    "output_tokens": 973,
+    "iterations": 3,
+    "tool_calls": 12,
+    "score": 1.0,
+    "reason": "The answer explicitly states the expected fact: \"Planner statistics are not free \u2014 refresh after large mutations,\" with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Sally the SQLite's distilled wisdom on planner statistics is:\n\n- **Planner statistics are not free \u2014 refresh after large mutations.** Specifically, run ANALYZE after a bulk insert of >10k rows, as planner stats go stale.\n- **Partial indexes pay off when selectivity is extreme.** For example, a partial index on `status='active'` beats a full index when >90% of rows are inactive.",
+    "input_tokens": 13873,
+    "output_tokens": 99,
+    "score": 1.0,
+    "reason": "The answer contains the expected fact almost verbatim: 'Planner statistics are not free \u2014 refresh after large mutations,' with no contradicting claims."
+  }
+}

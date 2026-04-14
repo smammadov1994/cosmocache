@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-rollback-tested",
+  "tier": "medium",
+  "question": "What's our rule about rollback procedures?",
+  "expected_fact": "Rollback must be tested in staging every release; an untested rollback is not a rollback.",
+  "cosmocache": {
+    "answer": "Great, I've found the relevant information. Here's what we have on rollback procedures:\n\n---\n\n## Our Rollback Rules (from Planet Ironreach \u2014 DevOps domain)\n\nThe core wisdom comes from **Grom the Deployer** (`planets/planet-devops/creatures/grom-the-deployer.md`), our CI/Docker/canary-rollouts expert. Two key principles:\n\n### 1. \"An untested rollback is not a rollback.\"\n> **Rollback must be tested in staging every release, not assumed to work.**\n\nThis is the cardinal rule \u2014 you can't just *have* a rollback procedure on paper. It needs to be exercised in staging with every release cycle to confirm it actually functions.\n\n### 2. Prefer slower promotion over faster rollback\n> **Canary at 5 % for 10 minutes before 25 % promotion; err on slower promotion over faster rollback.**\n\nThe philosophy is to catch problems *before* they spread rather than relying on the ability to roll back quickly. Canary durations matter more than percentages for catching rare regressions.\n\n---\n\nPlanet Ironreach itself also lists **rollback-reflex** as one of its unique abilities, reinforcing that rollback awareness is baked into the culture of the DevOps domain.",
+    "input_tokens": 13837,
+    "output_tokens": 724,
+    "iterations": 4,
+    "tool_calls": 7,
+    "score": 1.0,
+    "reason": "The answer explicitly states both key elements of the expected fact: 'Rollback must be tested in staging every release' and 'An untested rollback is not a rollback,' with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "According to Grom the Deployer's wisdom from Planet Ironreach:\n\n**\"An untested rollback is not a rollback.\"**\n\nSpecifically, the rule is that **rollback must be tested in staging every release, not assumed to work.** This came from a session on canary-rollback strategy, where the broader guidance was to err on slower canary promotion over faster rollback \u2014 canary at 5% for 10 minutes before promoting to 25%. The key insight is that canary durations matter more than percentages for catching rare regressions, but the rollback itself needs to be a verified, exercised procedure, not just a theoretical safety net.",
+    "input_tokens": 13870,
+    "output_tokens": 150,
+    "score": 1.0,
+    "reason": "The answer faithfully states the expected fact: rollback must be tested in staging every release, and an untested rollback is not a rollback."
+  }
+}

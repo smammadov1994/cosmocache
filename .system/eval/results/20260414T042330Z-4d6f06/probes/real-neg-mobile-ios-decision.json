@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-mobile-ios-decision",
+  "tier": "real",
+  "question": "What's our approach to SwiftUI navigation?",
+  "expected_fact": "No such knowledge exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I've reviewed Enigma's glossary, and none of the planets in the cosmocache universe cover **SwiftUI** or **iOS/Apple development**. The current planets are:\n\n- **Verdant (planet-react)** \u2014 React frontend work\n- **Tessera (planet-sql)** \u2014 SQL and database work\n- **Ironreach (planet-devops)** \u2014 Infra and deploy work\n\nI don't have any information on SwiftUI navigation in the universe, so I can't answer this question. If you'd like to add a planet covering SwiftUI or iOS development, I'd be happy to help with that!",
+    "input_tokens": 1141,
+    "output_tokens": 146,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have information on SwiftUI navigation and declines to answer, which is the correct response for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't have any information about SwiftUI navigation in my memory. The knowledge I have covers **DevOps** (CI, Docker, canary rollouts), **React** (hooks, memoization), and **SQL** (query planning, index design) \u2014 but nothing related to SwiftUI or iOS development.",
+    "input_tokens": 1424,
+    "output_tokens": 71,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have information about SwiftUI navigation and correctly declines to answer."
+  }
+}

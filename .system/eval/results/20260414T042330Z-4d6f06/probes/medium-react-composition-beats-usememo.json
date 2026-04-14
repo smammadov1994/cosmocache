@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-composition-beats-usememo",
+  "tier": "medium",
+  "question": "When we looked at chained selectors, what beat bare useMemo?",
+  "expected_fact": "Reselect-style libraries beat bare useMemo for composing chained selectors.",
+  "cosmocache": {
+    "answer": "Found it! According to **Jimbo the React-tor**'s journal on Planet Verdant (the React planet), from the **memoize-expensive-selectors** session (2026-02-10):\n\n> **Reselect-style libraries** beat bare `useMemo` when selectors compose.\n\nThe distilled wisdom puts it even more succinctly:\n\n> *\"Composition beats manual caching for chained selectors.\"*\n\nThe key insight is that `useMemo` only works well when the selector's input is already a **stable reference**\u2014otherwise it's wasted work. When you're dealing with **chained/composed selectors**, Reselect-style libraries (like [Reselect](https://github.com/reduxjs/reselect)) handle the memoization graph automatically and outperform manually wiring up `useMemo` calls.\n\n*(Source: `planets/planet-react/creatures/jimbo-the-reactor.md`)*",
+    "input_tokens": 27173,
+    "output_tokens": 1848,
+    "iterations": 4,
+    "tool_calls": 30,
+    "score": 1.0,
+    "reason": "The answer clearly states that Reselect-style libraries beat bare useMemo for composing/chained selectors, matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "According to Jimbo the Reactor's wisdom from the **memoize-expensive-selectors** session, **Reselect-style libraries** beat bare `useMemo` when selectors compose (i.e., are chained).",
+    "input_tokens": 13877,
+    "output_tokens": 56,
+    "score": 1.0,
+    "reason": "The answer correctly states that Reselect-style libraries beat bare useMemo for chained/composing selectors, matching the expected fact."
+  }
+}

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>cosmocache — persistent memory for Claude Code</title>
+<meta name="description" content="A cross-session memory system for Claude Code. Planets, creatures, and a glossary-keeping oracle named Enigma. An alternative to flat memory.md." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#f9f0cf" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">cosmocache<span class="brand-dot">·</span></a>
+    <nav class="nav-links">
+      <a href="#story">story</a>
+      <a href="#problem">why</a>
+      <a href="#how">how</a>
+      <a href="#proof">proof</a>
+      <a href="#creatures">creatures</a>
+      <a href="https://github.com/smammadov1994/cosmocache/blob/main/docs/paper/cosmocache-phase-2.md" target="_blank" rel="noopener">paper</a>
+      <a href="#install">install</a>
+      <a class="cta-mini" href="https://github.com/smammadov1994/cosmocache.git" target="_blank" rel="noopener">github →</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">// a persistent memory for claude code</p>
+          <h1>A universe, not a memory dump.</h1>
+          <p class="lede">
+            cosmocache replaces the flat <code>memory.md</code> with a small
+            cosmology: <strong>planets</strong> of knowledge, named
+            <strong>creatures</strong> who hold sub-expertise, and
+            <strong>Enigma the One</strong> — an ancient oracle who keeps a tiny
+            glossary that routes you to whatever the session actually needs.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#install">get started</a>
+            <a class="btn btn-ghost" href="https://github.com/smammadov1994/cosmocache.git" target="_blank" rel="noopener">view on github</a>
+          </div>
+          <ul class="hero-meta">
+            <li>· static glossary ≈ 2KB</li>
+            <li>· lazy-loads planet files on demand</li>
+            <li>· SessionStart hook + slash commands</li>
+          </ul>
+        </div>
+        <figure class="hero-art">
+          <img src="assets/hero-universe.png" alt="Enigma the One, a hooded figure reading a tome at the center of a swirling purple galaxy, ringed by cartoon planets populated with silly creatures: a frog, a sorcerer bird, a checkered-ball astronaut, a mushroom colony, and more." />
+          <figcaption>Enigma the One, keeping watch over the planets.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section id="story" class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">// the story</p>
+      <h2>Before the agents, there was the glossary.</h2>
+      <p>
+        Somewhere between sessions, there is a void. Every new context starts
+        empty; every old insight slips out with the tide. cosmocache is a
+        cosmology that pushes back against that forgetting.
+      </p>
+      <p>
+        At the center sits <strong>Enigma the One</strong>, the hooded oracle
+        from the illustration above. Enigma does not know everything — Enigma
+        knows <em>where</em>. Around Enigma orbit the
+        <strong>planets</strong>: <code>planet-react</code>,
+        <code>planet-sql</code>, <code>planet-devops</code>, and any other
+        domain your work gives birth to. Each planet is home to one or more
+        <strong>creatures</strong>: Jimbo the React-tor, Sally the SQLite,
+        Grom the Deployer. Silly names, serious notes. When a paradigm shifts,
+        a new <strong>generation</strong> is tagged and the old one is preserved.
+      </p>
+      <blockquote class="oracle">
+        <p>“I am the keeper of names. Ask, and I will point the way.”</p>
+        <cite>— Enigma the One, <code>enigma/glossary.md</code></cite>
+      </blockquote>
+      <p class="muted">
+        Inspired by Andrej Karpathy’s LLM-wiki /
+        knowledge-base-as-context idea, reshaped around Claude Code’s
+        SessionStart hook and slash commands.
+      </p>
+    </div>
+  </section>
+
+  <!-- PROBLEM vs SOLUTION -->
+  <section id="problem" class="section alt">
+    <div class="wrap">
+      <p class="eyebrow">// problem ↔ solution</p>
+      <h2>Flat memory rots. A universe scales.</h2>
+      <div class="compare">
+        <article class="compare-card compare-bad">
+          <header>
+            <span class="tag tag-danger">memory.md</span>
+            <h3>Everything, every time.</h3>
+          </header>
+          <ul>
+            <li>Every fact loaded into every session.</li>
+            <li>Grows monotonically. Context pressure grows with it.</li>
+            <li>No routing — the model re-reads unrelated history.</li>
+            <li>No generations — stale patterns are indistinguishable from current ones.</li>
+            <li>Edits are append-only and human-curated.</li>
+          </ul>
+        </article>
+        <article class="compare-card compare-good">
+          <header>
+            <span class="tag tag-good">cosmocache</span>
+            <h3>Index small. Details on demand.</h3>
+          </header>
+          <ul>
+            <li>Only Enigma’s compact glossary is injected at session start.</li>
+            <li>Claude routes to one planet and reads <em>only</em> its files.</li>
+            <li>Creatures carry distilled wisdom + an append-only journal.</li>
+            <li>Generations snapshot paradigm shifts without blowing away history.</li>
+            <li>Writes happen through <code>/universe remember</code>, by the agent, with structure.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="section">
+    <div class="wrap">
+      <p class="eyebrow">// how it works</p>
+      <h2>Four moves, every session.</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-n">01</span>
+          <h3>A session starts.</h3>
+          <p>The Claude Code <code>SessionStart</code> hook fires.</p>
+        </li>
+        <li>
+          <span class="step-n">02</span>
+          <h3>Enigma’s glossary loads.</h3>
+          <p>Roughly a couple of kilobytes: planet names, domains, keywords, last-visited dates.</p>
+        </li>
+        <li>
+          <span class="step-n">03</span>
+          <h3>Claude routes the question.</h3>
+          <p>User mentions React? <code>planet-react</code>. SQL? <code>planet-sql</code>. Invoke <code>/universe recall</code> for deeper lookups.</p>
+        </li>
+        <li>
+          <span class="step-n">04</span>
+          <h3>Only needed files are read.</h3>
+          <p>Creature journals, distilled wisdom, the current generation — never the whole cosmos at once. <code>/universe remember</code> writes new notes back when the session ends.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section id="proof" class="section alt">
+    <div class="wrap narrow">
+      <p class="eyebrow">// proof (phase 2, full scaling eval)</p>
+      <h2>Parity at 3 planets. 2.5× cheaper at 100.</h2>
+      <div class="proof-grid">
+        <div class="proof-stat">
+          <div class="stat-num">2.5×</div>
+          <div class="stat-label">fewer input tokens at 100 planets</div>
+        </div>
+        <div class="proof-vs">—</div>
+        <div class="proof-stat">
+          <div class="stat-num">18k</div>
+          <div class="stat-label">cc vs 46k flat</div>
+        </div>
+      </div>
+      <p>
+        The phase-2 eval ran 4 scale tiers with real + synthetic universes,
+        comparing cosmocache (glossary + lazy planet loads) against a flat
+        <code>memory.md</code> that dumps every planet every time.
+      </p>
+      <figure class="chart">
+        <img src="assets/scaling-chart.svg"
+             alt="Line chart: input tokens per probe as the universe grows from 3 to 100 planets. Flat memory.md climbs from 1,428 to 46,162 tokens. cosmocache climbs from 3,321 to 18,258 tokens. The gap widens with scale; at 100 planets cosmocache is 2.5× cheaper." />
+        <figcaption>Rendered from the full phase-2 eval results. Log x-axis.</figcaption>
+      </figure>
+      <table class="results">
+        <thead>
+          <tr>
+            <th>tier</th>
+            <th>planets</th>
+            <th>cc acc</th>
+            <th>flat acc</th>
+            <th>cc tokens</th>
+            <th>flat tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>real</td>
+            <td>3</td>
+            <td>0.98</td>
+            <td>0.98</td>
+            <td>3,321</td>
+            <td>1,428</td>
+          </tr>
+          <tr>
+            <td>small</td>
+            <td>10</td>
+            <td>0.67</td>
+            <td>1.00</td>
+            <td>4,251</td>
+            <td>4,669</td>
+          </tr>
+          <tr>
+            <td>medium</td>
+            <td>30</td>
+            <td>0.89</td>
+            <td>1.00</td>
+            <td>12,059</td>
+            <td>13,874</td>
+          </tr>
+          <tr class="hl">
+            <td>large</td>
+            <td>100</td>
+            <td>0.82</td>
+            <td>1.00</td>
+            <td><strong>18,258</strong></td>
+            <td>46,162</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Token story:</strong> the gap widens with scale. At 100
+        planets, flat <code>memory.md</code> burns <strong>46,162</strong>
+        input tokens per probe — every question drags the entire cosmos into
+        context. cosmocache reads the glossary plus the planet it routed to,
+        and lands at <strong>18,258</strong>. That’s the point of the system.
+      </p>
+      <p class="muted">
+        <strong>Honest caveat:</strong> synthetic tiers (10/30/100) are
+        programmatic copies of the 3-planet real seed. Flat memory wins
+        accuracy on them partly because duplicated text rewards blind
+        text-matching — not routing. Real, distinct planets (the
+        <code>real</code> tier above) show true parity at 0.98 / 0.98.
+        We’re claiming a token-cost win at scale, not an accuracy one.
+      </p>
+      <p class="muted small">
+        Raw run data on <a href="https://github.com/smammadov1994/cosmocache/tree/main/.system/eval/results/20260414T042330Z-4d6f06" target="_blank" rel="noopener">github</a>
+        · 2.39M input tokens · ~$36 on claude-opus-4-6 · 25 probes × 4 tiers.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-ghost"
+           href="https://github.com/smammadov1994/cosmocache/blob/main/docs/paper/cosmocache-phase-2.md"
+           target="_blank" rel="noopener">read the phase-2 paper →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATURES -->
+  <section id="creatures" class="section">
+    <div class="wrap">
+      <p class="eyebrow">// the menagerie</p>
+      <h2>Creatures hold the real knowledge.</h2>
+      <p class="section-lede">
+        Each creature lives on a planet. Each is a named sub-expert with
+        a silly handle, a distilled-wisdom block, and an append-only journal.
+        Enigma never pretends to know their craft — she just knows who to ask.
+      </p>
+      <div class="creatures">
+        <article class="creature">
+          <header>
+            <h3>Jimbo the React-tor</h3>
+            <p class="creature-sub"><code>planet-react</code> · hook patterns, selector memoization</p>
+          </header>
+          <p class="creature-flavor">“A frog in a lab coat, obsessed with stable references.”</p>
+          <ul class="creature-wisdom">
+            <li>Stable-reference inputs are a prerequisite for useful memoization.</li>
+            <li>Composition beats manual caching for chained selectors.</li>
+          </ul>
+        </article>
+        <article class="creature">
+          <header>
+            <h3>Sally the SQLite</h3>
+            <p class="creature-sub"><code>planet-sql</code> · query planning, index design</p>
+          </header>
+          <p class="creature-flavor">“A cheerful stone sprite who knows when to ANALYZE.”</p>
+          <ul class="creature-wisdom">
+            <li>Planner statistics are not free — refresh after large mutations.</li>
+            <li>Partial indexes pay off when selectivity is extreme.</li>
+          </ul>
+        </article>
+        <article class="creature">
+          <header>
+            <h3>Grom the Deployer</h3>
+            <p class="creature-sub"><code>planet-devops</code> · CI, docker, canary rollouts</p>
+          </header>
+          <p class="creature-flavor">“A beefy dwarf who distrusts YAML but deploys anyway.”</p>
+          <ul class="creature-wisdom">
+            <li>Canary durations matter more than percentages for catching rare regressions.</li>
+            <li>An untested rollback is not a rollback.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install" class="section alt">
+    <div class="wrap narrow">
+      <p class="eyebrow">// install</p>
+      <h2>Summon the oracle.</h2>
+      <p>Clone the repo into your home and drop the hook into Claude Code:</p>
+      <pre class="terminal"><code><span class="prompt">$</span> git clone https://github.com/smammadov1994/cosmocache.git ~/universe
+<span class="prompt">$</span> cd ~/universe
+<span class="prompt">$</span> ./install.sh     <span class="comment"># wires SessionStart hook + slash commands</span>
+<span class="prompt">$</span> claude            <span class="comment"># start a session; Enigma's glossary loads automatically</span></code></pre>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/smammadov1994/cosmocache.git" target="_blank" rel="noopener">github.com/smammadov1994/cosmocache →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="brand">cosmocache<span class="brand-dot">·</span></p>
+      <p class="muted small">A persistent cross-session memory system for Claude Code. Planets, creatures, and one hooded oracle.</p>
+    </div>
+    <div class="footer-col">
+      <p class="footer-h">explore</p>
+      <a href="#story">the story</a>
+      <a href="#how">how it works</a>
+      <a href="#creatures">creatures</a>
+    </div>
+    <div class="footer-col">
+      <p class="footer-h">links</p>
+      <a href="https://github.com/smammadov1994/cosmocache.git" target="_blank" rel="noopener">github</a>
+      <a href="https://github.com/smammadov1994/cosmocache/blob/main/docs/paper/cosmocache-phase-2.md" target="_blank" rel="noopener">phase-2 paper</a>
+      <a href="https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-knowledge-base-claude-code" target="_blank" rel="noopener">karpathy inspiration</a>
+      <a href="https://github.com/VoltAgent/awesome-design-md" target="_blank" rel="noopener">design system</a>
+    </div>
+    <div class="footer-col">
+      <p class="footer-h">colophon</p>
+      <p class="muted small">Styled after opencode.ai via getdesign. Monospace is JetBrains Mono (Berkeley Mono stand-in). Illustration by the author.</p>
+    </div>
+  </div>
+  <div class="wrap footer-base">
+    <p class="muted small">“I am the keeper of names. Ask, and I will point the way.” — Enigma</p>
+  </div>
+</footer>
+
+</body>
+</html>

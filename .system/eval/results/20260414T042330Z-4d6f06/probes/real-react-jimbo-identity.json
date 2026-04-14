@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-jimbo-identity",
+  "tier": "real",
+  "question": "Who on Verdant is the expert on hook patterns?",
+  "expected_fact": "Jimbo the React-tor is the creature on planet Verdant (planet-react) who handles hook patterns and selector memoization.",
+  "cosmocache": {
+    "answer": "## Jimbo the Reactor \ud83d\udc38\ud83e\uddea\n\nThe expert on **hook patterns** on Planet Verdant is **Jimbo the Reactor** \u2014 described as *\"a frog in a lab coat, obsessed with stable references.\"*\n\nAccording to his creature file (`creatures/jimbo-the-reactor.md`), his expertise covers:\n\n- **Hook patterns**\n- **Selector memoization**\n\n### Key Distilled Wisdom from Jimbo:\n1. **Stable-reference inputs** are a prerequisite for useful memoization \u2014 `useMemo` is wasted work if the selector's input isn't a stable reference.\n2. **Composition beats manual caching** for chained selectors \u2014 Reselect-style libraries outperform bare `useMemo` when selectors compose.\n\nJimbo was born in **gen-0** (2026-04-13) and feeds on **jsx-syrup** like all creatures of Verdant. He also possesses the planet's unique abilities: **hook-sight** and **prop-weaving**.",
+    "input_tokens": 3046,
+    "output_tokens": 394,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Jimbo the Reactor (a minor spelling variation of 'React-tor') as the creature on Planet Verdant who handles hook patterns and selector memoization, matching the expected fact."
+  },
+  "flatmemory": {
+    "answer": "**Jimbo the React-tor** \u2014 a frog in a lab coat on Planet Verdant (planet-react). His expertise covers **hook patterns** and **selector memoization**.\n\nKey wisdom from Jimbo:\n\n- Stable-reference inputs are a prerequisite for useful memoization.\n- Composition beats manual caching for chained selectors.\n- Memoize via `useMemo` only when the selector's input is a stable reference; otherwise it's wasted work.\n- Reselect-style libraries beat bare `useMemo` when selectors compose.",
+    "input_tokens": 1426,
+    "output_tokens": 134,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Jimbo the React-tor on Planet Verdant as the expert on hook patterns and selector memoization, matching the expected fact with no contradictions."
+  }
+}

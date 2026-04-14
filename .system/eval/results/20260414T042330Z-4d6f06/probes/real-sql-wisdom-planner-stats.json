@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-wisdom-planner-stats",
+  "tier": "real",
+  "question": "What's Sally's distilled wisdom about planner statistics?",
+  "expected_fact": "Planner statistics are not free \u2014 refresh them after large mutations.",
+  "cosmocache": {
+    "answer": "Here's **Sally the SQLite's** distilled wisdom about planner statistics:\n\n> **\"Planner statistics are not free \u2014 refresh after large mutations.\"**\n\nThis is backed by her journal entry from the `when-to-run-analyze` session, where she noted:\n\n- **Run `ANALYZE` after a bulk insert of >10k rows** \u2014 planner stats go stale.\n- Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive.\n\nIn short, Sally's key insight is that the query planner relies on statistics that can become outdated after significant data changes (like large inserts), so you should proactively run `ANALYZE` to keep them fresh. They have a cost, so treat them as something to maintain deliberately rather than assuming they'll always be accurate.",
+    "input_tokens": 2708,
+    "output_tokens": 274,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact and provides additional context without any contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Sally the SQLite's distilled wisdom on planner statistics is:\n\n**\"Planner statistics are not free \u2014 refresh after large mutations.\"**\n\nSpecifically, from her journal session, she noted that you should run `ANALYZE` after a bulk insert of >10k rows, as planner stats go stale.",
+    "input_tokens": 1426,
+    "output_tokens": 71,
+    "score": 1.0,
+    "reason": "The answer faithfully reproduces the expected fact almost verbatim with no contradicting claims."
+  }
+}

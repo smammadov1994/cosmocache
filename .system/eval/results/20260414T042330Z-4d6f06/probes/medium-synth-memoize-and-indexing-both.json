@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-memoize-and-indexing-both",
+  "tier": "medium",
+  "question": "Summarize what Jimbo says about memoization in two sentences.",
+  "expected_fact": "useMemo only helps when inputs are stable references. Reselect-style composition beats bare useMemo for chained selectors.",
+  "cosmocache": {
+    "answer": "Here's the summary:\n\n**Jimbo the React-tor** (from *planet-react*) says that memoization with `useMemo` is only worthwhile when the selector's input is a stable reference \u2014 otherwise it's wasted work. He also advises that for chained or composed selectors, using a Reselect-style library beats manual `useMemo` caching because composition naturally handles the caching chain more effectively.",
+    "input_tokens": 11940,
+    "output_tokens": 748,
+    "iterations": 3,
+    "tool_calls": 11,
+    "score": 1.0,
+    "reason": "The answer faithfully captures both key points: useMemo only helps with stable references, and Reselect-style composition beats bare useMemo for chained selectors."
+  },
+  "flatmemory": {
+    "answer": "Jimbo advises that `useMemo` is only worthwhile when the selector's inputs are stable references\u2014otherwise it's wasted work. For composing multiple selectors, Reselect-style libraries outperform manual `useMemo` caching.",
+    "input_tokens": 13877,
+    "output_tokens": 60,
+    "score": 1.0,
+    "reason": "The answer faithfully paraphrases both expected facts: useMemo only helps with stable references, and Reselect-style composition beats bare useMemo for chained selectors."
+  }
+}

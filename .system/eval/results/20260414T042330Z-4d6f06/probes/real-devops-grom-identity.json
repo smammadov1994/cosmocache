@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-grom-identity",
+  "tier": "real",
+  "question": "Who's the creature on planet Ironreach?",
+  "expected_fact": "Grom the Deployer on planet Ironreach (planet-devops) handles CI, docker, and canary rollouts.",
+  "cosmocache": {
+    "answer": "## Grom the Deployer \ud83c\udfd7\ufe0f\n\nThe creature on **Planet Ironreach** (the DevOps planet) is **Grom the Deployer** \u2014 described as *\"a beefy dwarf who distrusts YAML but deploys anyway.\"* \ud83d\ude04\n\nHere's what we know about Grom:\n\n- **Planet:** Ironreach (planet-devops)\n- **Born:** 2026-04-13 (Generation 0)\n- **Expertise:** CI, Docker, canary rollouts\n- **Sessions so far:** 0\n\n### Grom's Distilled Wisdom\n- **Canary durations matter more than percentages** for catching rare regressions.\n- **An untested rollback is not a rollback.**\n\n### Key Journal Notes\n- Canary at **5% for 10 minutes** before 25% promotion \u2014 err on slower promotion over faster rollback.\n- Rollback must be **tested in staging every release**, not just assumed to work.\n\nGrom may distrust YAML, but he clearly knows his deployment strategy! \ud83d\ude80",
+    "input_tokens": 2744,
+    "output_tokens": 369,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on planet Ironreach (planet-devops) and mentions CI, Docker, and canary rollouts, fully matching the expected fact."
+  },
+  "flatmemory": {
+    "answer": "The creature on **Planet Ironreach** (planet-devops) is **Grom the Deployer** \u2014 *a beefy dwarf who distrusts YAML but deploys anyway.*\n\nHis expertise covers **CI, Docker, and canary rollouts**. Key wisdom from Grom:\n\n- Canary durations matter more than percentages for catching rare regressions.\n- An untested rollback is not a rollback.",
+    "input_tokens": 1424,
+    "output_tokens": 102,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on planet Ironreach (planet-devops) and his expertise in CI, Docker, and canary rollouts, fully matching the expected fact with no contradictions."
+  }
+}

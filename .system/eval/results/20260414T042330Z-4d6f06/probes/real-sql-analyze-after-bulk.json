@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-analyze-after-bulk",
+  "tier": "real",
+  "question": "When should I run ANALYZE on a Postgres table?",
+  "expected_fact": "Run ANALYZE after a bulk insert of more than ten thousand rows, because planner stats go stale.",
+  "cosmocache": {
+    "answer": "Great question! According to **Sally the SQLite**, the resident query-planning expert on **Planet Tessera** \ud83e\udea8, here's the guidance:\n\n---\n\n### When to Run `ANALYZE` on a Postgres Table\n\n1. **After bulk inserts of >10k rows** \u2014 The planner's statistics go stale after large data mutations. Running `ANALYZE` refreshes the statistics so the query planner can make informed decisions about execution plans (e.g., choosing between a sequential scan and an index scan).\n\n2. **After any large mutation** \u2014 The distilled wisdom from Sally generalizes this: *\"Planner statistics are not free \u2014 refresh after large mutations.\"* This includes bulk `UPDATE`s and `DELETE`s, not just inserts.\n\n### Why It Matters\n\nPostgres's query planner relies on table statistics (row counts, value distributions, etc.) to choose optimal query plans. When those stats are stale, the planner may pick poor plans \u2014 like doing a full sequential scan when an index scan would be far faster, or vice versa.\n\n### Bonus Tip from Sally \ud83c\udf81\n\n> **Partial indexes** on something like `status = 'active'` beat full indexes when >90% of rows are inactive. Selectivity matters \u2014 partial indexes pay off when it's extreme.\n\n---\n\n*Sources: `planets/planet-sql/creatures/sally-the-sqlite.md` (session: when-to-run-analyze)*",
+    "input_tokens": 5131,
+    "output_tokens": 620,
+    "iterations": 3,
+    "tool_calls": 5,
+    "score": 1.0,
+    "reason": "The answer correctly states to run ANALYZE after bulk inserts of more than 10k rows because planner stats go stale, matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "Based on **Sally the SQLite's** wisdom from Planet Tessera:\n\n**Run ANALYZE after a bulk insert of more than ~10,000 rows** \u2014 the planner's statistics go stale after large mutations, and stale stats lead to poor query plans.\n\nHer distilled principle: **Planner statistics are not free \u2014 refresh them after large mutations.**\n\nIn practice this extends to any large data change (bulk updates, deletes, or loads) that significantly shifts the distribution of values in your tables. Without fresh statistics, Postgres may choose suboptimal join strategies, index usage, or scan methods.",
+    "input_tokens": 1426,
+    "output_tokens": 134,
+    "score": 1.0,
+    "reason": "The answer faithfully states to run ANALYZE after a bulk insert of more than ~10,000 rows because planner stats go stale, matching the expected fact with no contradicting claims."
+  }
+}

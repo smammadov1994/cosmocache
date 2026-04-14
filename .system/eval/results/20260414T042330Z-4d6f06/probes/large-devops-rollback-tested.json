@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-rollback-tested",
+  "tier": "large",
+  "question": "What's our rule about rollback procedures?",
+  "expected_fact": "Rollback must be tested in staging every release; an untested rollback is not a rollback.",
+  "cosmocache": {
+    "answer": "Here's what we have on record about rollback procedures, sourced from **Planet Ironreach** (`planet-devops`) and its creature **Grom the Deployer**:\n\n---\n\n### Our Rollback Rules\n\n1. **\"An untested rollback is not a rollback.\"**\n   Rollback must be **tested in staging every release** \u2014 it should never be *assumed* to work. *(Grom the Deployer \u2014 Distilled Wisdom)*\n\n2. **Err on slower promotion over faster rollback.**\n   The canary strategy calls for deploying at **5% for 10 minutes** before promoting to 25%. The emphasis is on catching issues early through slower promotion rather than relying on a fast rollback after the fact. *(Session: canary-rollback-strategy)*\n\n3. **Canary durations matter more than percentages** for catching rare regressions \u2014 give the canary enough *time* to surface problems.\n\n---\n\nThe overarching philosophy on Planet Ironreach is captured by its unique ability called **\"rollback-reflex\"** \u2014 the instinct to always have a proven, tested path back. The core principle: **never ship a release whose rollback hasn't been exercised in staging first.**",
+    "input_tokens": 26752,
+    "output_tokens": 655,
+    "iterations": 4,
+    "tool_calls": 5,
+    "score": 1.0,
+    "reason": "The answer explicitly states both key elements: 'Rollback must be tested in staging every release' and 'An untested rollback is not a rollback,' faithfully matching the expected fact."
+  },
+  "flatmemory": {
+    "answer": "According to Grom the Deployer's wisdom from Planet Ironreach (planet-devops):\n\n**\"An untested rollback is not a rollback.\"**\n\nSpecifically, the guidance is that **rollback must be tested in staging every release, not assumed to work.** This came from a session on canary-rollback strategy, where the broader principle was to err on slower canary promotion over faster rollback \u2014 meaning you shouldn't rely on rollback as your safety net unless you've actually verified it works.",
+    "input_tokens": 46157,
+    "output_tokens": 115,
+    "score": 1.0,
+    "reason": "The answer contains the exact expected fact: rollback must be tested in staging every release, and an untested rollback is not a rollback, with no contradicting claims."
+  }
+}

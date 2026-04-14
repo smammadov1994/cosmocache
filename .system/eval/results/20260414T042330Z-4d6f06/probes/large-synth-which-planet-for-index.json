@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-which-planet-for-index",
+  "tier": "large",
+  "question": "I need advice on whether to add a partial index. Where do I look?",
+  "expected_fact": "Planet Tessera (planet-sql), creature Sally the SQLite \u2014 she handles query planning and index design.",
+  "cosmocache": {
+    "answer": "I found exactly what you need. Here's what the cosmocache universe has to say about partial indexes:\n\n---\n\n## \ud83e\ude90 Planet Tessera (`planet-sql`) \u2014 Sally the SQLite\n\nSally the SQLite is the creature on **Planet Tessera** (the SQL/database planet) with expertise in **query planning and index design**. Here's her distilled wisdom on partial indexes:\n\n### When to Use a Partial Index\n> **\"Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive.\"**\n\nIn other words, partial indexes pay off **when selectivity is extreme** \u2014 i.e., when the filter condition in your `WHERE` clause matches only a small fraction of the total rows.\n\n### Rule of Thumb\n- \u2705 **Add a partial index** if the condition targets a small minority of rows (e.g., only ~10% are `active` out of millions).\n- \u274c **Skip it** if the data distribution is more even \u2014 a full index may serve you just as well, and a partial index won't save much space or lookup time.\n\n### Bonus Tip from Sally\n> After a **bulk insert of >10k rows**, run `ANALYZE` \u2014 planner stats go stale, and your indexes (partial or otherwise) won't be used optimally if the query planner has outdated statistics.\n\n---\n\n**Source:** `planets/planet-sql/creatures/sally-the-sqlite.md` \u2014 session *\"when-to-run-analyze\"* (2026-03-02)",
+    "input_tokens": 25912,
+    "output_tokens": 650,
+    "iterations": 4,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Planet Tessera (planet-sql) and creature Sally the SQLite as the source for query planning and index design advice, matching the expected fact with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Based on the memory, you should consult **Sally the SQLite** on **Planet Tessera** (the SQL/database planet).\n\nHere's her distilled wisdom on the topic:\n\n- **Partial indexes pay off when selectivity is extreme** \u2014 specifically, a partial index (e.g., on `status='active'`) beats a full index when **>90% of rows are inactive** (i.e., the filtered condition is highly selective).\n- **Planner statistics matter** \u2014 after large mutations (bulk inserts of >10k rows), run `ANALYZE` so the planner actually knows about the data distribution and can make use of your partial index effectively.\n\n**Rule of thumb from Sally's session (`when-to-run-analyze`):** If the vast majority of your rows *don't* match the condition you're filtering on, a partial index is a clear win \u2014 it's smaller, cheaper to maintain, and the planner can leverage it well. If selectivity isn't extreme, a full index may serve you just as well or better.",
+    "input_tokens": 46164,
+    "output_tokens": 231,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both Planet Tessera (planet-sql) and Sally the SQLite as the source for advice on partial indexes, matching the expected fact with no contradicting claims."
+  }
+}

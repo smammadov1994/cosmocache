@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-wisdom-distilled-composition",
+  "tier": "real",
+  "question": "What distilled wisdom does Jimbo keep about caching chained selectors?",
+  "expected_fact": "Composition beats manual caching for chained selectors.",
+  "cosmocache": {
+    "answer": "## Jimbo's Wisdom on Caching Chained Selectors\n\nAccording to **Jimbo the Reactor** \u2014 the lab-coat-wearing frog of Planet **Verdant** \u2014 his distilled wisdom on the topic is:\n\n> **\"Composition beats manual caching for chained selectors.\"**\n\nThis insight is paired with a complementary principle:\n\n> **\"Stable-reference inputs are a prerequisite for useful memoization.\"**\n\nThese two ideas come from his journal session on **memoizing expensive selectors** (2026-02-10), where he noted that Reselect-style libraries outperform bare `useMemo` when selectors compose, and that `useMemo` is wasted work if the selector's input isn't a stable reference.\n\nIn short: rather than trying to manually cache each link in a chain of selectors, Jimbo advocates using **compositional memoization** (\u00e0 la Reselect) \u2014 letting the library handle the caching at each stage, as long as your inputs maintain **stable references**.\n\n*Source: `planets/planet-react/creatures/jimbo-the-reactor.md`*",
+    "input_tokens": 2736,
+    "output_tokens": 359,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact: 'Composition beats manual caching for chained selectors.' with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Jimbo's distilled wisdom on this topic is:\n\n**\"Composition beats manual caching for chained selectors.\"**\n\nThis came from his session on memoizing expensive selectors, where he found that Reselect-style libraries outperform bare `useMemo` when selectors compose, and that stable-reference inputs are a prerequisite for useful memoization in the first place.",
+    "input_tokens": 1431,
+    "output_tokens": 90,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim and does not contradict it."
+  }
+}

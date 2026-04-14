@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-which-planet-for-rollback",
+  "tier": "real",
+  "question": "Our rollback broke last release. Which creature do I ask?",
+  "expected_fact": "Grom the Deployer on planet Ironreach (planet-devops) \u2014 he handles CI and rollback procedures.",
+  "cosmocache": {
+    "answer": "You want **Grom the Deployer** on **Planet Ironreach** (planet-devops). He's your go-to creature for rollback issues.\n\nHere's what Grom already knows that's directly relevant to your broken rollback:\n\n### Grom's Distilled Wisdom on Rollbacks\n- *\"An untested rollback is not a rollback.\"*\n- *\"Canary durations matter more than percentages for catching rare regressions.\"*\n\n### From his journal (session: `canary-rollback-strategy`)\n- Canary at **5% for 10 minutes** before 25% promotion; err on **slower promotion** over faster rollback.\n- **Rollback must be tested in staging every release**, not assumed to work.\n\nSo Grom would likely tell you: if the rollback broke, it's because it wasn't exercised in staging beforehand. His core philosophy is that a rollback you haven't tested is no rollback at all. \ud83d\udd27",
+    "input_tokens": 3085,
+    "output_tokens": 395,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on Planet Ironreach (planet-devops) as the creature to ask about rollback issues, matching all material details in the expected fact."
+  },
+  "flatmemory": {
+    "answer": "You want **Grom the Deployer** on **Planet Ironreach** (planet-devops).\n\nGrom's core wisdom on this exact topic:\n\n> *\"An untested rollback is not a rollback.\"*\n\nFrom his journal, he advises:\n\n- **Rollback must be tested in staging every release**, not assumed to work.\n- Canary at 5 % for 10 minutes before 25 % promotion; err on slower promotion over faster rollback \u2014 but only if the rollback itself is proven.\n\nIf your rollback broke, Grom would say you skipped the staging verification step. Test the rollback path as a first-class part of every release cycle.",
+    "input_tokens": 1427,
+    "output_tokens": 160,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on Planet Ironreach (planet-devops) as the creature to ask about rollback issues, matching the expected fact with no contradicting claims."
+  }
+}

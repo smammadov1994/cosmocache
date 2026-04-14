@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-wisdom-canary-duration",
+  "tier": "large",
+  "question": "What does Grom's distilled wisdom say about canary durations vs percentages?",
+  "expected_fact": "Canary durations matter more than percentages for catching rare regressions.",
+  "cosmocache": {
+    "answer": "Here's what **Grom the Deployer** \u2014 a creature residing on **Planet Ironreach** (`planet-devops`) \u2014 has to say in his distilled wisdom:\n\n> **\"Canary durations matter more than percentages for catching rare regressions.\"**\n\nThis insight comes from a session on **canary-rollback-strategy** (2026-03-20), where Grom noted the practice of running a canary at **5% for 10 minutes** before promoting to 25%, emphasizing that one should **err on slower promotion over faster rollback**. The reasoning is that rare regressions are more likely to surface given enough *time* at a small percentage, rather than quickly ramping up the traffic percentage. In other words, holding a canary longer at a low percentage is more valuable for catching subtle bugs than rushing to a higher percentage sooner.\n\nGrom also pairs this with a second piece of distilled wisdom:\n\n> **\"An untested rollback is not a rollback.\"**\n\n\u2014 reinforcing that rollback procedures must be actively tested in staging every release, not just assumed to work.\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`)*",
+    "input_tokens": 19154,
+    "output_tokens": 519,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim and provides additional accurate context without any contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Grom's distilled wisdom states:\n\n> **Canary durations matter more than percentages for catching rare regressions.**\n\nIn other words, how *long* you hold a canary stage is more important than what *percentage* of traffic it receives when it comes to detecting uncommon issues.",
+    "input_tokens": 46167,
+    "output_tokens": 68,
+    "score": 1.0,
+    "reason": "The answer exactly matches the expected fact, stating that canary durations matter more than percentages for catching rare regressions, and provides a faithful elaboration without any contradicting claims."
+  }
+}

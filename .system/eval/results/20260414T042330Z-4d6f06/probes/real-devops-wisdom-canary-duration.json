@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-wisdom-canary-duration",
+  "tier": "real",
+  "question": "What does Grom's distilled wisdom say about canary durations vs percentages?",
+  "expected_fact": "Canary durations matter more than percentages for catching rare regressions.",
+  "cosmocache": {
+    "answer": "## Grom's Wisdom on Canary Durations vs. Percentages\n\nAccording to **Grom the Deployer** on planet **Ironreach** (planet-devops), his distilled wisdom states:\n\n> **\"Canary durations matter more than percentages for catching rare regressions.\"**\n\nThis is reinforced by his journal entry from the `canary-rollback-strategy` session, where he noted a practical example: running a canary at **5% for 10 minutes** before promoting to 25%, and emphasizing that you should **err on slower promotion over faster rollback**. \n\nThe core insight is that *how long* you observe a canary is more important than *what percentage* of traffic it receives \u2014 because rare regressions need time (duration) to surface, not just more traffic (percentage). A short canary window at a high percentage could still miss infrequent issues that a longer observation window would catch.\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`)*",
+    "input_tokens": 2747,
+    "output_tokens": 336,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim and provides additional accurate context without any contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Grom's distilled wisdom states:\n\n**\"Canary durations matter more than percentages for catching rare regressions.\"**\n\nThis insight comes from his session on canary rollback strategy, where the practical guidance was to canary at 5% for 10 minutes before promoting to 25%, erring on slower promotion over faster rollback.",
+    "input_tokens": 1433,
+    "output_tokens": 80,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim and provides additional consistent context without any contradicting claims."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-wisdom-planner-stats",
+  "tier": "large",
+  "question": "What's Sally's distilled wisdom about planner statistics?",
+  "expected_fact": "Planner statistics are not free \u2014 refresh them after large mutations.",
+  "cosmocache": {
+    "answer": "I don't have any information about \"Sally\" or \"planner statistics\" in the cosmocache universe. The glossary contains planets related to DevOps, React, and SQL synthetic domains, but none of them reference a topic about \"planner statistics\" or an entity named \"Sally.\"\n\nIf this relates to a specific planet or creature in the cosmocache universe, could you provide more details (like a planet name or slug) so I can look it up? Otherwise, I don't want to confabulate an answer \u2014 I simply don't have that data.",
+    "input_tokens": 5824,
+    "output_tokens": 123,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 0.0,
+    "reason": "The answer does not contain the expected fact that planner statistics are not free and should be refreshed after large mutations; instead it declines to answer, but this is not a NEGATIVE probe so declining is incorrect."
+  },
+  "flatmemory": {
+    "answer": "Sally the SQLite's distilled wisdom on planner statistics is:\n\n- **Planner statistics are not free \u2014 refresh after large mutations.** Specifically, run ANALYZE after a bulk insert of >10k rows, as planner stats go stale.\n- **Partial indexes pay off when selectivity is extreme.** For example, a partial index on `status='active'` beats a full index when >90% of rows are inactive.",
+    "input_tokens": 46160,
+    "output_tokens": 99,
+    "score": 1.0,
+    "reason": "The answer contains the expected fact almost verbatim: 'Planner statistics are not free \u2014 refresh after large mutations,' with no contradicting claims."
+  }
+}

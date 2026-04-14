@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-devops-release-checklist",
+  "tier": "real",
+  "question": "Based on Grom's knowledge, list the two things every release must include.",
+  "expected_fact": "A canary phase (5% for 10 minutes before 25%), and a rollback procedure that was tested in staging that release.",
+  "cosmocache": {
+    "answer": "Based on Grom the Deployer's knowledge, every release must include these **two things**:\n\n1. **A canary phase** \u2014 Canary at 5% for 10 minutes before promoting to 25%, erring on slower promotion over faster rollback.\n2. **A tested rollback** \u2014 Rollback must be tested in staging every release, not just assumed to work. As Grom puts it: *\"An untested rollback is not a rollback.\"*\n\n*(Source: `planets/planet-devops/creatures/grom-the-deployer.md`)*",
+    "input_tokens": 2738,
+    "output_tokens": 227,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer perfectly matches the expected fact, including both the canary phase with correct percentages/timing and the tested rollback requirement, with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Based on Grom the Deployer's distilled wisdom, every release must include:\n\n1. **A canary deployment with sufficient duration** \u2014 Canary durations matter more than percentages for catching rare regressions (he recommends 5% for 10 minutes before promoting to 25%, erring on slower promotion).\n\n2. **A tested rollback** \u2014 Rollback must be tested in staging every release, not assumed to work. As Grom puts it: *\"An untested rollback is not a rollback.\"*",
+    "input_tokens": 1431,
+    "output_tokens": 122,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both required elements: a canary phase (5% for 10 minutes before 25%) and a rollback procedure tested in staging every release, matching the expected fact precisely."
+  }
+}

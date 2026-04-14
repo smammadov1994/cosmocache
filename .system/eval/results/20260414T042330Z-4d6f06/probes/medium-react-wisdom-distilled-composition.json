@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-wisdom-distilled-composition",
+  "tier": "medium",
+  "question": "What distilled wisdom does Jimbo keep about caching chained selectors?",
+  "expected_fact": "Composition beats manual caching for chained selectors.",
+  "cosmocache": {
+    "answer": "Great, I found the answer! Here's what Jimbo knows:\n\n---\n\n**Jimbo the React-tor** \ud83d\udc38\ud83e\udd7c \u2014 a frog in a lab coat from **Planet Verdant** (planet-react) \u2014 is obsessed with stable references and specializes in *hook patterns* and *selector memoization*. His distilled wisdom on caching chained selectors is:\n\n1. **Stable-reference inputs are a prerequisite for useful memoization.** \u2014 Memoizing via `useMemo` is wasted work unless the selector's input is already a stable reference.\n\n2. **Composition beats manual caching for chained selectors.** \u2014 Rather than hand-rolling `useMemo` for each link in a chain of selectors, use a Reselect-style composition library. It handles the caching of intermediate results more reliably than bare `useMemo`.\n\nThese nuggets come from his journal session *\"memoize-expensive-selectors\"* (2026-02-10), where he noted that Reselect-style libraries outperform bare `useMemo` specifically when selectors compose (i.e., are chained together).\n\n*(Sources: `planets/planet-react/creatures/jimbo-the-reactor.md`, `planets/planet-react/planet.md`)*",
+    "input_tokens": 9020,
+    "output_tokens": 604,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer explicitly states 'Composition beats manual caching for chained selectors,' which exactly matches the expected fact, with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "Jimbo the React-tor's distilled wisdom on this topic is:\n\n**\"Composition beats manual caching for chained selectors.\"**\n\nThis came from his session on memoizing expensive selectors, where he noted that Reselect-style libraries beat bare `useMemo` when selectors compose.",
+    "input_tokens": 13878,
+    "output_tokens": 72,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim with no contradicting claims."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-jimbo-identity",
+  "tier": "medium",
+  "question": "Who on Verdant is the expert on hook patterns?",
+  "expected_fact": "Jimbo the React-tor is the creature on planet Verdant (planet-react) who handles hook patterns and selector memoization.",
+  "cosmocache": {
+    "answer": "I don't have any information about a planet called \"Verdant\" in the cosmocache universe. The glossary I have access to contains planets in the **DevOps**, **React**, and **SQL** synthetic domains, but none named \"Verdant.\"\n\nI can't answer this question without confabulating. If you believe this planet exists, it may not be indexed in my current glossary. Could you double-check the planet name or provide more context?",
+    "input_tokens": 2416,
+    "output_tokens": 102,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 0.0,
+    "reason": "The answer fails to identify Jimbo the React-tor as the expert on hook patterns on Verdant, instead incorrectly claiming no knowledge of the planet."
+  },
+  "flatmemory": {
+    "answer": "**Jimbo the React-tor** \u2014 a frog in a lab coat, obsessed with stable references. He lives on **Planet Verdant** (the React planet) and his expertise covers **hook patterns and selector memoization**.\n\nHis key distilled wisdom:\n\n- **Stable-reference inputs** are a prerequisite for useful memoization.\n- **Composition beats manual caching** for chained selectors (e.g., Reselect-style libraries over bare `useMemo`).",
+    "input_tokens": 13873,
+    "output_tokens": 115,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Jimbo the React-tor as the expert on hook patterns on Planet Verdant (the React planet), and also mentions selector memoization, fully matching the expected fact with no contradictions."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-rollback-tested",
+  "tier": "real",
+  "question": "What's our rule about rollback procedures?",
+  "expected_fact": "Rollback must be tested in staging every release; an untested rollback is not a rollback.",
+  "cosmocache": {
+    "answer": "Great question! According to **Grom the Deployer** on **Planet Ironreach** (our DevOps knowledge base), we have clear rules about rollback procedures:\n\n### Core Rules\n\n1. **\"An untested rollback is not a rollback.\"**\n   Rollback must be **tested in staging every release** \u2014 never just assumed to work.\n\n2. **Prefer slower promotion over faster rollback.**\n   The strategy favors cautious canary promotion (5 % for 10 minutes before promoting to 25 %) rather than relying on quick rollbacks as a safety net.\n\n3. **Canary durations matter more than percentages** for catching rare regressions \u2014 so give each promotion step enough soak time.\n\nThe overarching philosophy is: *don't treat rollback as a magic undo button*. Validate it proactively in staging with every release so you know it actually works when you need it in production.\n\n*(Sources: `planets/planet-devops/creatures/grom-the-deployer.md`, `planets/planet-devops/planet.md`)*",
+    "input_tokens": 5060,
+    "output_tokens": 509,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer explicitly states both key parts of the expected fact: 'Rollback must be tested in staging every release' and 'An untested rollback is not a rollback,' with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "According to **Grom the Deployer** from Planet Ironreach (DevOps), the rule is clear:\n\n> **An untested rollback is not a rollback.**\n\nSpecifically:\n\n- **Rollback must be tested in staging every release** \u2014 it should never be assumed to work.\n- Grom also notes that **canary durations matter more than percentages** for catching rare regressions, and the general philosophy is to err on **slower promotion over faster rollback** (e.g., canary at 5% for 10 minutes before promoting to 25%).",
+    "input_tokens": 1423,
+    "output_tokens": 134,
+    "score": 1.0,
+    "reason": "The answer explicitly states both key elements: rollback must be tested in staging every release, and an untested rollback is not a rollback, matching the expected fact exactly with no contradicting claims."
+  }
+}

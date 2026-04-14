@@ -6,6 +6,8 @@
 .system/eval/results/*
 !.system/eval/results/.gitkeep
 .system/eval/.cache/
+.system/eval/.env
+.env
 __pycache__/
 *.pyc
 .pytest_cache/

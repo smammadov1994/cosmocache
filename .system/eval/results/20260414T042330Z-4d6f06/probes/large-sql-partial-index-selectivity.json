@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-partial-index-selectivity",
+  "tier": "large",
+  "question": "When is a partial index on status='active' worth it?",
+  "expected_fact": "When more than 90% of rows are inactive \u2014 extreme selectivity is what makes partial indexes pay off.",
+  "cosmocache": {
+    "answer": "Excellent! I found the relevant wisdom from **Planet Tessera** (the SQL planet), specifically from the creature **Sally the SQLite** \u2014 a stone sprite specializing in query planning and index design.\n\n---\n\n## When Is a Partial Index on `status='active'` Worth It?\n\nAccording to Sally the SQLite's distilled wisdom (from `planets/planet-sql/creatures/sally-the-sqlite.md`):\n\n### The 90% Rule\n> **Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive.**\n\nIn other words, a partial index becomes worthwhile when the value you're filtering on is **highly selective** \u2014 meaning only a small fraction of the table matches the condition. If 90%+ of your rows are `'inactive'` (or `'archived'`, `'deleted'`, etc.), then:\n\n1. **A full index** wastes space and I/O indexing all those irrelevant inactive rows.\n2. **A partial index** like:\n   ```sql\n   CREATE INDEX idx_active_users ON users (created_at)\n     WHERE status = 'active';\n   ```\n   \u2026only indexes the ~10% of rows you actually query, making it **smaller, faster to scan, and cheaper to maintain**.\n\n### Sally's General Principle\n> *\"Partial indexes pay off when selectivity is extreme.\"*\n\n### Key Takeaways\n\n| Factor | Full Index | Partial Index (`WHERE status='active'`) |\n|---|---|---|\n| **Index size** | Covers all rows | Only the matching subset |\n| **Write overhead** | Every INSERT/UPDATE touches the index | Only rows matching the predicate |\n| **Query speed** | Scans more entries | Smaller B-tree \u2192 faster lookups |\n| **When to prefer** | Values are evenly distributed | One value dominates (>90% skew) |\n\n### Bonus Tip from Sally\n> *\"Run ANALYZE after a bulk insert of >10k rows; planner stats go stale.\"*\n\nAfter creating a partial index (or doing bulk data changes), make sure the query planner knows about the new statistics \u2014 otherwise it may not choose your shiny new partial index!",
+    "input_tokens": 25497,
+    "output_tokens": 760,
+    "iterations": 4,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer correctly states that a partial index on status='active' is worth it when >90% of rows are inactive, and explicitly mentions extreme selectivity as the key factor, matching the expected fact precisely."
+  },
+  "flatmemory": {
+    "answer": "According to Sally the SQLite's wisdom, a **partial index on `status='active'` beats a full index when more than 90% of rows are inactive** \u2014 in other words, when selectivity is extreme.\n\nThe underlying principle: **partial indexes pay off when selectivity is extreme**, meaning only a small fraction of rows match the indexed condition, so the index stays small and efficient compared to indexing the entire table.",
+    "input_tokens": 46161,
+    "output_tokens": 92,
+    "score": 1.0,
+    "reason": "The answer correctly states that a partial index on status='active' is worth it when more than 90% of rows are inactive, matching the expected fact about extreme selectivity."
+  }
+}

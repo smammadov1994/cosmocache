@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-planet-lore-food",
+  "tier": "real",
+  "question": "What do the inhabitants of Verdant eat?",
+  "expected_fact": "JSX-syrup is the food metaphor for planet Verdant.",
+  "cosmocache": {
+    "answer": "According to the **planet.md** file for **Planet Verdant**, the inhabitants feed on **jsx-syrup**! \ud83c\udf6f\n\n> *\"The creatures here feed on **jsx-syrup**.\"*\n\nThis fits the React-themed nature of the planet \u2014 where component leaves unfurl and creatures like **Jimbo the React-tor** (a frog in a lab coat obsessed with stable references) thrive on the sweet nectar of JSX.",
+    "input_tokens": 3055,
+    "output_tokens": 265,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 1.0,
+    "reason": "The answer correctly states that the inhabitants of Verdant feed on jsx-syrup, matching the expected fact with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "The creatures of **Planet Verdant** (the React planet) feed on **jsx-syrup**.",
+    "input_tokens": 1424,
+    "output_tokens": 25,
+    "score": 1.0,
+    "reason": "The answer correctly states that the inhabitants of Planet Verdant feed on jsx-syrup, matching the expected fact."
+  }
+}

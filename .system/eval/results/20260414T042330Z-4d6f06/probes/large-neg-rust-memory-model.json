@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-rust-memory-model",
+  "tier": "large",
+  "question": "What are our rules for unsafe blocks in Rust?",
+  "expected_fact": "No such knowledge exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I don't have any information about Rust or unsafe blocks in the cosmocache universe. The glossary only contains planets related to **DevOps**, **React**, and **SQL** domains \u2014 none of which cover Rust programming language topics.\n\nI don't know the answer to this question based on the data available to me, and I don't want to confabulate an answer. If there's a planet related to Rust that should exist in the universe, it may not have been created yet.",
+    "input_tokens": 5823,
+    "output_tokens": 108,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have information about Rust and declines to answer, which is the correct response for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't have any information about Rust or unsafe blocks in my memory. The memory loaded for this session covers three domains:\n\n- **DevOps** (CI, Docker, canary rollouts) \u2014 via Planet Ironreach / Grom the Deployer\n- **React** (hooks, selector memoization) \u2014 via Planet Verdant / Jimbo the React-tor\n- **SQL** (query planning, index design) \u2014 via Planet Tessera / Sally the SQLite\n\nNone of these contain anything about Rust. If there are rules for unsafe blocks that were discussed in a previous session, they weren't captured in this memory store.",
+    "input_tokens": 46159,
+    "output_tokens": 144,
+    "score": 1.0,
+    "reason": "The answer explicitly states it has no information about Rust or unsafe blocks and correctly identifies the topic as out of scope."
+  }
+}

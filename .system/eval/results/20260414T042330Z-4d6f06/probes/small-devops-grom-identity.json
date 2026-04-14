@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-grom-identity",
+  "tier": "small",
+  "question": "Who's the creature on planet Ironreach?",
+  "expected_fact": "Grom the Deployer on planet Ironreach (planet-devops) handles CI, docker, and canary rollouts.",
+  "cosmocache": {
+    "answer": "I've checked Enigma's glossary, and there is no planet called \"Ironreach\" (or any slug matching that name) in the cosmocache universe. The known planets are related to **DevOps**, **React**, and **SQL** domains.\n\nI don't have any information about a planet named Ironreach, so I can't answer this question. If you think the name might be different, feel free to share more details and I'll be happy to look it up!",
+    "input_tokens": 1442,
+    "output_tokens": 107,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 0.0,
+    "reason": "The expected answer indicates that Grom the Deployer is the creature on planet Ironreach, but the system incorrectly claims there is no planet called Ironreach and fails to provide any of the expected information."
+  },
+  "flatmemory": {
+    "answer": "The creature on **Planet Ironreach** (the DevOps planet) is **Grom the Deployer** \u2014 *\"A beefy dwarf who distrusts YAML but deploys anyway.\"*\n\nHis expertise covers **CI, Docker, and canary rollouts**. Key distilled wisdom from Grom:\n\n- **Canary durations matter more than percentages** for catching rare regressions.\n- **An untested rollback is not a rollback** \u2014 rollbacks must be tested in staging every release, not assumed to work.",
+    "input_tokens": 4668,
+    "output_tokens": 126,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on Planet Ironreach and accurately states his expertise in CI, Docker, and canary rollouts, fully matching the expected fact with no contradictions."
+  }
+}

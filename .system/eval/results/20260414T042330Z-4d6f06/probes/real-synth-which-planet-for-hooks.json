@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-which-planet-for-hooks",
+  "tier": "real",
+  "question": "I'm debugging a React hook that re-renders too often. Which planet and creature should I consult?",
+  "expected_fact": "Planet Verdant (planet-react), creature Jimbo the React-tor \u2014 he handles hook patterns and selector memoization.",
+  "cosmocache": {
+    "answer": "Here's what you need:\n\n---\n\n### \ud83e\ude90 Planet: **Verdant** (`planet-react`)\n> *\"Where component leaves unfurl\"*\n\n- **Domain:** React frontend work\n- **Unique Abilities:** `hook-sight`, `prop-weaving`\n\n### \ud83d\udc38 Creature: **Jimbo the Reactor**\n> *\"A frog in a lab coat, obsessed with stable references.\"*\n\n- **Expertise:** Hook patterns, selector memoization\n\n#### Jimbo's Distilled Wisdom (directly relevant to your re-render issue):\n1. **Stable-reference inputs are a prerequisite for useful memoization.** \u2014 If the inputs to your `useMemo` or `useCallback` aren't referentially stable, the memoization is wasted work and your component will re-render anyway.\n2. **Composition beats manual caching for chained selectors.** \u2014 If you're chaining derived state, consider a Reselect-style library rather than bare `useMemo`.\n\n#### Quick debugging checklist based on Jimbo's notes:\n- Are you passing **new object/array literals** on every render as deps to a hook? (breaks referential stability)\n- Are you using `useMemo` where the **inputs themselves change every render**? (wasted memoization)\n- Do you have **composed/chained selectors**? If so, a library like Reselect may outperform manual `useMemo` chains.\n\nJimbo is the creature to consult \u2014 he lives and breathes stable references! \ud83e\uddea",
+    "input_tokens": 3106,
+    "output_tokens": 555,
+    "iterations": 2,
+    "tool_calls": 2,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Planet Verdant (planet-react) and creature Jimbo the Reactor (minor spelling variation from 'React-tor') with his expertise in hook patterns and selector memoization, matching all material details of the expected fact."
+  },
+  "flatmemory": {
+    "answer": "You should consult **Planet Verdant** (`planet-react`) and its creature **Jimbo the React-tor** \u2014 the frog in a lab coat who's obsessed with stable references.\n\nHis distilled wisdom is directly relevant to your problem:\n\n- **Stable-reference inputs are a prerequisite for useful memoization.** If the inputs to your `useMemo` or dependency arrays aren't referentially stable, memoization is wasted work and you'll get unnecessary re-renders.\n- **Composition beats manual caching for chained selectors.** If you're composing selectors, a Reselect-style library will handle memoization more reliably than bare `useMemo`.\n\nIn short, check whether the values in your hook's dependency arrays are actually stable references \u2014 that's the most common culprit for excessive re-renders.",
+    "input_tokens": 1436,
+    "output_tokens": 192,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Planet Verdant (planet-react) and Jimbo the React-tor, and accurately describes his role in handling hook patterns and selector memoization, matching the expected fact."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-partial-index-selectivity",
+  "tier": "medium",
+  "question": "When is a partial index on status='active' worth it?",
+  "expected_fact": "When more than 90% of rows are inactive \u2014 extreme selectivity is what makes partial indexes pay off.",
+  "cosmocache": {
+    "answer": "Here's what the cosmocache knows about partial indexes on `status='active'`, courtesy of **Sally the SQLite** from **Planet Tessera** (the SQL realm):\n\n---\n\n## When a Partial Index on `status='active'` Is Worth It\n\nAccording to Sally's distilled wisdom on index design (`planets/planet-sql/creatures/sally-the-sqlite.md`):\n\n### The Key Rule: **Extreme Selectivity**\n\n> **\"Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive.\"**\n\nIn other words, a partial index becomes worthwhile when the value you're filtering on represents a **small minority** of the total rows. The specific threshold Sally cites is:\n\n- \u2705 **Worth it** when **\u226410% of rows** match `status='active'` (i.e., >90% are inactive/archived/closed)\n- \u274c **Not worth it** when active rows are a large proportion of the table\n\n### Why It Works\n\n1. **Smaller index size** \u2014 The partial index only stores entries for the `active` rows, so if that's 10% of your table, the index is ~10\u00d7 smaller than a full index on `status`.\n2. **Faster scans** \u2014 Smaller index = fewer pages to read = faster lookups.\n3. **Lower write overhead** \u2014 Rows transitioning *out* of `active` status don't need index maintenance on the partial index; only rows entering or leaving the `active` state touch it.\n4. **Better cache utilization** \u2014 A tiny index stays hot in memory more easily.\n\n### The Distilled Wisdom\n\nSally summarizes it as:\n\n> *\"Partial indexes pay off when selectivity is extreme.\"*\n\n### Practical Example (PostgreSQL)\n\n```sql\n-- Instead of this:\nCREATE INDEX idx_orders_status ON orders (status);\n\n-- Do this when most orders are completed/archived:\nCREATE INDEX idx_orders_active ON orders (created_at)\n  WHERE status = 'active';\n```\n\nThis is a classic pattern for tables like `orders`, `jobs`, `tasks`, or `subscriptions` where rows accumulate over time but only a small \"working set\" is actively queried.\n\n---\n\n**Source:** Sally the SQLite, Planet Tessera (`planet-sql`), session `when-to-run-analyze` (2026-03-02)",
+    "input_tokens": 27059,
+    "output_tokens": 2132,
+    "iterations": 4,
+    "tool_calls": 30,
+    "score": 1.0,
+    "reason": "The answer explicitly states the >90% inactive threshold and that extreme selectivity is what makes partial indexes pay off, matching the expected fact precisely."
+  },
+  "flatmemory": {
+    "answer": "According to Sally the SQLite's wisdom from Planet Tessera, a **partial index on `status='active'` beats a full index when >90% of rows are inactive**. In other words, it pays off when **selectivity is extreme** \u2014 the filtered condition matches only a small minority of rows, making the partial index much smaller and more efficient than indexing the entire table.",
+    "input_tokens": 13874,
+    "output_tokens": 84,
+    "score": 1.0,
+    "reason": "The answer correctly states that a partial index on status='active' is worth it when more than 90% of rows are inactive, emphasizing extreme selectivity, which matches the expected fact exactly."
+  }
+}

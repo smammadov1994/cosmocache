@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-planet-lore-ability",
+  "tier": "small",
+  "question": "What unique abilities does Tessera (planet-sql) grant its inhabitants?",
+  "expected_fact": "join-sense and query-plan-vision are the unique abilities of planet Tessera (planet-sql).",
+  "cosmocache": {
+    "answer": "Based on the **planet.md** file for **Planet Tessera** (planet-sql), here are the unique abilities it grants its inhabitants:\n\n---\n\n### \ud83c\udf10 Planet Tessera \u2014 Unique Abilities\n\nPlanet Tessera, described as *\"a tiled realm of relational truth,\"* bestows two special abilities upon its creatures:\n\n1. **Join-Sense** \u2014 The innate ability to perceive and navigate relationships between data, much like how SQL JOINs link tables together. Inhabitants can instinctively sense how disparate pieces of information connect.\n\n2. **Query-Plan-Vision** \u2014 The power to visualize and understand the most efficient path to retrieve or process information, akin to how a database engine formulates a query execution plan. Creatures with this ability can \"see\" the optimal route through complex data landscapes.\n\n---\n\n### Additional Lore\n\n- **Food source:** Creatures on Tessera feed on **index-loam**, a nourishing substance tied to the planet's database-oriented nature.\n- **Birth cycle:** New creatures spawn whenever a distinct sub-expertise in the SQL/database domain first appears.\n\n*(Source: `planets/planet-sql/planet.md`)*",
+    "input_tokens": 5669,
+    "output_tokens": 456,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted by Planet Tessera, matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "Planet Tessera grants its inhabitants two unique abilities:\n\n- **join-sense**\n- **query-plan-vision**",
+    "input_tokens": 4674,
+    "output_tokens": 30,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted by planet Tessera, matching the expected fact exactly."
+  }
+}

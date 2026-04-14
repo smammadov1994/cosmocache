@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-sql-full-practice",
+  "tier": "large",
+  "question": "What's the full rule Sally taught us about keeping query plans fast after big changes?",
+  "expected_fact": "Run ANALYZE after bulk inserts of more than 10k rows to refresh planner stats; consider partial indexes when selectivity is extreme.",
+  "cosmocache": {
+    "answer": "Great, I found Sally! Here's the full answer:\n\n---\n\n## Sally the SQLite's Rule on Keeping Query Plans Fast After Big Changes\n\nSally is a creature on **Planet Tessera** (the SQL planet) whose expertise is *query planning and index design*. Here's the full rule she taught us:\n\n> **Run `ANALYZE` after a bulk insert of more than 10,000 rows \u2014 planner stats go stale.**\n\nShe distilled this into a broader principle:\n\n> **\"Planner statistics are not free \u2014 refresh after large mutations.\"**\n\nIn other words, after any big data change (bulk inserts, mass updates, large deletes), the query planner's statistics become outdated and it may choose poor execution plans. Running `ANALYZE` refreshes those statistics so the planner can make good decisions again.\n\nShe also shared a related tip:\n\n- **Partial indexes** on something like `status='active'` beat full indexes when more than 90% of rows are inactive \u2014 i.e., partial indexes pay off when selectivity is extreme.\n\n*(Source: `planets/planet-sql/creatures/sally-the-sqlite.md`, session `2026-03-02 \u2014 when-to-run-analyze`)*",
+    "input_tokens": 25198,
+    "output_tokens": 555,
+    "iterations": 4,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer faithfully includes both key facts: running ANALYZE after bulk inserts of more than 10k rows to refresh planner stats, and considering partial indexes when selectivity is extreme."
+  },
+  "flatmemory": {
+    "answer": "From Sally the SQLite's session on **when-to-run-analyze**:\n\n- **Run ANALYZE after a bulk insert of >10k rows** \u2014 planner statistics go stale after large mutations, so you need to refresh them.\n- **Partial indexes on `status='active'` beat full indexes when >90% of rows are inactive** \u2014 partial indexes pay off when selectivity is extreme.\n\nHer distilled wisdom boils it down to:\n\n1. **Planner statistics are not free \u2014 refresh after large mutations.**\n2. **Partial indexes pay off when selectivity is extreme.**",
+    "input_tokens": 46165,
+    "output_tokens": 134,
+    "score": 1.0,
+    "reason": "The answer faithfully covers both parts of the expected fact: running ANALYZE after bulk inserts of more than 10k rows to refresh planner stats, and considering partial indexes when selectivity is extreme, with no contradicting claims."
+  }
+}

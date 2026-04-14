@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-planet-lore-ability",
+  "tier": "real",
+  "question": "What unique abilities does Tessera (planet-sql) grant its inhabitants?",
+  "expected_fact": "join-sense and query-plan-vision are the unique abilities of planet Tessera (planet-sql).",
+  "cosmocache": {
+    "answer": "## Tessera's Unique Abilities\n\nAccording to the planet file (`planets/planet-sql/planet.md`), **Planet Tessera** \u2014 described as *\"a tiled realm of relational truth\"* \u2014 grants its inhabitants two unique abilities:\n\n1. **Join-Sense** \u2014 An intuitive awareness of how data relates across tables, enabling creatures to naturally perceive and navigate relational joins.\n2. **Query-Plan-Vision** \u2014 The ability to *see* how queries will be executed, understanding the optimizer's choices before they happen.\n\n### In Practice\n\nThese abilities are embodied by Tessera's known inhabitant, **Sally the SQLite**, a *\"cheerful stone sprite who knows when to ANALYZE.\"* Her expertise in **query planning** and **index design** is a direct reflection of these planetary gifts. For example, her distilled wisdom includes insights like:\n\n- Knowing that planner statistics go stale after bulk inserts (query-plan-vision in action).\n- Recognizing when partial indexes outperform full indexes based on selectivity (join-sense guiding efficient data access).\n\nThe creatures of Tessera sustain themselves on **index-loam**, and new creatures spawn whenever a distinct sub-expertise in the SQL/database domain first appears.",
+    "input_tokens": 4702,
+    "output_tokens": 474,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted by Planet Tessera, matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "Planet Tessera grants its inhabitants two unique abilities:\n\n- **join-sense**\n- **query-plan-vision**",
+    "input_tokens": 1430,
+    "output_tokens": 30,
+    "score": 1.0,
+    "reason": "The answer correctly identifies both join-sense and query-plan-vision as the unique abilities granted by planet Tessera, matching the expected fact exactly."
+  }
+}

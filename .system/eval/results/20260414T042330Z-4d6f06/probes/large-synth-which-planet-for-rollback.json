@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-which-planet-for-rollback",
+  "tier": "large",
+  "question": "Our rollback broke last release. Which creature do I ask?",
+  "expected_fact": "Grom the Deployer on planet Ironreach (planet-devops) \u2014 he handles CI and rollback procedures.",
+  "cosmocache": {
+    "answer": "You want **Grom the Deployer** \u2014 the resident creature on **Planet Ironreach** (`planet-devops`).\n\nGrom's expertise covers **CI, Docker, and canary rollouts**, and his distilled wisdom is directly relevant to your broken rollback:\n\n> *\"Rollback must be tested in staging every release, not assumed to work.\"*\n> *\"An untested rollback is not a rollback.\"*\n\nHe also advises:\n- **Canary at 5 %** for 10 minutes before promoting to 25 % \u2014 err on slower promotion over faster rollback.\n- **Canary durations matter more than percentages** for catching rare regressions.\n\nSo summon Grom! He'll likely tell you the rollback broke because it was never validated in staging beforehand. His core principle: **treat rollback as a first-class deployment path and test it every release cycle.**",
+    "input_tokens": 19116,
+    "output_tokens": 427,
+    "iterations": 3,
+    "tool_calls": 3,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on Planet Ironreach (planet-devops) as the creature to ask about rollback issues, and accurately describes his expertise in CI and rollback procedures, with no contradicting claims."
+  },
+  "flatmemory": {
+    "answer": "You'd ask **Grom the Deployer** on **Planet Ironreach** (planet-devops).\n\nHis core wisdom on this exact topic:\n\n> *\"An untested rollback is not a rollback.\"*\n\nFrom his journal (session: *canary-rollback-strategy*):\n\n- **Rollback must be tested in staging every release, not assumed to work.**\n- Canary at 5 % for 10 minutes before 25 % promotion; err on slower promotion over faster rollback.\n\nSo Grom would tell you: if the rollback broke, it's because it wasn't exercised in staging beforehand. Bake a rollback test into every release cycle so it's proven before you need it in production.",
+    "input_tokens": 46161,
+    "output_tokens": 170,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Grom the Deployer on Planet Ironreach (planet-devops) as the creature to ask about rollback issues, matching all material details in the expected fact."
+  }
+}

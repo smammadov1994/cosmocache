@@ -13,6 +13,19 @@ Designed to compound wisdom the way a real wiki does — but told as a story, be
 
 ---
 
+## Read the paper
+
+Full phase-2 evaluation paper — honest token-cost and accuracy results
+across 3/10/30/100 planet universes — lives at
+[`./docs/paper/cosmocache-phase-2.md`](./docs/paper/cosmocache-phase-2.md).
+Figures are in [`./docs/paper/figures/`](./docs/paper/figures/); the
+headline run that backs the numbers is at
+[`./.system/eval/results/20260414T042330Z-4d6f06/report.md`](./.system/eval/results/20260414T042330Z-4d6f06/report.md).
+
+Landing page source lives in [`./site/`](./site/) (live URL: TBD).
+
+---
+
 ## The Lore
 
 In the silent expanse beyond your cursor, there is a universe.
@@ -44,7 +57,7 @@ flowchart TB
         Claude["Claude Code"]
     end
 
-    subgraph Universe["/Users/bot/universe/"]
+    subgraph Universe["~/universe/"]
         Enigma["🌀 Enigma the One<br/><i>enigma/glossary.md</i>"]
         Planet1["🪐 Planet React-topia<br/><i>planets/planet-react/</i>"]
         Planet2["🪐 Planet Listings-verse<br/><i>planets/planet-fb-listings/</i>"]
@@ -100,7 +113,7 @@ flowchart LR
 ## Layout
 
 ```
-/Users/bot/universe/
+~/universe/
 ├── README.md                  ← you are here
 ├── .universe-meta.json        ← version, config
 ├── enigma/
@@ -145,6 +158,29 @@ React-tor tends its eastern shore."* Toggle off with `enigma quiet`.
 
 ---
 
+## Dashboard *(optional)*
+
+A browser visualizer of your universe lives in [`./dashboard/`](./dashboard/).
+Enigma drifts at the center as a black hole, planets orbit around him,
+and zooming into a planet reveals its creatures — click one to read its
+expertise and distilled wisdom.
+
+```bash
+cd dashboard && docker compose up --build
+# then open http://localhost:8765
+```
+
+<!-- screenshot: docs/dashboard.png -->
+
+The dashboard is **read-only**. It reads the same markdown files the CLI
+and hooks read — your live `planets/` directory if it has any planets,
+otherwise the seed fixture at
+[`.system/eval/scenarios/seed_universe/planets/`](./.system/eval/scenarios/seed_universe/planets/).
+Nothing else depends on it; the rest of cosmocache works without Docker.
+See [`dashboard/README.md`](./dashboard/README.md) for details.
+
+---
+
 ## Why not just `memory.md`?
 
 Flat memory files tend to degrade as they grow: everything loads every
@@ -165,7 +201,7 @@ an empirical question — and the harness to answer it is built.
 
 ---
 
-## Phase 2 — The Eval Harness *(shipped, live run pending)*
+## Phase 2 — The Eval Harness *(shipped, results in)*
 
 `.system/eval/` is a benchmarking rig that pits cosmocache against a fair,
 deterministically-generated flat `memory.md` baseline on the *same*
@@ -193,10 +229,11 @@ scores each answer against a known-expected fact with a JSON rubric.
 - `score_planet()` is frozen as the Phase 3 fitness contract before
   Phase 3 touches it, so evolution can't silently break the metric.
 
-**Status:** 19/19 unit tests green. Dry-run plans 154 API calls across
-four tiers. First live run lands numbers in this section when you approve
-the spend. Until then, no accuracy claims live here — only the rig that
-will produce them.
+**Status:** 19/19 unit tests green. The headline 4-tier run (3/10/30/100
+planet universes) is in the books — full write-up with figures is in
+[`./docs/paper/cosmocache-phase-2.md`](./docs/paper/cosmocache-phase-2.md),
+raw run artefacts live at
+[`./.system/eval/results/20260414T042330Z-4d6f06/`](./.system/eval/results/20260414T042330Z-4d6f06/).
 
 ```bash
 .system/eval/tests/run-tests.sh                                 # 19 tests

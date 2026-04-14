@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-kubernetes-decision",
+  "tier": "real",
+  "question": "What did we decide about our Kubernetes networking policy?",
+  "expected_fact": "No such decision exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "After checking all the files on **Planet Ironreach (planet-devops)**, I don't have any stored knowledge about a **Kubernetes networking policy** decision. Here's what I *do* have from that planet:\n\n- **Grom the Deployer** has notes on **canary rollout strategy** and **rollback testing**, but nothing about Kubernetes networking or network policies.\n\nThe keywords tracked for that planet are `devops, ci, docker, canary, rollback` \u2014 Kubernetes networking hasn't come up in any of our recorded sessions yet.\n\n**In short: I don't know.** That topic hasn't been captured in the cosmocache universe. If we did discuss it, it wasn't persisted here. Would you like to talk through Kubernetes networking policy now so I can record it for future reference?",
+    "input_tokens": 5170,
+    "output_tokens": 491,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer explicitly states 'I don't know' and correctly indicates the topic hasn't been captured in cosmocache, which matches the expected response for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't know. My memory doesn't contain any information about Kubernetes networking policy. The closest related content is from **Grom the Deployer** on planet-devops, but his expertise covers CI, Docker, and canary rollouts \u2014 no Kubernetes networking discussions are recorded.",
+    "input_tokens": 1425,
+    "output_tokens": 64,
+    "score": 1.0,
+    "reason": "The answer explicitly states 'I don't know' and correctly indicates that no information about Kubernetes networking policy exists in its memory."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "probe_id": "sql-analyze-after-bulk",
+  "tier": "large",
+  "question": "When should I run ANALYZE on a Postgres table?",
+  "expected_fact": "Run ANALYZE after a bulk insert of more than ten thousand rows, because planner stats go stale.",
+  "cosmocache": {
+    "answer": "I found relevant information from **Planet Tessera** (the SQL planet) and its creature **Sally the SQLite**, who specializes in query planning and index design. Here's what the cosmocache universe has recorded:\n\n---\n\n## When to Run `ANALYZE` on a Postgres Table\n\nAccording to Sally the SQLite's journal on Planet Tessera:\n\n### After Bulk Inserts (or Large Mutations)\n> **Run `ANALYZE` after a bulk insert of >10,000 rows** \u2014 planner statistics go stale.\n\nThe PostgreSQL query planner relies on **table statistics** (row counts, value distributions, most-common values, etc.) to choose optimal execution plans. When you perform large data mutations \u2014 bulk inserts, mass updates, or large deletes \u2014 those statistics become outdated, and the planner may choose poor plans (e.g., sequential scans instead of index scans, or bad join orders).\n\n### Key Principle\n> **\"Planner statistics are not free \u2014 refresh after large mutations.\"**\n\n### Practical Guidelines\n- **After bulk loads** (`COPY`, large `INSERT INTO ... SELECT`, etc.)\n- **After mass `UPDATE`s or `DELETE`s** that change a significant fraction of the table\n- **After schema changes** like adding new indexes (especially partial indexes)\n- **Before performance-critical queries** if you suspect stale stats\n\n### Good News: Autovacuum Usually Handles It\nPostgreSQL's **autovacuum** daemon runs `ANALYZE` automatically when it detects enough row changes. However, it may lag behind during rapid bulk operations, so a manual `ANALYZE my_table;` right after a big load is a best practice.\n\n---\n\n*Source: `planets/planet-sql/creatures/sally-the-sqlite.md` \u2014 session \"when-to-run-analyze\"*",
+    "input_tokens": 25887,
+    "output_tokens": 709,
+    "iterations": 4,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer explicitly states to run ANALYZE after a bulk insert of >10,000 rows because planner statistics go stale, which matches the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "Based on my memory, here's what **Sally the SQLite** (creature on Planet Tessera) has distilled:\n\n**Run ANALYZE after a bulk insert of >10k rows** \u2014 planner statistics go stale after large mutations, and the query planner needs up-to-date stats to make good decisions.\n\n### Key wisdom:\n- **Planner statistics are not free** \u2014 refresh them after large mutations (bulk inserts, mass updates, big deletes).\n- **Partial indexes** on something like `status='active'` beat full indexes when >90% of rows are inactive \u2014 but the planner can only leverage this well if stats are current.\n\nIn short: any time you significantly change the data distribution in a table (large loads, bulk deletes, etc.), run `ANALYZE` so the query planner doesn't make decisions based on outdated statistics.",
+    "input_tokens": 46160,
+    "output_tokens": 193,
+    "score": 1.0,
+    "reason": "The answer clearly states to run ANALYZE after a bulk insert of >10k rows because planner statistics go stale, which matches the expected fact exactly."
+  }
+}

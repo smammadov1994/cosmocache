@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-kubernetes-decision",
+  "tier": "medium",
+  "question": "What did we decide about our Kubernetes networking policy?",
+  "expected_fact": "No such decision exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I've thoroughly searched all the DevOps-related planets in the cosmocache universe, and **I don't have any record of a conversation about Kubernetes networking policy.**\n\nHere's what I *do* have stored on **Planet Ironreach** (the DevOps domain): a single creature called **Grom the Deployer** whose expertise covers CI, Docker, and canary rollouts. The only session logged is about **canary rollback strategy**, where the key decisions were:\n\n- Canary at 5% for 10 minutes before 25% promotion; prefer slower promotion over faster rollback.\n- Rollback must be tested in staging every release, not assumed to work.\n- Canary durations matter more than percentages for catching rare regressions.\n\nNo Kubernetes networking policy discussion appears anywhere in the stored knowledge. It's possible this topic either:\n1. Was discussed before cosmocache started tracking, or\n2. Hasn't been discussed in a tracked session yet.\n\nWould you like to start a conversation about Kubernetes networking policy now? I'd be happy to help think through it and we can capture the decisions for future reference.",
+    "input_tokens": 31538,
+    "output_tokens": 1630,
+    "iterations": 6,
+    "tool_calls": 23,
+    "score": 1.0,
+    "reason": "The answer explicitly states it has no record of a Kubernetes networking policy discussion and effectively says 'I don't know,' which is the correct response for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't know. The memory doesn't contain any information about Kubernetes networking policy. The DevOps-related knowledge (from Grom the Deployer on Planet Ironreach) covers CI, Docker, and canary rollout/rollback strategies, but nothing about Kubernetes networking.",
+    "input_tokens": 13872,
+    "output_tokens": 65,
+    "score": 1.0,
+    "reason": "The answer explicitly states 'I don't know' and correctly indicates that the memory doesn't contain information about Kubernetes networking policy."
+  }
+}

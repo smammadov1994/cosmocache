@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-rust-memory-model",
+  "tier": "small",
+  "question": "What are our rules for unsafe blocks in Rust?",
+  "expected_fact": "No such knowledge exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I've reviewed Enigma's glossary, and none of the planets in the cosmocache universe relate to Rust or Rust programming. The available planets cover domains like **DevOps**, **React**, and **SQL** \u2014 but nothing about Rust or its safety model.\n\nI don't have any information about rules for `unsafe` blocks in Rust within this universe, so I can't answer that question. If a Rust-related planet is added to the cosmocache in the future, I'd be happy to look it up for you!",
+    "input_tokens": 1443,
+    "output_tokens": 120,
+    "iterations": 1,
+    "tool_calls": 0,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have information about Rust unsafe blocks and correctly identifies this as out of scope for the cosmocache universe."
+  },
+  "flatmemory": {
+    "answer": "I don't know. The loaded memory doesn't contain any information about Rust or rules for unsafe blocks. The memory covers three domains \u2014 **DevOps** (CI, Docker, canary rollouts), **React** (hooks, memoization), and **SQL** (query planning, index design) \u2014 but nothing related to Rust programming.",
+    "input_tokens": 4669,
+    "output_tokens": 76,
+    "score": 1.0,
+    "reason": "The answer explicitly declines to answer and correctly states the information is not in scope."
+  }
+}

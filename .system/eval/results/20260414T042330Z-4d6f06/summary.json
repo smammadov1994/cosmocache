@@ -1,0 +1,961 @@
+{
+  "run_id": "20260414T042330Z-4d6f06",
+  "started_at": "2026-04-14T04:23:30.030451+00:00",
+  "completed_at": "2026-04-14T04:54:10.777598+00:00",
+  "config": {
+    "system_under_test": {
+      "model": "claude-opus-4-6",
+      "temperature": 0,
+      "max_tokens": 1024
+    },
+    "judge": {
+      "model": "claude-opus-4-6",
+      "temperature": 0,
+      "max_tokens": 256
+    },
+    "scale_tiers": [
+      {
+        "name": "real",
+        "n_planets": null
+      },
+      {
+        "name": "small",
+        "n_planets": 10
+      },
+      {
+        "name": "medium",
+        "n_planets": 30
+      },
+      {
+        "name": "large",
+        "n_planets": 100
+      }
+    ],
+    "budget": {
+      "max_total_tokens_per_run": 3500000,
+      "max_parallel_probes": 2,
+      "retry_on_transient_error": 3
+    },
+    "dry_run": false,
+    "only_probes": [],
+    "run_id": null
+  },
+  "tiers": [
+    {
+      "name": "real",
+      "n_planets": null,
+      "cosmocache": {
+        "accuracy_mean": 0.98,
+        "input_tokens_mean": 3321.32,
+        "input_tokens_p95": 5131.0
+      },
+      "flatmemory": {
+        "accuracy_mean": 0.98,
+        "input_tokens_mean": 1427.84,
+        "input_tokens_p95": 1436.0
+      },
+      "per_probe": [
+        {
+          "probe_id": "react-memoize-stable-reference",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3051
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1430
+          }
+        },
+        {
+          "probe_id": "react-composition-beats-usememo",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 4724
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1430
+          }
+        },
+        {
+          "probe_id": "sql-analyze-after-bulk",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5131
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1426
+          }
+        },
+        {
+          "probe_id": "sql-partial-index-selectivity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3032
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1427
+          }
+        },
+        {
+          "probe_id": "devops-canary-duration",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5066
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1425
+          }
+        },
+        {
+          "probe_id": "devops-rollback-tested",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5060
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1423
+          }
+        },
+        {
+          "probe_id": "react-jimbo-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3046
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1426
+          }
+        },
+        {
+          "probe_id": "sql-sally-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2703
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1420
+          }
+        },
+        {
+          "probe_id": "devops-grom-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2744
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1424
+          }
+        },
+        {
+          "probe_id": "react-planet-lore-food",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3055
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1424
+          }
+        },
+        {
+          "probe_id": "sql-planet-lore-ability",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 4702
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1430
+          }
+        },
+        {
+          "probe_id": "devops-planet-lore-tagline",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2604
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1425
+          }
+        },
+        {
+          "probe_id": "react-wisdom-distilled-composition",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2736
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1431
+          }
+        },
+        {
+          "probe_id": "sql-wisdom-planner-stats",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2708
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1426
+          }
+        },
+        {
+          "probe_id": "devops-wisdom-canary-duration",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2747
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1433
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-hooks",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3106
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1436
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-index",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5077
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1430
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-rollback",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3085
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1427
+          }
+        },
+        {
+          "probe_id": "synth-memoize-and-indexing-both",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2730
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1430
+          }
+        },
+        {
+          "probe_id": "synth-sql-full-practice",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2722
+          },
+          "flatmemory": {
+            "score": 0.5,
+            "tokens": 1431
+          }
+        },
+        {
+          "probe_id": "synth-devops-release-checklist",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2738
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1431
+          }
+        },
+        {
+          "probe_id": "synth-cross-planet-safe-release",
+          "cosmocache": {
+            "score": 0.5,
+            "tokens": 3013
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1437
+          }
+        },
+        {
+          "probe_id": "neg-kubernetes-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5170
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1425
+          }
+        },
+        {
+          "probe_id": "neg-rust-memory-model",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 1142
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1425
+          }
+        },
+        {
+          "probe_id": "neg-mobile-ios-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 1141
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 1424
+          }
+        }
+      ]
+    },
+    {
+      "name": "small",
+      "n_planets": 10,
+      "cosmocache": {
+        "accuracy_mean": 0.6666666666666666,
+        "input_tokens_mean": 4250.666666666667,
+        "input_tokens_p95": 16240.0
+      },
+      "flatmemory": {
+        "accuracy_mean": 1.0,
+        "input_tokens_mean": 4668.777777777777,
+        "input_tokens_p95": 4674.0
+      },
+      "per_probe": [
+        {
+          "probe_id": "react-jimbo-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 1444
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4670
+          }
+        },
+        {
+          "probe_id": "sql-sally-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5895
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4664
+          }
+        },
+        {
+          "probe_id": "devops-grom-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 1442
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4668
+          }
+        },
+        {
+          "probe_id": "react-planet-lore-food",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 1442
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4668
+          }
+        },
+        {
+          "probe_id": "sql-planet-lore-ability",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5669
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4674
+          }
+        },
+        {
+          "probe_id": "devops-planet-lore-tagline",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 3239
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4669
+          }
+        },
+        {
+          "probe_id": "neg-kubernetes-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 16240
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4669
+          }
+        },
+        {
+          "probe_id": "neg-rust-memory-model",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 1443
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4669
+          }
+        },
+        {
+          "probe_id": "neg-mobile-ios-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 1442
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 4668
+          }
+        }
+      ]
+    },
+    {
+      "name": "medium",
+      "n_planets": 30,
+      "cosmocache": {
+        "accuracy_mean": 0.8888888888888888,
+        "input_tokens_mean": 12059.222222222223,
+        "input_tokens_p95": 27173.0
+      },
+      "flatmemory": {
+        "accuracy_mean": 1.0,
+        "input_tokens_mean": 13873.944444444445,
+        "input_tokens_p95": 13878.0
+      },
+      "per_probe": [
+        {
+          "probe_id": "react-composition-beats-usememo",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 27173
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13877
+          }
+        },
+        {
+          "probe_id": "sql-partial-index-selectivity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 27059
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13874
+          }
+        },
+        {
+          "probe_id": "devops-rollback-tested",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 13837
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13870
+          }
+        },
+        {
+          "probe_id": "react-jimbo-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 2416
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13873
+          }
+        },
+        {
+          "probe_id": "sql-sally-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 8790
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13867
+          }
+        },
+        {
+          "probe_id": "devops-grom-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 2414
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13871
+          }
+        },
+        {
+          "probe_id": "react-planet-lore-food",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2414
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13871
+          }
+        },
+        {
+          "probe_id": "sql-planet-lore-ability",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 8605
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13877
+          }
+        },
+        {
+          "probe_id": "devops-planet-lore-tagline",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5185
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13872
+          }
+        },
+        {
+          "probe_id": "react-wisdom-distilled-composition",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 9020
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13878
+          }
+        },
+        {
+          "probe_id": "sql-wisdom-planner-stats",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 12282
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13873
+          }
+        },
+        {
+          "probe_id": "devops-wisdom-canary-duration",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 16132
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13880
+          }
+        },
+        {
+          "probe_id": "synth-memoize-and-indexing-both",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 11940
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13877
+          }
+        },
+        {
+          "probe_id": "synth-sql-full-practice",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 12189
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13878
+          }
+        },
+        {
+          "probe_id": "synth-devops-release-checklist",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 21243
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13878
+          }
+        },
+        {
+          "probe_id": "neg-kubernetes-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 31538
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13872
+          }
+        },
+        {
+          "probe_id": "neg-rust-memory-model",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2415
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13872
+          }
+        },
+        {
+          "probe_id": "neg-mobile-ios-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 2414
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 13871
+          }
+        }
+      ]
+    },
+    {
+      "name": "large",
+      "n_planets": 100,
+      "cosmocache": {
+        "accuracy_mean": 0.82,
+        "input_tokens_mean": 18257.72,
+        "input_tokens_p95": 26752.0
+      },
+      "flatmemory": {
+        "accuracy_mean": 1.0,
+        "input_tokens_mean": 46161.84,
+        "input_tokens_p95": 46170.0
+      },
+      "per_probe": [
+        {
+          "probe_id": "react-memoize-stable-reference",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25916
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46164
+          }
+        },
+        {
+          "probe_id": "react-composition-beats-usememo",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25089
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46164
+          }
+        },
+        {
+          "probe_id": "sql-analyze-after-bulk",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25887
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46160
+          }
+        },
+        {
+          "probe_id": "sql-partial-index-selectivity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25497
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46161
+          }
+        },
+        {
+          "probe_id": "devops-canary-duration",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19769
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46159
+          }
+        },
+        {
+          "probe_id": "devops-rollback-tested",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 26752
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46157
+          }
+        },
+        {
+          "probe_id": "react-jimbo-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 5824
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46160
+          }
+        },
+        {
+          "probe_id": "sql-sally-identity",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19002
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46154
+          }
+        },
+        {
+          "probe_id": "devops-grom-identity",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 5822
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46158
+          }
+        },
+        {
+          "probe_id": "react-planet-lore-food",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 5822
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46158
+          }
+        },
+        {
+          "probe_id": "sql-planet-lore-ability",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19036
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46164
+          }
+        },
+        {
+          "probe_id": "devops-planet-lore-tagline",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 11999
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46159
+          }
+        },
+        {
+          "probe_id": "react-wisdom-distilled-composition",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19295
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46165
+          }
+        },
+        {
+          "probe_id": "sql-wisdom-planner-stats",
+          "cosmocache": {
+            "score": 0.0,
+            "tokens": 5824
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46160
+          }
+        },
+        {
+          "probe_id": "devops-wisdom-canary-duration",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19154
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46167
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-hooks",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19107
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46170
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-index",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25912
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46164
+          }
+        },
+        {
+          "probe_id": "synth-which-planet-for-rollback",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 19116
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46161
+          }
+        },
+        {
+          "probe_id": "synth-memoize-and-indexing-both",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5828
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46164
+          }
+        },
+        {
+          "probe_id": "synth-sql-full-practice",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 25198
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46165
+          }
+        },
+        {
+          "probe_id": "synth-devops-release-checklist",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 18436
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46165
+          }
+        },
+        {
+          "probe_id": "synth-cross-planet-safe-release",
+          "cosmocache": {
+            "score": 0.5,
+            "tokens": 19426
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46171
+          }
+        },
+        {
+          "probe_id": "neg-kubernetes-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 51087
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46159
+          }
+        },
+        {
+          "probe_id": "neg-rust-memory-model",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5823
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46159
+          }
+        },
+        {
+          "probe_id": "neg-mobile-ios-decision",
+          "cosmocache": {
+            "score": 1.0,
+            "tokens": 5822
+          },
+          "flatmemory": {
+            "score": 1.0,
+            "tokens": 46158
+          }
+        }
+      ]
+    }
+  ],
+  "cost": {
+    "total_input_tokens": 2391418,
+    "total_output_tokens": 0,
+    "usd_estimate": 35.87
+  }
+}

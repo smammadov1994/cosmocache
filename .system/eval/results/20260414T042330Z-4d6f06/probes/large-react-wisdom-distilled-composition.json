@@ -1,0 +1,22 @@
+{
+  "probe_id": "react-wisdom-distilled-composition",
+  "tier": "large",
+  "question": "What distilled wisdom does Jimbo keep about caching chained selectors?",
+  "expected_fact": "Composition beats manual caching for chained selectors.",
+  "cosmocache": {
+    "answer": "Here's what **Jimbo the React-tor** \u2014 a frog in a lab coat obsessed with stable references \u2014 keeps as distilled wisdom about caching chained selectors:\n\n> **\"Composition beats manual caching for chained selectors.\"**\n\nThis is paired with a complementary insight:\n\n> **\"Stable-reference inputs are a prerequisite for useful memoization.\"**\n\nThese two nuggets come from a session on memoizing expensive selectors (`memoize-expensive-selectors`), where Jimbo noted that:\n\n1. `useMemo` is only worthwhile when the selector's input is a **stable reference** \u2014 otherwise it's wasted work.\n2. **Reselect-style libraries** (which compose selectors) beat bare `useMemo` when selectors are chained together.\n\nIn short, Jimbo's advice is: don't try to manually cache each link in a chain of selectors \u2014 instead, use a composition-aware memoization approach (like Reselect) that handles the chaining for you.\n\n*(Source: `planets/planet-react/creatures/jimbo-the-reactor.md`)*",
+    "input_tokens": 19295,
+    "output_tokens": 592,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact: \"Composition beats manual caching for chained selectors.\""
+  },
+  "flatmemory": {
+    "answer": "Jimbo the React-tor's distilled wisdom on this topic is:\n\n**\"Composition beats manual caching for chained selectors.\"**\n\nThis came from his session on memoizing expensive selectors (2026-02-10), where he noted that Reselect-style libraries beat bare `useMemo` when selectors compose.",
+    "input_tokens": 46165,
+    "output_tokens": 79,
+    "score": 1.0,
+    "reason": "The answer directly quotes the expected fact verbatim with no contradicting claims."
+  }
+}

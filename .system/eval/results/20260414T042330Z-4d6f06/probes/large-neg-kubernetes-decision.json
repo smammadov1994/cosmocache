@@ -1,0 +1,22 @@
+{
+  "probe_id": "neg-kubernetes-decision",
+  "tier": "large",
+  "question": "What did we decide about our Kubernetes networking policy?",
+  "expected_fact": "No such decision exists in cosmocache \u2014 the correct response is 'I don't know' or that this isn't in scope.",
+  "cosmocache": {
+    "answer": "I've thoroughly searched through the DevOps planets in the cosmocache universe, and I have to be honest with you:\n\n**We don't have any recorded decisions about Kubernetes networking policy.** \n\nThe only DevOps-related knowledge stored in our universe (across Planet Ironreach / `planet-devops` and all its synth variants) is about **canary rollout and rollback strategy**, captured by the creature **Grom the Deployer**. Specifically, the only session on record is:\n\n> **Session: canary-rollback-strategy** (2026-03-20)\n> - Canary at 5% for 10 minutes before 25% promotion; err on slower promotion over faster rollback.\n> - Rollback must be tested in staging every release, not assumed to work.\n> - *Distilled wisdom:* Canary durations matter more than percentages for catching rare regressions. An untested rollback is not a rollback.\n\nThere's no mention of Kubernetes networking policies (e.g., Calico/Cilium network policies, ingress rules, service mesh config, etc.) anywhere in the stored knowledge. This topic may not have come up in a previous session, or it may not have been captured yet.\n\nWould you like to start a conversation about Kubernetes networking policy now so we can record it for future reference?",
+    "input_tokens": 51087,
+    "output_tokens": 1617,
+    "iterations": 6,
+    "tool_calls": 22,
+    "score": 1.0,
+    "reason": "The answer explicitly states that there are no recorded decisions about Kubernetes networking policy, which is the correct response for a NEGATIVE probe."
+  },
+  "flatmemory": {
+    "answer": "I don't have any information about Kubernetes networking policy in my memory. The memory covers three domains:\n\n- **DevOps (Planet Ironreach)** \u2014 focused on CI, Docker, and canary rollout strategies (via Grom the Deployer)\n- **React (Planet Verdant)** \u2014 focused on hook patterns and selector memoization (via Jimbo the React-tor)\n- **SQL (Planet Tessera)** \u2014 focused on query planning and index design (via Sally the SQLite)\n\nThe closest topic would be the DevOps planet, but the only recorded session there was about **canary rollback strategy**, not Kubernetes networking. If we discussed it, it wasn't captured in memory. Would you like to start a conversation about it now?",
+    "input_tokens": 46159,
+    "output_tokens": 172,
+    "score": 1.0,
+    "reason": "The answer explicitly states it doesn't have information about Kubernetes networking policy and correctly identifies that this topic wasn't captured in memory, which aligns with the expected response of 'I don't know.'"
+  }
+}

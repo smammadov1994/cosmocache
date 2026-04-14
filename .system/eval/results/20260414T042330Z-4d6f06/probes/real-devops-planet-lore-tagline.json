@@ -1,0 +1,22 @@
+{
+  "probe_id": "devops-planet-lore-tagline",
+  "tier": "real",
+  "question": "What's the tagline of the devops planet?",
+  "expected_fact": "Forges and pipelines, ever humming \u2014 the tagline of planet Ironreach (planet-devops).",
+  "cosmocache": {
+    "answer": "The tagline of **Planet Ironreach** (the DevOps planet) is:\n\n> *Forges and pipelines, ever humming*",
+    "input_tokens": 2604,
+    "output_tokens": 112,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer correctly identifies the tagline of the DevOps planet (Ironreach) as 'Forges and pipelines, ever humming,' matching the expected fact exactly."
+  },
+  "flatmemory": {
+    "answer": "The tagline of planet-devops (Planet Ironreach) is:\n\n*Forges and pipelines, ever humming*",
+    "input_tokens": 1425,
+    "output_tokens": 32,
+    "score": 1.0,
+    "reason": "The answer correctly states the tagline of planet-devops (Planet Ironreach) as 'Forges and pipelines, ever humming,' matching the expected fact exactly."
+  }
+}

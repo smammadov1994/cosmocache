@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-cross-planet-safe-release",
+  "tier": "large",
+  "question": "I'm about to do a release that touches both a React bundle and a SQL migration. Which planets matter here?",
+  "expected_fact": "Verdant (planet-react) and Tessera (planet-sql) \u2014 and Ironreach (planet-devops) for the rollout itself.",
+  "cosmocache": {
+    "answer": "Here's the summary of the two planets that matter for your release:\n\n---\n\n### \ud83c\udf3f Planet Verdant (`planet-react`)\n- **Domain:** React frontend work\n- **Keywords:** `react`, `jsx`, `hooks`\n- **Unique abilities:** *hook-sight*, *prop-weaving*\n- **Creature food:** jsx-syrup\n- **Creature:** `jimbo-the-reactor` (lives in the creatures directory)\n\nThis is where your **React bundle** changes land. It also has a constellation of ~33 synthetic sub-planets (`planet-react-synth-*`) that may track finer-grained React sub-expertise.\n\n---\n\n### \ud83e\uddf1 Planet Tessera (`planet-sql`)\n- **Domain:** SQL and database work\n- **Keywords:** `sql`, `postgres`, `query`\n- **Unique abilities:** *join-sense*, *query-plan-vision*\n- **Creature food:** index-loam\n- **Creature:** `sally-the-sqlite` (lives in the creatures directory)\n\nThis is where your **SQL migration** changes land. It likewise has ~33 synthetic sub-planets (`planet-sql-synth-*`) for more specific database sub-topics.\n\n---\n\n### TL;DR for your release\nYou'll want to keep an eye on **both** planets. If your React bundle and SQL migration are tightly coupled (e.g., a new UI feature backed by a schema change), be aware that these are tracked as **separate planets** \u2014 there's no cross-planet link today. Make sure both sides are validated independently!",
+    "input_tokens": 19426,
+    "output_tokens": 662,
+    "iterations": 3,
+    "tool_calls": 4,
+    "score": 0.5,
+    "reason": "The answer correctly identifies Verdant (planet-react) and Tessera (planet-sql) but omits Ironreach (planet-devops) for the rollout itself, which is a material detail in the expected answer."
+  },
+  "flatmemory": {
+    "answer": "Based on the memory, two planets are relevant to your release:\n\n1. **Planet Verdant (planet-react)** \u2014 React frontend work. Its creature **Jimbo the React-tor** covers hook patterns and selector memoization. Key wisdom: make sure memoization relies on stable-reference inputs, and prefer Reselect-style composition over bare `useMemo` for chained selectors.\n\n2. **Planet Tessera (planet-sql)** \u2014 SQL and database work. Its creature **Sally the SQLite** covers query planning and index design. Key wisdom: **run ANALYZE after your migration** if it involves bulk inserts of >10k rows (planner stats go stale), and consider partial indexes when selectivity is extreme (e.g., `status='active'` with >90% inactive rows).\n\nIf your release also involves a deploy pipeline (CI, Docker, canary rollout), then **Planet Ironreach (planet-devops)** and its creature **Grom the Deployer** would also apply \u2014 his advice: canary at 5% for 10 minutes before promoting to 25%, favor slower promotion over faster rollback, and **test your rollback in staging every release** (\"an untested rollback is not a rollback\").",
+    "input_tokens": 46171,
+    "output_tokens": 283,
+    "score": 1.0,
+    "reason": "The answer correctly identifies Verdant (planet-react), Tessera (planet-sql), and Ironreach (planet-devops) as the relevant planets, matching the expected fact with no contradicting claims."
+  }
+}

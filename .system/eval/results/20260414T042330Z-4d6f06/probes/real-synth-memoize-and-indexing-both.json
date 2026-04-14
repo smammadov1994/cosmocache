@@ -1,0 +1,22 @@
+{
+  "probe_id": "synth-memoize-and-indexing-both",
+  "tier": "real",
+  "question": "Summarize what Jimbo says about memoization in two sentences.",
+  "expected_fact": "useMemo only helps when inputs are stable references. Reselect-style composition beats bare useMemo for chained selectors.",
+  "cosmocache": {
+    "answer": "Here's Jimbo's take on memoization in two sentences:\n\n**Jimbo advises that `useMemo` should only be used when the selector's input is a stable reference \u2014 otherwise the memoization is wasted work. For chained or composed selectors, he recommends Reselect-style libraries over bare `useMemo`, since composition beats manual caching.**",
+    "input_tokens": 2730,
+    "output_tokens": 180,
+    "iterations": 2,
+    "tool_calls": 1,
+    "score": 1.0,
+    "reason": "The answer faithfully captures both key points: useMemo only helps with stable references, and Reselect-style composition is preferred over bare useMemo for chained selectors."
+  },
+  "flatmemory": {
+    "answer": "Jimbo advises that **stable-reference inputs are a prerequisite** for useful memoization \u2014 using `useMemo` without them is wasted work. He also notes that **Reselect-style composition beats manual caching** when selectors are chained together.",
+    "input_tokens": 1430,
+    "output_tokens": 63,
+    "score": 1.0,
+    "reason": "The answer faithfully paraphrases both expected facts: that useMemo requires stable-reference inputs to be useful, and that Reselect-style composition is superior to bare useMemo for chained selectors."
+  }
+}
