@@ -35,6 +35,14 @@ pass "load detects anchor + injects planet.md"
 
 rm -rf "$TEST_ANCHOR"
 
+# Test 2b: reject false-positive prefix match (/foo should NOT match /foobar)
+mkdir -p /tmp/universe-anchor-foobar
+sed -i '' "s|anchor_paths: \[[^]]*\]|anchor_paths: [/tmp/universe-anchor]|" "$UNIVERSE_ROOT/planets/planet-react/planet.md"
+OUTPUT="$(cd /tmp/universe-anchor-foobar && "$LOAD" 2>&1)"
+assert_contains "$OUTPUT" "Anchored to: none" "should not match /foobar to /foo anchor"
+pass "load rejects false-positive prefix match"
+rm -rf /tmp/universe-anchor-foobar
+
 # -------- universe-commit.sh --------
 
 # Test 3: commit hook prints the persistence prompt

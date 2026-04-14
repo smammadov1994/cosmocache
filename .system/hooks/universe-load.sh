@@ -29,7 +29,8 @@ if [[ -d "$UNIVERSE_ROOT/planets" ]]; then
     for raw in "${PATHS[@]}"; do
       path="$(echo "$raw" | xargs)"  # trim
       [[ -z "$path" ]] && continue
-      if [[ "$CWD" == "$path"* ]]; then
+      # Match on path-component boundary (prevent /foo matching /foobar)
+      if [[ "$CWD/" == "$path/"* ]]; then
         ANCHORED="$(basename "$p")"
         echo "---"
         echo "# Anchored Planet ($ANCHORED)"
