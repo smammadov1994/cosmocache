@@ -52,6 +52,7 @@ SCRIPTS_DIR = UNIVERSE / "scripts"
 INSTALL_SCRIPT = SCRIPTS_DIR / "install_evolution_cron.sh"
 UNINSTALL_SCRIPT = SCRIPTS_DIR / "uninstall_evolution_cron.sh"
 EVOLVE_DB_SCRIPT = SCRIPTS_DIR / "evolve.py"
+SEEDS_DIR = UNIVERSE / ".system" / "seeds"
 
 
 # ---------------------------------------------------------------------------
@@ -713,6 +714,60 @@ def cmd_stats(json_mode) -> None:
                    f"{'present' if d['has_index_md'] else 'not yet built'}")
 
     emit(payload, json_mode, human)
+
+
+@cli.command("seed")
+@click.argument("name", default="ten-planets")
+@click.option("--list", "list_seeds", is_flag=True, help="List available seeds and exit.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_seed(name, list_seeds, json_mode) -> None:
+    """Run a seed script from .system/seeds/ (default: ten-planets).
+
+    Seeds are small shell scripts that birth a canonical set of planets so
+    a fresh universe has something to look at. Each seed is idempotent-ish:
+    if a planet already exists, that one errors and the rest continue.
+    """
+    if not SEEDS_DIR.exists():
+        emit({"ok": False, "error": f"no seeds dir at {SEEDS_DIR}"},
+             json_mode, f"no seeds dir at {SEEDS_DIR}")
+        sys.exit(1)
+
+    available = sorted(
+        p.stem for p in SEEDS_DIR.glob("*.sh") if p.is_file()
+    )
+
+    if list_seeds:
+        emit(available, json_mode, lambda d: click.echo("\n".join(d) or "(none)"))
+        return
+
+    seed_path = SEEDS_DIR / f"{name}.sh"
+    if not seed_path.exists():
+        emit({"ok": False, "error": f"no such seed: {name}",
+              "available": available}, json_mode,
+             f"no such seed: {name}. Available: {', '.join(available) or '(none)'}")
+        sys.exit(1)
+
+    if not json_mode:
+        click.echo(f"Running seed: {seed_path.relative_to(UNIVERSE)}")
+        click.echo("-" * 60)
+    r = run(
+        ["bash", str(seed_path)],
+        cwd=UNIVERSE,
+        capture=not json_mode,  # stream to terminal in human mode
+    )
+    payload = {
+        "ok": r.returncode == 0,
+        "seed": name,
+        "path": str(seed_path),
+        "returncode": r.returncode,
+    }
+    if json_mode:
+        payload["stdout"] = r.stdout or ""
+        payload["stderr"] = r.stderr or ""
+    emit(payload, json_mode,
+         lambda d: click.echo(f"\nseed '{d['seed']}' finished "
+                              f"(exit {d['returncode']})"))
+    sys.exit(0 if r.returncode == 0 else 1)
 
 
 if __name__ == "__main__":

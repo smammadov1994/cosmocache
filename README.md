@@ -146,6 +146,26 @@ You don't. Claude does — automatically.
 
 Your only job is to work as normal. The universe grows around you.
 
+### Seed a fresh universe
+
+A brand new `planets/` directory is empty. If you want a canonical set of
+10 planets to play with (React, Python, Rust, Go, TypeScript, Docker, K8s,
+Postgres, AWS, LLM), run the seed:
+
+```bash
+cosmo seed                  # runs .system/seeds/ten-planets.sh
+cosmo seed --list           # list available seeds
+```
+
+Or invoke the shell script directly:
+
+```bash
+.system/seeds/ten-planets.sh
+```
+
+Each seed calls `birth-planet.sh` once per planet and then re-installs the
+launchd cron so every new world gets picked up by the evolution loop.
+
 ### Optional: theatrical mode
 
 ```

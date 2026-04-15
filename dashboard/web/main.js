@@ -243,60 +243,159 @@ enigmaRing.position.y = -WELL_DEPTH + 0.25;
 scene.add(enigmaRing);
 
 // Morphing liquid core — Enigma's body. A subdivided icosahedron whose
-// vertices are swayed by a sum of sinusoids in the vertex shader, so the
-// shape slowly morphs between states like a drop of mercury. A rim term
-// in the fragment gives it a bright silhouette so it reads at a distance.
+// vertices are violently swayed by stacked sinusoids + noise-like beats,
+// so the shape roils chaotically rather than drifting. Dark blue palette,
+// with a cyan-white rim for silhouette. Larger than the well's mouth so
+// it reads as "the thing at the center" rather than "a bead in a bowl".
+const ENIGMA_RADIUS = HOLE_R * 1.75;
 const enigmaCore = (() => {
-  const geom = new THREE.IcosahedronGeometry(HOLE_R * 0.82, 5);
+  const geom = new THREE.IcosahedronGeometry(ENIGMA_RADIUS, 6);
   const mat = new THREE.ShaderMaterial({
     uniforms: {
-      uTime:    { value: 0 },
-      uColor:   { value: PALETTE.violet.clone() },
-      uColorHi: { value: PALETTE.violetLilac.clone() },
+      uTime:     { value: 0 },
+      uColor:    { value: new THREE.Color("#000000") }, // true black
+      uColorHi:  { value: new THREE.Color("#0a0a0a") }, // slightly-lifted black for displacement highs
+      uRim:      { value: new THREE.Color("#1a1a1a") }, // faint grey silhouette, no hue
+      // Eye glow pass: two spots on the surface that fade in/out as Enigma
+      // opens and closes them. Directions are in object space so they rotate
+      // with the mesh — back-face culling hides them when they spin away.
+      uEyeDir1:  { value: new THREE.Vector3(-0.42, 0.18, 0.89).normalize() },
+      uEyeDir2:  { value: new THREE.Vector3( 0.42, 0.18, 0.89).normalize() },
+      uEyeOpen1: { value: 0 },  // 0 = closed/black, 1 = fully open/glowing
+      uEyeOpen2: { value: 0 },
+      uEyeGlow:  { value: new THREE.Color("#4a9eff") }, // cold blue
     },
     transparent: true,
     depthWrite: true,
     vertexShader: /* glsl */`
       uniform float uTime;
       varying vec3  vNormal;
+      varying vec3  vObjNormal;
       varying float vDisp;
+      // stacked sinusoids at incommensurate frequencies -> chaotic-looking
+      // morphing without true noise. Amplitude is pumped by a slow beat so
+      // the shape has moments of calm and moments of violent distortion.
       float sway(vec3 p, float t) {
         float n = 0.0;
-        n += sin(p.x * 1.6 + t * 1.1);
-        n += sin(p.y * 1.4 - t * 0.9) * 0.8;
-        n += sin(p.z * 1.8 + t * 1.3) * 0.6;
-        n += sin((p.x + p.y) * 2.1 + t * 0.7) * 0.5;
-        n += sin((p.y + p.z) * 2.5 - t * 1.2) * 0.35;
-        return n * 0.2;
+        n += sin(p.x * 1.6 + t * 1.8);
+        n += sin(p.y * 1.9 - t * 1.5) * 0.9;
+        n += sin(p.z * 2.3 + t * 2.1) * 0.7;
+        n += sin((p.x + p.y) * 2.8 + t * 1.4) * 0.6;
+        n += sin((p.y + p.z) * 3.1 - t * 1.9) * 0.45;
+        n += sin((p.x - p.z) * 3.7 + t * 2.4) * 0.35;
+        n += sin(length(p) * 4.2 - t * 2.8) * 0.5;
+        return n * 0.28;
       }
       void main() {
         vec3  n = normalize(position);
         float d = sway(position, uTime);
-        vec3  displaced = position + n * d * 2.4;
-        vDisp   = d;
-        vNormal = normalize(normalMatrix * n);
+        // slow breathing beat: 0.6 .. 1.5
+        float beat = 1.05 + 0.45 * sin(uTime * 0.35);
+        vec3  displaced = position + n * d * 4.6 * beat;
+        vDisp      = d;
+        vNormal    = normalize(normalMatrix * n);
+        vObjNormal = n;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
       }
     `,
     fragmentShader: /* glsl */`
-      uniform vec3 uColor;
-      uniform vec3 uColorHi;
-      varying vec3 vNormal;
+      uniform vec3  uColor;
+      uniform vec3  uColorHi;
+      uniform vec3  uRim;
+      uniform vec3  uEyeDir1;
+      uniform vec3  uEyeDir2;
+      uniform float uEyeOpen1;
+      uniform float uEyeOpen2;
+      uniform vec3  uEyeGlow;
+      varying vec3  vNormal;
+      varying vec3  vObjNormal;
       varying float vDisp;
+
+      // Render one almond-shaped eye with a vertical slit pupil (cat-eye /
+      // demon-eye look). \`openAmt\` drives the vertical extent, so closing
+      // compresses the eye into a thin horizontal sliver before it vanishes.
+      vec3 eyeShape(vec3 eyeDir, float openAmt) {
+        if (openAmt < 0.001) return vec3(0.0);
+        float front = dot(vObjNormal, eyeDir);
+        if (front < 0.92) return vec3(0.0);     // outside eye neighborhood
+
+        // Tangent-plane basis at the eye location, in object space.
+        vec3 worldUp  = vec3(0.0, 1.0, 0.0);
+        vec3 eyeRight = normalize(cross(eyeDir, worldUp));
+        vec3 eyeUp    = cross(eyeRight, eyeDir);
+
+        // Project fragment direction onto the tangent plane -> local u,v
+        // (in radians, small-angle approx; good enough for eye-sized patches).
+        vec3  offset = vObjNormal - eyeDir * front;
+        float u = dot(offset, eyeRight);
+        float v = dot(offset, eyeUp);
+
+        // Iris: horizontal ellipse. Vertical radius scales with openness
+        // so the eye becomes a slit as it closes.
+        float rx = 0.22;
+        float ry = 0.085 * openAmt;
+        if (ry < 0.0008) return vec3(0.0);
+        float d2 = (u * u) / (rx * rx) + (v * v) / (ry * ry);
+        if (d2 > 1.0) return vec3(0.0);
+
+        float iris = pow(1.0 - d2, 1.6);
+        vec3  col  = uEyeGlow * iris;
+
+        // Vertical slit pupil — tall and thin, hot white-blue center.
+        float pupilH = 0.014;
+        float pupilV = 0.055 * openAmt;
+        if (pupilV > 0.0008) {
+          float pd2 = (u * u) / (pupilH * pupilH) + (v * v) / (pupilV * pupilV);
+          float pupil = smoothstep(1.8, 0.0, pd2);
+          col += vec3(0.78, 0.88, 1.0) * pupil * 0.9;
+        }
+
+        return col * openAmt;
+      }
+
       void main() {
+        // Tight silhouette rim in grey so the form reads against the
+        // starfield without adding any color cast to the body.
         float rim = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        rim = pow(rim, 2.0);
-        vec3 col = mix(uColor, uColorHi, smoothstep(-0.25, 0.3, vDisp));
-        col += rim * 0.55;
-        gl_FragColor = vec4(col, 0.94);
+        rim = pow(rim, 3.6);
+        vec3 col = mix(uColor, uColorHi, smoothstep(-0.35, 0.4, vDisp));
+        col += uRim * rim * 0.4;
+
+        // Eyes — painted straight over the black body. When closed, each
+        // eye contributes exactly zero so the surface returns to pure black.
+        col += eyeShape(uEyeDir1, uEyeOpen1);
+        col += eyeShape(uEyeDir2, uEyeOpen2);
+
+        gl_FragColor = vec4(col, 1.0);
       }
     `,
   });
   const mesh = new THREE.Mesh(geom, mat);
-  mesh.position.y = -WELL_DEPTH + HOLE_R * 0.9;
+  mesh.position.y = -WELL_DEPTH + HOLE_R * 1.1;
+  mesh.userData.kind = "enigma";
   return mesh;
 })();
 scene.add(enigmaCore);
+
+// Eye-open envelope. Most of each cycle the eye is closed (returns 0 -> pure
+// black). A short "presence" window fades in, holds with a mid-window blink,
+// then fades out. Two eyes with different `period` and `offset` stay async.
+function eyeOpenAt(t, period, offset) {
+  const phase = (((t + offset) % period) + period) % period / period; // 0..1
+  const presence = 0.22;               // ~22% of each cycle the eye is present
+  const start = 0.5 - presence / 2;
+  const end   = 0.5 + presence / 2;
+  if (phase < start || phase > end) return 0;
+
+  const local = (phase - start) / presence;          // 0..1 inside presence
+  const env   = Math.sin(local * Math.PI);           // fade in, hold, fade out
+  // quick blink near the middle of the presence window
+  const blinkDist = Math.abs(local - 0.5);
+  const blinkDip  = blinkDist < 0.06
+    ? Math.pow(blinkDist / 0.06, 1.4)
+    : 1;
+  return env * blinkDip;
+}
 
 // Y-offset where the Enigma label floats (used by updateLabels).
 const ENIGMA_LABEL_Y = 6;
@@ -739,8 +838,11 @@ function raycastPick(clientX, clientY) {
   ndc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
   ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
   raycaster.setFromCamera(ndc, camera);
-  // planets are Groups; recurse into children to hit the body mesh, then
-  // walk up to the group so callers always see a kind:"planet" object.
+  // Enigma first (he's at the center and big) — then planets. Planets are
+  // Groups; recurse into children to hit the body mesh, then walk up to the
+  // group so callers always see a kind:"planet" object.
+  const enigmaHits = raycaster.intersectObject(enigmaCore, false);
+  if (enigmaHits.length) return enigmaCore;
   const hits = raycaster.intersectObjects(planetMeshes, true);
   if (!hits.length) return null;
   let obj = hits[0].object;
@@ -752,6 +854,11 @@ function handleClick(clientX, clientY) {
   const hit = raycastPick(clientX, clientY);
   if (hit && hit.userData.kind === "planet") {
     focusPlanet(hit);
+  } else if (hit && hit.userData.kind === "enigma") {
+    // If focused on a planet, pull camera back to universe view first so
+    // Enigma is actually visible alongside the open panel.
+    if (focused) exitFocus();
+    openEnigmaPanel();
   } else {
     // background click -> exit focus if zoomed
     if (focused) exitFocus();
@@ -977,6 +1084,27 @@ function openCreaturePanel(creature, planet) {
     </dl>
     <p class="panel-wisdom-label">distilled wisdom</p>
     <p class="panel-wisdom">${escapeHtml(preview) || "<em>No wisdom recorded yet.</em>"}</p>
+  `;
+  panelEl.classList.add("open");
+  panelEl.setAttribute("aria-hidden", "false");
+}
+
+// Enigma panel — opens when the user clicks the morphing core at the
+// center. Shows his name, flavor, and the glossary he keeps.
+function openEnigmaPanel() {
+  if (!universeState) return;
+  panelMode = "enigma";
+  openFile = null;
+  const e = universeState.enigma || {};
+  const name = e.name || "Enigma the One";
+  const flavor = e.flavor || "";
+  const glossary = e.glossary_md || "";
+  panelBody.innerHTML = `
+    <h3>${escapeHtml(name)}</h3>
+    <p class="panel-sub">keeper of the glossary · ancient</p>
+    ${flavor ? `<p class="panel-flavor">&ldquo;${escapeHtml(flavor)}&rdquo;</p>` : ""}
+    <p class="panel-wisdom-label">glossary</p>
+    <pre class="file-plain">${escapeHtml(glossary) || "<em>No glossary entries yet.</em>"}</pre>
   `;
   panelEl.classList.add("open");
   panelEl.setAttribute("aria-hidden", "false");
@@ -1289,6 +1417,13 @@ function frame() {
   enigmaCore.material.uniforms.uTime.value = t;
   enigmaCore.rotation.y = t * 0.12;
   enigmaCore.rotation.x = Math.sin(t * 0.15) * 0.25;
+
+  // Eye blink/appear pattern: each eye is closed for most of its cycle,
+  // then fades in, holds open with a brief mid-window blink, and fades
+  // back to fully closed (= pure black). Two independent cycles at
+  // different periods so the eyes don't sync.
+  enigmaCore.material.uniforms.uEyeOpen1.value = eyeOpenAt(t,  6.3, 0.0);
+  enigmaCore.material.uniforms.uEyeOpen2.value = eyeOpenAt(t,  7.7, 1.6);
 
   // slow camera drift when idle — just the base yaw, so user input still wins
   camDrift += dt * 0.02;

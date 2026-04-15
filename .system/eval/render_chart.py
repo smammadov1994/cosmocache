@@ -2,7 +2,9 @@
 """Render the phase-2 token-scaling chart as SVG for the landing page.
 
 Matches the cosmocache site palette (parchment cream + violet/coral ink).
-Reads hardcoded data from the 20260414T042330Z-4d6f06 report.
+Hardcoded values are the post-fix merged numbers (21 unaffected probes from
+run 4d6f06 + 4 re-run probes from bb6180). Source of truth:
+docs/paper/figures/_render.py.
 """
 from __future__ import annotations
 
@@ -21,7 +23,7 @@ BORDER     = (42/255, 35/255, 64/255, 0.14)
 BORDER_SFT = (42/255, 35/255, 64/255, 0.07)
 
 PLANETS   = [3,     10,    30,     100]
-CC_TOKENS = [3321,  4251,  12059,  18258]
+CC_TOKENS = [3321,  5328,  12753,  20380]
 FLAT_TOK  = [1428,  4669,  13874,  46162]
 
 MONO = ["JetBrains Mono", "Berkeley Mono", "IBM Plex Mono",
