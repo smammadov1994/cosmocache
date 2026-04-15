@@ -63,9 +63,13 @@ def needs_rebuild() -> bool:
     if GLOSSARY.exists() and GLOSSARY.stat().st_mtime > idx_mtime:
         return True
     planets_dir = UNIVERSE / "planets"
-    if planets_dir.is_dir():
-        for pmd in planets_dir.glob("*/planet.md"):
-            if pmd.stat().st_mtime > idx_mtime:
+    if not planets_dir.is_dir():
+        return False
+    for pattern in ("*/planet.md",
+                    "*/generations/*.md",
+                    "*/creatures/*.md"):
+        for path in planets_dir.glob(pattern):
+            if path.stat().st_mtime > idx_mtime:
                 return True
     return False
 

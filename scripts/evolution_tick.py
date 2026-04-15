@@ -140,21 +140,101 @@ def judge_decision(slug: str, planet_dir: Path) -> dict:
         return {"decision": "skip", "reason": f"judge-unparseable: {text[:80]}", "hint": ""}
 
 
-def autoresearch(slug: str, planet_dir: Path, hint: str) -> tuple[bool, str]:
+def _read_frontmatter_line(text: str, key: str) -> str | None:
+    """Return the raw value of `<key>:` within the first --- block, or None."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return None
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            break
+        if lines[i].startswith(f"{key}:"):
+            return lines[i].split(":", 1)[1].strip()
+    return None
+
+
+def _parse_list_literal(raw: str) -> list[str]:
+    """Parse `[a, b, c]` or `a, b, c` into a clean list of tokens."""
+    raw = raw.strip().strip("[").rstrip("]")
+    if not raw:
+        return []
+    return [tok.strip().strip('"').strip("'")
+            for tok in raw.split(",")
+            if tok.strip()]
+
+
+def read_planet_keywords(planet_dir: Path) -> list[str]:
+    pmd = planet_dir / "planet.md"
+    if not pmd.exists():
+        return []
+    raw = _read_frontmatter_line(pmd.read_text(), "keywords")
+    return _parse_list_literal(raw) if raw else []
+
+
+def extract_new_keywords(out_file: Path) -> list[str]:
+    if not out_file.exists():
+        return []
+    raw = _read_frontmatter_line(out_file.read_text(), "new_keywords")
+    if not raw:
+        return []
+    kws = _parse_list_literal(raw)
+    # cap to 3 and drop anything that's not a short slug-ish token
+    clean = [k.lower() for k in kws
+             if k and len(k) <= 40 and " " not in k.strip()]
+    return clean[:3]
+
+
+def merge_keywords_into_planet(planet_dir: Path, new_kws: list[str]) -> list[str]:
+    """Append genuinely-new kws to planet.md's keywords line. Returns added."""
+    if not new_kws:
+        return []
+    pmd = planet_dir / "planet.md"
+    if not pmd.exists():
+        return []
+    current = [k.lower() for k in read_planet_keywords(planet_dir)]
+    additions = [k for k in new_kws if k not in current]
+    if not additions:
+        return []
+    merged = current + additions
+    text = pmd.read_text()
+    lines = text.splitlines(keepends=True)
+    for i, line in enumerate(lines):
+        if line.startswith("keywords:"):
+            lines[i] = f"keywords: [{', '.join(merged)}]\n"
+            pmd.write_text("".join(lines))
+            return additions
+    return []
+
+
+def autoresearch(slug: str, planet_dir: Path, hint: str,
+                 current_keywords: list[str]) -> tuple[bool, str]:
     date = time.strftime("%Y-%m-%d", time.gmtime())
     out_file = planet_dir / "generations" / f"autoresearch-{date}.md"
     out_file.parent.mkdir(parents=True, exist_ok=True)
+    kw_csv = ", ".join(current_keywords) if current_keywords else "(none)"
     prompt = (
         f"You are the autoresearch subagent for planet-{slug}.\n\n"
         f"Research hint from the judge: {hint}\n\n"
+        f"Current glossary keywords for this planet: {kw_csv}\n\n"
         f"Step 1: Inspect the planet directory at {planet_dir}. Read code, skills, docs.\n"
         f"Step 2: Use WebFetch/WebSearch if current information is helpful.\n"
         f"Step 3: Write your findings to: {out_file}\n\n"
+        "The file MUST start with a YAML frontmatter block:\n"
+        "---\n"
+        "new_keywords: [kw1, kw2, kw3]   # 0-3 terms NOT in current keywords; [] if nothing new\n"
+        "---\n\n"
+        "Rules for new_keywords:\n"
+        "- Only propose terms that meaningfully index new material (libraries, concepts, patterns).\n"
+        "- Single tokens or short hyphenated slugs (e.g. 'useMemo', 'canary-rollout'). No spaces.\n"
+        "- Empty list is correct if nothing new worth indexing surfaced.\n\n"
+        "After the frontmatter, write these sections:\n"
+        "- Summary\n"
+        "- Key Learnings\n"
+        "- Open Questions for Human\n\n"
         "Rules:\n"
         "- DO NOT modify planet.md or anything in creatures/.\n"
         "- Write ONLY the output file above.\n"
-        "- Keep report under 500 words.\n"
-        "- Sections: Summary, Key Learnings, Open Questions for Human.\n"
+        "- Keep report under 500 words (frontmatter excluded).\n"
     )
     try:
         r = subprocess.run(
@@ -223,9 +303,17 @@ def main() -> int:
 
     reason = decision.get("reason", "autoresearch")[:120]
     hint = decision.get("hint", "")
+    current_kws = read_planet_keywords(planet_dir)
     evolve("start", slug, msg=reason)
-    ok, tail = autoresearch(slug, planet_dir, hint)
+    ok, tail = autoresearch(slug, planet_dir, hint, current_kws)
     log(slug, f"autoresearch exit_ok={ok}; tail={tail}")
+    if ok:
+        date = time.strftime("%Y-%m-%d", time.gmtime())
+        out_file = planet_dir / "generations" / f"autoresearch-{date}.md"
+        new_kws = extract_new_keywords(out_file)
+        added = merge_keywords_into_planet(planet_dir, new_kws)
+        if added:
+            log(slug, f"keywords merged into planet.md: {added}")
     evolve("complete" if ok else "fail",
            slug,
            msg=("autoresearch ok" if ok else f"autoresearch failed: {tail[:80]}"))
