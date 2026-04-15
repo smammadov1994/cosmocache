@@ -29,3 +29,7 @@ enigma/index.md
 dashboard/.ruff_cache/
 dashboard/web/universe.json
 dashboard/web/evolutions.json
+
+# Local planet memory — each clone seeds its own cosmos via install.sh
+planets/*
+!planets/.gitkeep
