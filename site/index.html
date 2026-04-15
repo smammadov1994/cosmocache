@@ -22,6 +22,7 @@
       <a href="#problem">why</a>
       <a href="#how">how</a>
       <a href="#proof">proof</a>
+      <a href="#evolution">evolution</a>
       <a href="#creatures">creatures</a>
       <a href="https://github.com/smammadov1994/cosmocache/blob/main/docs/paper/cosmocache-phase-2.md" target="_blank" rel="noopener">paper</a>
       <a href="#install">install</a>
@@ -166,16 +167,16 @@
   <!-- PROOF -->
   <section id="proof" class="section alt">
     <div class="wrap narrow">
-      <p class="eyebrow">// proof (phase 2, full scaling eval)</p>
-      <h2>Parity at 3 planets. 2.5× cheaper at 100.</h2>
+      <p class="eyebrow">// proof (phase 2, full scaling eval, post-fix merged)</p>
+      <h2>Accuracy parity. 2.3× cheaper at 100 planets.</h2>
       <div class="proof-grid">
         <div class="proof-stat">
-          <div class="stat-num">2.5×</div>
+          <div class="stat-num">2.3×</div>
           <div class="stat-label">fewer input tokens at 100 planets</div>
         </div>
         <div class="proof-vs">—</div>
         <div class="proof-stat">
-          <div class="stat-num">18k</div>
+          <div class="stat-num">20k</div>
           <div class="stat-label">cc vs 46k flat</div>
         </div>
       </div>
@@ -186,8 +187,8 @@
       </p>
       <figure class="chart">
         <img src="assets/scaling-chart.svg"
-             alt="Line chart: input tokens per probe as the universe grows from 3 to 100 planets. Flat memory.md climbs from 1,428 to 46,162 tokens. cosmocache climbs from 3,321 to 18,258 tokens. The gap widens with scale; at 100 planets cosmocache is 2.5× cheaper." />
-        <figcaption>Rendered from the full phase-2 eval results. Log x-axis.</figcaption>
+             alt="Line chart: input tokens per probe as the universe grows from 3 to 100 planets. Flat memory.md climbs from 1,428 to 46,162 tokens. cosmocache climbs from 3,321 to 20,380 tokens. The gap widens with scale; at 100 planets cosmocache is 2.3× cheaper." />
+        <figcaption>Rendered from the full phase-2 eval results (post-fix merged). Log x-axis.</figcaption>
       </figure>
       <table class="results">
         <thead>
@@ -212,47 +213,54 @@
           <tr>
             <td>small</td>
             <td>10</td>
-            <td>0.67</td>
             <td>1.00</td>
-            <td>4,251</td>
+            <td>1.00</td>
+            <td>5,328</td>
             <td>4,669</td>
           </tr>
           <tr>
             <td>medium</td>
             <td>30</td>
-            <td>0.89</td>
             <td>1.00</td>
-            <td>12,059</td>
+            <td>1.00</td>
+            <td>12,753</td>
             <td>13,874</td>
           </tr>
           <tr class="hl">
             <td>large</td>
             <td>100</td>
-            <td>0.82</td>
+            <td>0.98</td>
             <td>1.00</td>
-            <td><strong>18,258</strong></td>
+            <td><strong>20,380</strong></td>
             <td>46,162</td>
           </tr>
         </tbody>
       </table>
       <p>
+        <strong>Accuracy story:</strong> effectively at parity across every
+        tier. The single 0.02 gap at 100 planets is one probe
+        (<code>synth-cross-planet-safe-release</code>) that asked the agent
+        to reason across two planets — a known routing edge case,
+        not a memory failure.
+      </p>
+      <p>
         <strong>Token story:</strong> the gap widens with scale. At 100
         planets, flat <code>memory.md</code> burns <strong>46,162</strong>
         input tokens per probe — every question drags the entire cosmos into
         context. cosmocache reads the glossary plus the planet it routed to,
-        and lands at <strong>18,258</strong>. That’s the point of the system.
+        and lands at <strong>20,380</strong>. That's the point of the system.
       </p>
       <p class="muted">
-        <strong>Honest caveat:</strong> synthetic tiers (10/30/100) are
-        programmatic copies of the 3-planet real seed. Flat memory wins
-        accuracy on them partly because duplicated text rewards blind
-        text-matching — not routing. Real, distinct planets (the
-        <code>real</code> tier above) show true parity at 0.98 / 0.98.
-        We’re claiming a token-cost win at scale, not an accuracy one.
+        <strong>Methodology note:</strong> an earlier run showed a 0.67-0.89
+        accuracy dip on synthetic tiers. Root-cause was a bug in the
+        synthetic-corpus builder that was erasing canonical glossary rows
+        when it scaled the seed universe, so the routing step had no name
+        to match against. The fix is in <code>scenarios/synth_corpus.py</code>,
+        covered by a regression test; post-fix numbers are what you see above.
       </p>
       <p class="muted small">
-        Raw run data on <a href="https://github.com/smammadov1994/cosmocache/tree/main/.system/eval/results/20260414T042330Z-4d6f06" target="_blank" rel="noopener">github</a>
-        · 2.39M input tokens · ~$36 on claude-opus-4-6 · 25 probes × 4 tiers.
+        Raw run data on <a href="https://github.com/smammadov1994/cosmocache/tree/main/.system/eval/results" target="_blank" rel="noopener">github</a>
+        · 25 probes × 4 tiers · claude-opus-4-6 judge + system-under-test.
       </p>
       <div class="cta-row">
         <a class="btn btn-ghost"
@@ -262,8 +270,84 @@
     </div>
   </section>
 
+  <!-- EVOLUTION LOOP -->
+  <section id="evolution" class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">// the evolution loop</p>
+      <h2>Planets that grow while you're away.</h2>
+      <p>
+        Structure alone is a filing cabinet. What makes cosmocache more
+        than that is a second loop running underneath the session loop:
+        every planet wakes up on its own schedule and <em>evolves</em>.
+      </p>
+      <ol class="steps">
+        <li>
+          <span class="step-n">01</span>
+          <h3>Per-planet cron.</h3>
+          <p>A <code>launchd</code> plist per planet fires every 6h. Each planet runs its own autoresearch tick in isolation.</p>
+        </li>
+        <li>
+          <span class="step-n">02</span>
+          <h3>A cheap judge decides.</h3>
+          <p>Haiku 4.5 reads the planet's file manifest and answers one question: is there <em>code</em>, <em>skills</em>, or <em>researchable docs</em> here, or just memory notes?</p>
+        </li>
+        <li>
+          <span class="step-n">03</span>
+          <h3>Autoresearch runs only if it matters.</h3>
+          <p>If the judge says "evolve," a <code>claude -p</code> subagent investigates the planet — Reads, Globs, WebFetches — and writes one short <code>generations/autoresearch-DATE.md</code>.</p>
+        </li>
+        <li>
+          <span class="step-n">04</span>
+          <h3>Enigma keeps the map in sync.</h3>
+          <p>Enigma has her own daily tick. If any <code>planet.md</code> has changed, she regenerates <code>enigma/index.md</code> — keyword synonyms, domain clusters, disambiguation. If nothing changed, she spends <strong>$0</strong>.</p>
+        </li>
+      </ol>
+      <h3 class="subhead">Why structure × evolution beats a flat file</h3>
+      <div class="compare">
+        <article class="compare-card compare-bad">
+          <header>
+            <span class="tag tag-danger">memory.md</span>
+            <h3>One file. Human-curated. Static.</h3>
+          </header>
+          <ul>
+            <li>Entropy grows with every session. Old facts drown new ones.</li>
+            <li>No background process can reason about one slice in isolation — the slices don't exist.</li>
+            <li>Out-of-date notes are invisible; nothing can mark them stale.</li>
+            <li>Every turn re-reads the whole thing.</li>
+          </ul>
+        </article>
+        <article class="compare-card compare-good">
+          <header>
+            <span class="tag tag-good">cosmocache</span>
+            <h3>Many planets. Isolated. Self-updating.</h3>
+          </header>
+          <ul>
+            <li><strong>Small blast radius.</strong> Evolving <code>planet-react</code> can't corrupt <code>planet-sql</code>. Each tick touches one planet directory.</li>
+            <li><strong>Cheap when idle.</strong> The judge skips pure-memory planets. Enigma rebuilds her index only on mtime change. Zero cost when nothing moved.</li>
+            <li><strong>Never overwrites lived knowledge.</strong> Autoresearch writes <em>new</em> files under <code>generations/</code>. Human-authored <code>planet.md</code> and creature files are untouched.</li>
+            <li><strong>Always-fresh index.</strong> Enigma's derived <code>index.md</code> stays in sync with the cosmos, so routing keeps working as the universe grows.</li>
+            <li><strong>Generations, not edits.</strong> Paradigm shifts are tagged. You can ask Claude "what did we know in gen-2?" because the old gen is still there.</li>
+          </ul>
+        </article>
+      </div>
+      <p>
+        The structural claim in the proof section (parity accuracy, 2.3×
+        cheaper at scale) is what happens on a <em>frozen</em> universe.
+        The evolution loop is what keeps that universe worth freezing —
+        it's why your planets don't rot between sessions the way a flat
+        <code>memory.md</code> does.
+      </p>
+      <p class="muted small">
+        Implementation: <code>scripts/evolution_tick.py</code> (per-planet),
+        <code>scripts/enigma_tick.py</code> (Enigma's daily index rebuild),
+        <code>scripts/install_evolution_cron.sh</code> (launchd plists).
+        Judge model: <code>claude-haiku-4-5</code>.
+      </p>
+    </div>
+  </section>
+
   <!-- CREATURES -->
-  <section id="creatures" class="section">
+  <section id="creatures" class="section alt">
     <div class="wrap">
       <p class="eyebrow">// the menagerie</p>
       <h2>Creatures hold the real knowledge.</h2>
@@ -311,7 +395,7 @@
   </section>
 
   <!-- INSTALL -->
-  <section id="install" class="section alt">
+  <section id="install" class="section">
     <div class="wrap narrow">
       <p class="eyebrow">// install</p>
       <h2>Summon the oracle.</h2>

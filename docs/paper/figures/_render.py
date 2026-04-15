@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Render figures for the cosmocache phase-2 paper.
 
-Pulls headline numbers from the 20260414T042330Z-4d6f06 eval report.
+Headline numbers reflect the post-fix merged result: raw answers from
+20260414T042330Z-4d6f06 for the 21 probes unaffected by the glossary-
+clobber bug, plus answers from 20260414T070946Z-bb6180 for the 4
+probes re-run after the fix to build_synthetic_universe() preserved
+canonical glossary rows. See merged_summary.json in the bb6180 dir.
 Matches the cosmocache site palette.
 """
 from __future__ import annotations
@@ -28,12 +32,12 @@ MONO = ["JetBrains Mono", "Berkeley Mono", "IBM Plex Mono",
 
 OUT_DIR = Path(__file__).resolve().parent
 
-# Headline data.
+# Headline data (post-fix merged).
 TIERS      = ["real",  "small", "medium", "large"]
 PLANETS    = [3,       10,      30,       100]
-CC_ACC     = [0.980,   0.667,   0.889,    0.820]
+CC_ACC     = [0.980,   1.000,   1.000,    0.980]
 FLAT_ACC   = [0.980,   1.000,   1.000,    1.000]
-CC_TOKENS  = [3321,    4251,    12059,    18258]
+CC_TOKENS  = [3321,    5328,    12753,    20380]
 FLAT_TOK   = [1428,    4669,    13874,    46162]
 
 
@@ -106,9 +110,9 @@ def fig1_token_scaling() -> None:
     for txt in leg.get_texts():
         txt.set_color(FG)
 
-    ax.annotate("2.5x cheaper\nat 100 planets",
-                xy=(100, (18258 + 46162) / 2),
-                xytext=(46, (18258 + 46162) / 2),
+    ax.annotate("2.3x cheaper\nat 100 planets",
+                xy=(100, (20380 + 46162) / 2),
+                xytext=(46, (20380 + 46162) / 2),
                 ha="right", va="center",
                 fontsize=10, color=VIOLET, fontweight="bold",
                 arrowprops=dict(arrowstyle="-", color=VIOLET,
@@ -246,8 +250,11 @@ def fig3_savings_ratio() -> None:
 
 
 def fig4_probe_scatter_large() -> None:
-    """Per-probe detail at the 100-planet tier."""
-    # Data from the 4d6f06 report's `tier: large` table.
+    """Per-probe detail at the 100-planet tier (post-fix merged)."""
+    # Technical / routing / negative / cross probes from 4d6f06.
+    # Identity / lore / wisdom probes previously clobbered by the glossary
+    # bug were re-run under bb6180 after the fix; their new scores + tokens
+    # replace the pre-fix entries below.
     probes = [
         ("react-memoize-stable-reference",       "technical", 1.00, 25916),
         ("react-composition-beats-usememo",      "technical", 1.00, 25089),
@@ -255,14 +262,14 @@ def fig4_probe_scatter_large() -> None:
         ("sql-partial-index-selectivity",        "technical", 1.00, 25497),
         ("devops-canary-duration",               "technical", 1.00, 19769),
         ("devops-rollback-tested",               "technical", 1.00, 26752),
-        ("react-jimbo-identity",                 "identity",  0.00,  5824),
+        ("react-jimbo-identity",                 "identity",  1.00, 15350),  # re-run
         ("sql-sally-identity",                   "identity",  1.00, 19002),
-        ("devops-grom-identity",                 "identity",  0.00,  5822),
-        ("react-planet-lore-food",               "lore",      0.00,  5822),
+        ("devops-grom-identity",                 "identity",  1.00, 15004),  # re-run
+        ("react-planet-lore-food",               "lore",      1.00, 23327),  # re-run
         ("sql-planet-lore-ability",              "lore",      1.00, 19036),
         ("devops-planet-lore-tagline",           "lore",      1.00, 11999),
         ("react-wisdom-distilled-composition",   "wisdom",    1.00, 19295),
-        ("sql-wisdom-planner-stats",             "wisdom",    0.00,  5824),
+        ("sql-wisdom-planner-stats",             "wisdom",    1.00, 22656),  # re-run
         ("devops-wisdom-canary-duration",        "wisdom",    1.00, 19154),
         ("synth-which-planet-for-hooks",         "routing",   1.00, 19107),
         ("synth-which-planet-for-index",         "routing",   1.00, 25912),

@@ -1,37 +1,38 @@
-/* cosmocache — styled after opencode.ai (via getdesign)
-   palette is tilted toward the hero illustration: parchment cream,
-   nebula violet, coral/moss creature accents — but the bones stay
-   warm-dark, flat, monospace, 4px-radius, no shadow, no gradient. */
+/* cosmocache — Claude palette: warm book-cloth cream + copper accent,
+   with clay/sage/amber for secondary creature tones. Bones stay flat,
+   monospace, 4px-radius, no shadow, no gradient. Legacy var names
+   (`--violet`, `--coral`, `--moss`, `--gold`) are preserved; their
+   values now map to Claude's copper / clay / sage / amber. */
 
 :root {
-  /* base — light parchment theme, tuned to the illustration background */
-  --bg:        hsla(48, 71%, 93%, 1); /* parchment cream (body) */
-  --bg-elev:   hsla(48, 55%, 88%, 1); /* slightly darker cream — cards */
-  --bg-alt:    hsla(48, 63%, 90%, 1); /* alt sections — between */
-  --fg:        #2a2340;              /* dark violet ink (primary text) */
-  --fg-mute:   #5e527a;              /* muted ink (body copy) */
-  --fg-dim:    #8a80a3;              /* dim ink (meta) */
+  /* base — warm book-cloth cream */
+  --bg:        hsla(42, 35%, 94%, 1); /* book cloth */
+  --bg-elev:   hsla(42, 25%, 89%, 1); /* darker card */
+  --bg-alt:    hsla(42, 30%, 92%, 1); /* alt section */
+  --fg:        #2c2620;              /* warm dark ink */
+  --fg-mute:   #5c5346;              /* muted ink */
+  --fg-dim:    #8e8477;              /* dim ink */
 
-  /* kept for legacy uses — cream as accent, ink as emphasis */
-  --cream:     #f4ecd8;
-  --cream-ink: #2a2340;
+  /* legacy cream tokens — kept for anything that still references them */
+  --cream:     #f0e9d9;
+  --cream-ink: #2c2620;
 
-  /* accents (from illustration creatures) */
-  --violet:    #7b5cd6;              /* nebula */
-  --violet-hv: #5c3fb8;
-  --coral:     #ef7a6d;              /* checkered-ball / mushroom */
-  --moss:      #7cae7a;              /* frog */
-  --gold:      #e7b850;              /* stars */
+  /* accents — Claude palette, mapped onto legacy names */
+  --violet:    #d97757;              /* copper (was nebula violet) */
+  --violet-hv: #bc5f41;              /* clay — hover state */
+  --coral:     #c15f3c;              /* deep clay (danger/warning tag) */
+  --moss:      #8c9a6f;              /* warm sage (good tag) */
+  --gold:      #c8945a;              /* amber (stars / highlights) */
 
   /* semantic (apple HIG, per design guide) */
   --danger:    #ff3b30;
   --success:   #30d158;
   --warning:   #ff9f0a;
 
-  /* borders — dark ink on cream, warm & translucent */
-  --border:       rgba(42, 35, 64, 0.14);
-  --border-soft:  rgba(42, 35, 64, 0.07);
-  --border-hard:  rgba(42, 35, 64, 0.24);
+  /* borders — warm dark ink, translucent */
+  --border:       rgba(44, 38, 32, 0.14);
+  --border-soft:  rgba(44, 38, 32, 0.07);
+  --border-hard:  rgba(44, 38, 32, 0.24);
 
   /* radii (per guide: 4 everywhere, 6 for inputs) */
   --r:   4px;
@@ -266,6 +267,13 @@ h1 {
 .section .section-lede {
   font-size: 16px;
   margin: 0 0 32px;
+}
+.section h3.subhead {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 40px 0 12px;
+  letter-spacing: -0.01em;
+  color: var(--fg);
 }
 
 /* ORACLE QUOTE */
