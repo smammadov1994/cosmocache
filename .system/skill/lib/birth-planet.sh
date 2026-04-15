@@ -76,3 +76,12 @@ status: active
 GEN
 
 echo "$PLANET_PATH"
+
+# Install / refresh the launchd cron so this new planet gets a tick.
+# Silent on success — log any failure to stderr but don't abort birth.
+CRON_INSTALL="$UNIVERSE_ROOT/scripts/install_evolution_cron.sh"
+if [[ -x "$CRON_INSTALL" ]]; then
+  if ! UNIVERSE_ROOT="$UNIVERSE_ROOT" "$CRON_INSTALL" >/dev/null 2>&1; then
+    echo "warning: install_evolution_cron.sh failed; run it manually" >&2
+  fi
+fi

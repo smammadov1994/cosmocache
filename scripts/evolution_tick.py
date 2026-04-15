@@ -58,17 +58,33 @@ def already_running(slug: str) -> bool:
     return any(row.get("planet_slug") == slug and row.get("status") == "running" for row in rows)
 
 
-def recent_activity(planet_dir: Path) -> bool:
-    cutoff = time.time() - USER_ACTIVITY_WINDOW
+def recent_activity(planet_dir: Path) -> tuple[Path, float] | None:
+    """Return (file, age_seconds) of the most recently modified file inside
+    USER_ACTIVITY_WINDOW, or None if nothing was touched in that window.
+
+    Ignores paths the tick itself writes (generations/autoresearch-*.md)
+    so successful ticks don't keep blocking themselves.
+    """
+    now = time.time()
+    cutoff = now - USER_ACTIVITY_WINDOW
+    newest: tuple[Path, float] | None = None
     for p in planet_dir.rglob("*"):
         if not p.is_file():
             continue
+        # Skip files that autoresearch itself writes.
+        if p.parent.name == "generations" and p.name.startswith("autoresearch-"):
+            continue
         try:
-            if p.stat().st_mtime > cutoff:
-                return True
+            mtime = p.stat().st_mtime
         except OSError:
             continue
-    return False
+        if mtime <= cutoff:
+            continue
+        if newest is None or mtime > newest[1]:
+            newest = (p, mtime)
+    if newest is None:
+        return None
+    return (newest[0], now - newest[1])
 
 
 def file_manifest(planet_dir: Path, limit: int = 200) -> list[str]:
@@ -164,10 +180,15 @@ def evolve(cmd: str, slug: str, msg: str | None = None) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("usage: evolution_tick.py <slug>", file=sys.stderr)
+    args = sys.argv[1:]
+    force = False
+    if "--force" in args:
+        force = True
+        args = [a for a in args if a != "--force"]
+    if len(args) != 1:
+        print("usage: evolution_tick.py [--force] <slug>", file=sys.stderr)
         return 2
-    slug = sys.argv[1]
+    slug = args[0]
     planet_dir = UNIVERSE / "planets" / slug
     if not planet_dir.is_dir():
         print(f"no such planet: {slug}", file=sys.stderr)
@@ -180,9 +201,15 @@ def main() -> int:
     if already_running(slug):
         log(slug, "already running; skip")
         return 0
-    if recent_activity(planet_dir):
-        log(slug, f"recent user activity within {USER_ACTIVITY_WINDOW}s; skip")
-        return 0
+    if not force:
+        hit = recent_activity(planet_dir)
+        if hit is not None:
+            rel = hit[0].relative_to(planet_dir)
+            log(slug, f"skip: {rel} modified {hit[1]:.0f}s ago "
+                      f"(window={USER_ACTIVITY_WINDOW}s)")
+            return 0
+    elif force:
+        log(slug, "force: bypassing recent-activity guard")
 
     try:
         decision = judge_decision(slug, planet_dir)

@@ -383,6 +383,45 @@ def evolve_status(json_mode) -> None:
     emit(rows, json_mode, human)
 
 
+@evolve.command("kick")
+@click.argument("slug")
+@click.option("--force/--no-force", default=True, show_default=True,
+              help="Bypass the recent-user-activity guard.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_kick(slug, force, json_mode) -> None:
+    """Fire an evolution tick NOW for one planet (synchronous).
+
+    Skips the launchd schedule and bypasses the 1h activity guard by default,
+    so you get instant feedback after birthing a planet. Judge + autoresearch
+    still run; output file still lands in planets/<slug>/generations/.
+    """
+    tick = SCRIPTS_DIR / "evolution_tick.py"
+    if not tick.exists():
+        emit({"ok": False, "error": f"missing {tick}"}, json_mode,
+             f"error: {tick} not found")
+        sys.exit(1)
+    planet_dir = PLANETS_DIR / slug
+    if not planet_dir.is_dir():
+        emit({"ok": False, "error": f"no such planet: {slug}"}, json_mode,
+             f"error: no planet dir at {planet_dir}")
+        sys.exit(2)
+
+    cmd = [sys.executable, str(tick)]
+    if force:
+        cmd.append("--force")
+    cmd.append(slug)
+    click.echo(f"→ {' '.join(cmd)}")
+    r = subprocess.run(cmd, capture_output=False)
+    emit({"ok": r.returncode == 0, "slug": slug, "exit_code": r.returncode,
+          "force": force}, json_mode,
+         lambda d: click.echo(
+             f"{'✓' if d['ok'] else '✗'} tick finished for {d['slug']} "
+             f"(exit={d['exit_code']}); "
+             f"tail: cosmo evolve logs {d['slug']}"))
+    if r.returncode != 0:
+        sys.exit(r.returncode)
+
+
 @evolve.command("logs")
 @click.argument("slug", required=False)
 @click.option("-n", "--tail", default=40, show_default=True,
