@@ -9,9 +9,11 @@ source "$SCRIPT_DIR/common.sh"
 
 PLANET_SLUG="$(slugify "$1")"
 WHY="$2"
-PLANET_NAME="planet-$PLANET_SLUG"
-require_planet_exists "$PLANET_NAME"
 
+# Verify the planet dir exists using slug directly before prefixing
+require_planet_exists "$PLANET_SLUG"
+
+PLANET_NAME="planet-$PLANET_SLUG"
 PLANET_MD="$UNIVERSE_ROOT/planets/$PLANET_NAME/planet.md"
 GLOSS="$UNIVERSE_ROOT/enigma/glossary.md"
 TODAY="$(today_iso)"
