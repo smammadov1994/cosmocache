@@ -77,7 +77,7 @@ fi
 # ─── step 1: hooks ──────────────────────────────────────────────────────
 section "Installation"
 
-step "1/3" "wiring Claude Code hooks ${D}→ ~/.claude/settings.json${R}"
+step "1/5" "wiring Claude Code hooks ${D}→ ~/.claude/settings.json${R}"
 python3 - <<'PY'
 import json, os, pathlib, sys
 repo = os.environ["REPO"]
@@ -121,7 +121,7 @@ PY
 ok "SessionStart + Stop wired (existing entries preserved)"
 
 # ─── step 2: skill ──────────────────────────────────────────────────────
-step "2/3" "registering ${Coral}/universe${R} skill ${D}→ ~/.claude/skills/universe${R}"
+step "2/5" "registering ${Coral}/universe${R} skill ${D}→ ~/.claude/skills/universe${R}"
 SKILL_SRC="$REPO/.system/skill"
 SKILL_DST="$HOME/.claude/skills/universe"
 mkdir -p "$HOME/.claude/skills"
@@ -132,8 +132,67 @@ fi
 ln -s "$SKILL_SRC" "$SKILL_DST"
 ok "symlinked"
 
-# ─── step 3: evolve loop (opt-in) ───────────────────────────────────────
-step "3/3" "autonomous evolve loop ${D}(opt-in)${R}"
+# ─── step 3: seed planets (opt-out prompt, default Y) ──────────────────
+step "3/5" "seed the universe with starter planets ${D}(default yes)${R}"
+dim "5 general planets for everyday Claude work:"
+dim "${Coral}writing${R} · ${Coral}career${R} · ${Coral}health${R} · ${Coral}travel${R} · ${Coral}learning${R}"
+dim "each is an empty scaffold — Claude fills them as you work."
+
+PLANETS_EXISTING=$(find "$REPO/planets" -maxdepth 1 -type d -name 'planet-*' 2>/dev/null | wc -l | tr -d ' ')
+if [[ "$PLANETS_EXISTING" -gt 0 ]]; then
+  dim "${PLANETS_EXISTING} planets already exist — skipping seed"
+  SEEDED=0
+else
+  printf "\n        ${Y}Seed the 5 starter planets now? [Y/n]${R} "
+  read -r ANS_SEED || ANS_SEED="Y"
+  ANS_SEED="${ANS_SEED:-Y}"
+  if [[ "$ANS_SEED" =~ ^[Yy]$ ]]; then
+    if UNIVERSE_ROOT="$REPO" bash "$REPO/.system/seeds/starter.sh" >/dev/null 2>&1; then
+      ok "seeded 5 planets (writing, career, health, travel, learning)"
+      SEEDED=1
+    else
+      bad "seed failed — run .system/seeds/starter.sh manually for details"
+      SEEDED=0
+    fi
+  else
+    dim "skipped — seed later with: ${C}scripts/cosmo seed starter${R}"
+    SEEDED=0
+  fi
+fi
+
+# ─── step 4: PATH (opt-in) ──────────────────────────────────────────────
+step "4/5" "add ${Coral}cosmo${R} to your PATH ${D}(opt-in)${R}"
+dim "so you can run ${C}cosmo planets${R} from anywhere instead of ${C}scripts/cosmo${R}"
+
+SHELL_RC=""
+case "${SHELL:-}" in
+  */zsh) SHELL_RC="$HOME/.zshrc" ;;
+  */bash) SHELL_RC="$HOME/.bashrc" ;;
+esac
+
+PATH_LINE="export PATH=\"$REPO/scripts:\$PATH\"  # cosmocache"
+
+if [[ -z "$SHELL_RC" ]]; then
+  dim "couldn't detect zsh/bash — add this to your shell rc manually:"
+  dim "  ${C}${PATH_LINE}${R}"
+elif [[ -f "$SHELL_RC" ]] && grep -qF "$REPO/scripts" "$SHELL_RC"; then
+  ok "already present in $(basename "$SHELL_RC")"
+else
+  printf "\n        ${Y}Add to $(basename "$SHELL_RC")? [y/N]${R} "
+  read -r ANS_PATH || ANS_PATH="N"
+  ANS_PATH="${ANS_PATH:-N}"
+  if [[ "$ANS_PATH" =~ ^[Yy]$ ]]; then
+    printf "\n%s\n" "$PATH_LINE" >> "$SHELL_RC"
+    ok "appended to $(basename "$SHELL_RC")"
+    dim "reload shell or run: ${C}source $SHELL_RC${R}"
+  else
+    dim "skipped — add manually later if you want:"
+    dim "  ${C}${PATH_LINE}${R}"
+  fi
+fi
+
+# ─── step 5: evolve loop (opt-in) ───────────────────────────────────────
+step "5/5" "autonomous evolve loop ${D}(opt-in)${R}"
 dim "runs a Haiku-4.5 judge every 6h per planet. When a planet has"
 dim "code/docs/skills, it writes an autoresearch note. Idle planets"
 dim "cost ~\$0. Disable anytime with: ${C}cosmo evolve uninstall${R}"
@@ -159,6 +218,7 @@ section "Summary"
 PLANET_COUNT=$(find "$REPO/planets" -maxdepth 1 -type d -name 'planet-*' 2>/dev/null | wc -l | tr -d ' ')
 printf "  %s planets known:  ${B}%s${R}\n" "$STAR" "$PLANET_COUNT"
 printf "  %s hooks:          ${B}SessionStart, Stop${R}\n" "$STAR"
+printf "  %s skill:          ${B}/universe${R}\n" "$STAR"
 if [[ $EVOLVE_ENABLED -eq 1 ]]; then
   printf "  %s evolve loop:    ${G}enabled${R} ${D}(6h/planet · daily/Enigma)${R}\n" "$STAR"
 else
@@ -171,10 +231,14 @@ cat <<EOF
   automatically. Use ${C}/universe recall${R} to query; the Stop hook will
   nudge ${C}/universe remember${R} on the way out if new knowledge emerged.
 
-  ${C}scripts/cosmo planets${R}             ${D}# roster${R}
-  ${C}scripts/cosmo search <query>${R}      ${D}# ripgrep across the cosmos${R}
-  ${C}scripts/cosmo evolve status${R}       ${D}# inspect the loop${R}
-  ${C}scripts/cosmo seed${R}                ${D}# birth 10 canonical planets${R}
+  ${C}cosmo planets${R}             ${D}# roster${R}
+  ${C}cosmo search <query>${R}      ${D}# ripgrep across the cosmos${R}
+  ${C}cosmo evolve status${R}       ${D}# inspect the loop${R}
+  ${C}cosmo seed ten-planets${R}    ${D}# add 10 tech-focused planets${R}
+
+  ${D}optional: the simulation dashboard (docker)${R}
+  ${C}cd dashboard && docker compose up --build${R}
+  ${D}then open http://localhost:8765${R}
 
 EOF
 printf "${Coral}        ✦ may the ancient one guide your seeking ✦${R}\n\n"
