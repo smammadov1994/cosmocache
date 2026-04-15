@@ -1,0 +1,680 @@
+#!/usr/bin/env python3
+"""cosmo — the cosmocache control CLI.
+
+Follows the CLI-Anything pattern (github.com/HKUDS/CLI-Anything): Click
+subcommand groups, a `--json` flag on every command for machine consumption,
+and short imperative docstrings so an LLM agent can chain these like tools.
+
+Install (one-time):
+    pip install click
+
+Make executable + link onto PATH:
+    chmod +x scripts/cosmo
+    ln -s "$PWD/scripts/cosmo" /usr/local/bin/cosmo
+
+Top-level groups:
+    cosmo sim     — start/stop/inspect the WebGL simulator (docker)
+    cosmo evolve  — manage per-planet autoresearch cron
+    (and flat commands: search, tree, planets, creatures, glossary,
+     index, stats)
+"""
+from __future__ import annotations
+
+import json as _json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+import webbrowser
+from pathlib import Path
+
+try:
+    import click
+except ImportError:
+    sys.stderr.write(
+        "cosmo: `click` is not installed. Run:  pip install click\n"
+    )
+    sys.exit(2)
+
+
+UNIVERSE = Path(os.environ.get("UNIVERSE_ROOT", "/Users/bot/universe")).resolve()
+DASHBOARD = UNIVERSE / "dashboard"
+DASHBOARD_URL = os.environ.get("COSMO_DASHBOARD_URL", "http://localhost:8765")
+DASHBOARD_CONTAINER = "cosmocache-dashboard"
+LOGS_DIR = UNIVERSE / ".system" / "logs"
+GLOSSARY = UNIVERSE / "enigma" / "glossary.md"
+INDEX = UNIVERSE / "enigma" / "index.md"
+PLANETS_DIR = UNIVERSE / "planets"
+SCRIPTS_DIR = UNIVERSE / "scripts"
+INSTALL_SCRIPT = SCRIPTS_DIR / "install_evolution_cron.sh"
+UNINSTALL_SCRIPT = SCRIPTS_DIR / "uninstall_evolution_cron.sh"
+EVOLVE_DB_SCRIPT = SCRIPTS_DIR / "evolve.py"
+
+
+# ---------------------------------------------------------------------------
+# Output helpers
+# ---------------------------------------------------------------------------
+def emit(data, json_mode: bool, human=None) -> None:
+    """Write either JSON (for agents) or a human string."""
+    if json_mode:
+        click.echo(_json.dumps(data, indent=2, default=str))
+        return
+    if human is None:
+        click.echo(_json.dumps(data, indent=2, default=str))
+    elif callable(human):
+        human(data)
+    else:
+        click.echo(human)
+
+
+def run(cmd: list[str], *, cwd: Path | None = None, check: bool = False,
+        capture: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        cmd,
+        cwd=str(cwd) if cwd else None,
+        capture_output=capture,
+        text=True,
+        check=check,
+    )
+
+
+def docker_available() -> bool:
+    return shutil.which("docker") is not None
+
+
+def http_ok(url: str, timeout: float = 2.0) -> bool:
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as r:
+            return 200 <= r.status < 500
+    except (urllib.error.URLError, TimeoutError, ConnectionError):
+        return False
+
+
+def container_state(name: str) -> dict:
+    """Return {exists, running, status, ports} for a docker container."""
+    if not docker_available():
+        return {"exists": False, "running": False, "status": "docker-missing"}
+    r = run(
+        ["docker", "inspect", "--format",
+         "{{.State.Status}}|{{.State.Running}}|{{.NetworkSettings.Ports}}",
+         name],
+    )
+    if r.returncode != 0:
+        return {"exists": False, "running": False, "status": "absent"}
+    parts = r.stdout.strip().split("|", 2)
+    if len(parts) < 2:
+        return {"exists": True, "running": False, "status": "unknown"}
+    return {
+        "exists": True,
+        "running": parts[1] == "true",
+        "status": parts[0],
+        "ports": parts[2] if len(parts) > 2 else "",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Root group
+# ---------------------------------------------------------------------------
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+@click.version_option("0.1.0", prog_name="cosmo")
+def cli() -> None:
+    """cosmo — cosmocache control CLI.
+
+    Manage the WebGL simulator, the evolution cron, and inspect the universe.
+    Every command accepts --json for agent-friendly structured output.
+    """
+
+
+# ===========================================================================
+# sim — simulator lifecycle
+# ===========================================================================
+@cli.group()
+def sim() -> None:
+    """Start, stop, and inspect the WebGL dashboard (docker)."""
+
+
+@sim.command("up")
+@click.option("--no-open", is_flag=True, help="Don't launch a browser tab.")
+@click.option("--rebuild", is_flag=True, help="Force --build --force-recreate.")
+@click.option("--timeout", default=60, show_default=True,
+              help="Seconds to wait for the dashboard to answer.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def sim_up(no_open: bool, rebuild: bool, timeout: int, json_mode: bool) -> None:
+    """Start the simulator in the background and open the tab."""
+    if not docker_available():
+        emit({"ok": False, "error": "docker not found on PATH"},
+             json_mode, "error: docker is not installed or not on PATH")
+        sys.exit(1)
+    if not DASHBOARD.exists():
+        emit({"ok": False, "error": f"no dashboard dir at {DASHBOARD}"},
+             json_mode, f"error: missing {DASHBOARD}")
+        sys.exit(1)
+
+    cmd = ["docker", "compose", "up", "-d"]
+    if rebuild:
+        cmd += ["--build", "--force-recreate"]
+    else:
+        cmd += ["--build"]
+
+    click.echo(f"→ {' '.join(cmd)}   (cwd={DASHBOARD})")
+    r = run(cmd, cwd=DASHBOARD, capture=False)
+    if r.returncode != 0:
+        emit({"ok": False, "error": "docker compose up failed",
+              "exit_code": r.returncode},
+             json_mode, "error: docker compose up failed")
+        sys.exit(r.returncode)
+
+    # Poll the endpoint until it answers or we give up.
+    deadline = time.time() + timeout
+    ready = False
+    while time.time() < deadline:
+        if http_ok(DASHBOARD_URL):
+            ready = True
+            break
+        time.sleep(0.5)
+
+    state = container_state(DASHBOARD_CONTAINER)
+    if ready and not no_open:
+        try:
+            webbrowser.open(DASHBOARD_URL)
+        except Exception:
+            pass
+
+    emit(
+        {"ok": ready, "url": DASHBOARD_URL, "opened": (ready and not no_open),
+         "container": state},
+        json_mode,
+        lambda d: click.echo(
+            f"✓ simulator up at {d['url']}" if d["ok"]
+            else f"✗ simulator did not answer within {timeout}s "
+                 f"(container status: {d['container'].get('status')})"
+        ),
+    )
+    if not ready:
+        sys.exit(1)
+
+
+@sim.command("down")
+@click.option("--volumes", is_flag=True, help="Also remove named volumes.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def sim_down(volumes: bool, json_mode: bool) -> None:
+    """Stop the simulator and remove the container."""
+    if not docker_available():
+        emit({"ok": False, "error": "docker not found"},
+             json_mode, "error: docker not found")
+        sys.exit(1)
+    cmd = ["docker", "compose", "down"]
+    if volumes:
+        cmd.append("-v")
+    click.echo(f"→ {' '.join(cmd)}   (cwd={DASHBOARD})")
+    r = run(cmd, cwd=DASHBOARD, capture=False)
+    emit({"ok": r.returncode == 0, "exit_code": r.returncode},
+         json_mode,
+         "✓ simulator down" if r.returncode == 0 else "✗ teardown failed")
+    if r.returncode != 0:
+        sys.exit(r.returncode)
+
+
+@sim.command("status")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def sim_status(json_mode: bool) -> None:
+    """Show container state + HTTP health."""
+    state = container_state(DASHBOARD_CONTAINER)
+    healthy = http_ok(DASHBOARD_URL, timeout=1.5)
+    payload = {
+        "container": state,
+        "url": DASHBOARD_URL,
+        "http_ok": healthy,
+        "ready": state.get("running", False) and healthy,
+    }
+
+    def human(d):
+        c = d["container"]
+        if not c["exists"]:
+            click.echo("✗ container does not exist (run `cosmo sim up`)")
+            return
+        click.echo(f"container: {c['status']} (running={c['running']})")
+        click.echo(f"url:       {d['url']}  →  "
+                   f"{'✓ 2xx' if d['http_ok'] else '✗ unreachable'}")
+        click.echo(f"ready:     {d['ready']}")
+
+    emit(payload, json_mode, human)
+
+
+@sim.command("logs")
+@click.option("-f", "--follow", is_flag=True, help="Stream logs.")
+@click.option("-n", "--tail", default=200, show_default=True,
+              help="Lines to tail when not following.")
+@click.option("--json", "json_mode", is_flag=True,
+              help="JSON output (captures tail, ignored with -f).")
+def sim_logs(follow: bool, tail: int, json_mode: bool) -> None:
+    """Show recent simulator container logs."""
+    if not docker_available():
+        emit({"ok": False, "error": "docker not found"}, json_mode,
+             "error: docker not found")
+        sys.exit(1)
+    cmd = ["docker", "logs", "--tail", str(tail), DASHBOARD_CONTAINER]
+    if follow:
+        cmd.append("-f")
+        subprocess.run(cmd)
+        return
+    r = run(cmd)
+    emit({"ok": r.returncode == 0, "stdout": r.stdout, "stderr": r.stderr},
+         json_mode, lambda d: click.echo(d["stdout"] + d["stderr"], nl=False))
+
+
+@sim.command("open")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def sim_open(json_mode: bool) -> None:
+    """Open the simulator tab in your browser (without restarting it)."""
+    ok = http_ok(DASHBOARD_URL, timeout=1.5)
+    if ok:
+        try:
+            webbrowser.open(DASHBOARD_URL)
+        except Exception:
+            pass
+    emit({"ok": ok, "url": DASHBOARD_URL}, json_mode,
+         f"→ opened {DASHBOARD_URL}" if ok
+         else f"✗ {DASHBOARD_URL} unreachable; run `cosmo sim up` first")
+
+
+# ===========================================================================
+# evolve — per-planet autoresearch cron
+# ===========================================================================
+@cli.group()
+def evolve() -> None:
+    """Manage the evolution cron (launchd) and inspect recent ticks."""
+
+
+@evolve.command("install")
+@click.option("--interval", default=None,
+              help="Override EVOLUTION_INTERVAL (seconds, default 21600).")
+@click.option("--enigma-interval", default=None,
+              help="Override ENIGMA_INTERVAL (seconds, default 86400).")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_install(interval, enigma_interval, json_mode) -> None:
+    """Install per-planet + Enigma launchd plists."""
+    env = os.environ.copy()
+    env["UNIVERSE_ROOT"] = str(UNIVERSE)
+    if interval:
+        env["EVOLUTION_INTERVAL"] = str(interval)
+    if enigma_interval:
+        env["ENIGMA_INTERVAL"] = str(enigma_interval)
+    r = subprocess.run(["bash", str(INSTALL_SCRIPT)], env=env)
+    emit({"ok": r.returncode == 0, "exit_code": r.returncode}, json_mode,
+         "✓ cron installed" if r.returncode == 0 else "✗ install failed")
+    if r.returncode != 0:
+        sys.exit(r.returncode)
+
+
+@evolve.command("uninstall")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_uninstall(json_mode) -> None:
+    """Remove all evolution launchd plists."""
+    r = subprocess.run(["bash", str(UNINSTALL_SCRIPT)])
+    emit({"ok": r.returncode == 0, "exit_code": r.returncode}, json_mode,
+         "✓ cron removed" if r.returncode == 0 else "✗ uninstall failed")
+    if r.returncode != 0:
+        sys.exit(r.returncode)
+
+
+@evolve.command("list")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_list(json_mode) -> None:
+    """List loaded launchd agents matching ai.cosmocache.*."""
+    r = run(["launchctl", "list"])
+    rows = []
+    for line in r.stdout.splitlines():
+        if "ai.cosmocache." not in line:
+            continue
+        parts = line.split(maxsplit=2)
+        if len(parts) < 3:
+            continue
+        pid, status, label = parts
+        rows.append({
+            "label": label,
+            "pid": None if pid == "-" else int(pid),
+            "last_exit_status": int(status) if status.lstrip("-").isdigit() else status,
+        })
+
+    def human(data):
+        if not data:
+            click.echo("no ai.cosmocache.* agents loaded")
+            return
+        for row in data:
+            pid = row["pid"] if row["pid"] is not None else "-"
+            click.echo(f"{row['label']:<50}  pid={pid!s:<6}  "
+                       f"last_exit={row['last_exit_status']}")
+
+    emit(rows, json_mode, human)
+
+
+@evolve.command("status")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_status(json_mode) -> None:
+    """Show evolutions DB rows (what's running / recent / failed)."""
+    if not EVOLVE_DB_SCRIPT.exists():
+        emit({"ok": False, "error": f"missing {EVOLVE_DB_SCRIPT}"},
+             json_mode, f"error: {EVOLVE_DB_SCRIPT} not found")
+        sys.exit(1)
+    r = run([sys.executable, str(EVOLVE_DB_SCRIPT), "list"])
+    try:
+        rows = _json.loads(r.stdout or "[]")
+    except _json.JSONDecodeError:
+        rows = []
+
+    def human(data):
+        if not data:
+            click.echo("no evolutions recorded yet")
+            return
+        click.echo(f"{'planet':<30}  {'status':<10}  {'started':<20}  msg")
+        click.echo("-" * 90)
+        for row in data:
+            click.echo(
+                f"{row.get('planet_slug', '?'):<30}  "
+                f"{row.get('status', '?'):<10}  "
+                f"{(row.get('started_at') or '')[:19]:<20}  "
+                f"{(row.get('msg') or '')[:40]}"
+            )
+
+    emit(rows, json_mode, human)
+
+
+@evolve.command("logs")
+@click.argument("slug", required=False)
+@click.option("-n", "--tail", default=40, show_default=True,
+              help="Lines to tail.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_logs(slug, tail, json_mode) -> None:
+    """Tail an evolution tick log. With no SLUG, lists available log files."""
+    if not LOGS_DIR.exists():
+        emit({"ok": False, "logs": [], "error": f"no {LOGS_DIR}"},
+             json_mode, f"(no logs yet at {LOGS_DIR})")
+        return
+    if slug is None:
+        files = sorted(LOGS_DIR.glob("evolution-*.log"))
+        names = [f.name for f in files]
+        emit({"ok": True, "logs": names}, json_mode,
+             lambda d: click.echo("\n".join(d["logs"]) or "(none)"))
+        return
+    path = LOGS_DIR / f"evolution-{slug}.log"
+    if not path.exists():
+        emit({"ok": False, "error": f"no log for {slug}"}, json_mode,
+             f"no log for {slug} (expected {path})")
+        sys.exit(1)
+    lines = path.read_text().splitlines()[-tail:]
+    emit({"ok": True, "slug": slug, "lines": lines}, json_mode,
+         lambda d: click.echo("\n".join(d["lines"])))
+
+
+# ===========================================================================
+# flat commands — search, tree, planets, creatures, glossary, index, stats
+# ===========================================================================
+@cli.command("search")
+@click.argument("query")
+@click.option("--scope",
+              type=click.Choice(["all", "planets", "glossary", "docs"]),
+              default="all", show_default=True)
+@click.option("-n", "--limit", default=50, show_default=True,
+              help="Max results.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_search(query, scope, limit, json_mode) -> None:
+    """Search the universe (ripgrep if available, else Python)."""
+    targets = {
+        "all":      [UNIVERSE],
+        "planets":  [PLANETS_DIR],
+        "glossary": [UNIVERSE / "enigma"],
+        "docs":     [UNIVERSE / "docs", UNIVERSE / ".system" / "docs"],
+    }[scope]
+    targets = [t for t in targets if t.exists()]
+    results: list[dict] = []
+
+    rg = shutil.which("rg")
+    if rg:
+        cmd = [rg, "--no-heading", "--with-filename", "--line-number",
+               "--color=never", "-S", "-t", "md", query] + [str(t) for t in targets]
+        r = run(cmd)
+        for line in r.stdout.splitlines():
+            # path:lineno:content
+            try:
+                path, lineno, text = line.split(":", 2)
+                results.append({"path": path, "lineno": int(lineno),
+                                "text": text.strip()[:200]})
+            except ValueError:
+                continue
+            if len(results) >= limit:
+                break
+    else:
+        needle = query.lower()
+        for root in targets:
+            for md in root.rglob("*.md"):
+                try:
+                    text = md.read_text(errors="replace")
+                except OSError:
+                    continue
+                for i, line in enumerate(text.splitlines(), start=1):
+                    if needle in line.lower():
+                        results.append({"path": str(md), "lineno": i,
+                                        "text": line.strip()[:200]})
+                        if len(results) >= limit:
+                            break
+                if len(results) >= limit:
+                    break
+            if len(results) >= limit:
+                break
+
+    def human(data):
+        if not data:
+            click.echo("(no matches)")
+            return
+        for hit in data:
+            rel = hit["path"]
+            try:
+                rel = str(Path(hit["path"]).relative_to(UNIVERSE))
+            except ValueError:
+                pass
+            click.echo(f"{rel}:{hit['lineno']}  {hit['text']}")
+
+    emit(results, json_mode, human)
+
+
+@cli.command("tree")
+@click.option("--planet", default=None,
+              help="Show the tree of one planet only (slug).")
+@click.option("--depth", default=3, show_default=True,
+              help="Max depth.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_tree(planet, depth, json_mode) -> None:
+    """Print folder tree (universe-wide or one planet)."""
+    root = PLANETS_DIR / planet if planet else UNIVERSE
+    if not root.exists():
+        emit({"ok": False, "error": f"no such path: {root}"},
+             json_mode, f"error: no such path: {root}")
+        sys.exit(1)
+
+    skip = {".git", "__pycache__", ".ruff_cache", ".pytest_cache",
+            ".venv", "node_modules", "results", ".cache"}
+    nodes: list[dict] = []
+
+    def walk(p: Path, d: int) -> None:
+        if d > depth:
+            return
+        try:
+            entries = sorted(p.iterdir(), key=lambda x: (not x.is_dir(), x.name))
+        except OSError:
+            return
+        for e in entries:
+            if e.name in skip or e.name.startswith("."):
+                continue
+            rel = e.relative_to(root)
+            nodes.append({"path": str(rel), "depth": d,
+                          "kind": "dir" if e.is_dir() else "file"})
+            if e.is_dir():
+                walk(e, d + 1)
+
+    walk(root, 1)
+
+    def human(data):
+        click.echo(str(root))
+        for n in data:
+            indent = "  " * (n["depth"] - 1)
+            glyph = "/" if n["kind"] == "dir" else " "
+            click.echo(f"{indent}{glyph} {Path(n['path']).name}")
+
+    emit(nodes, json_mode, human)
+
+
+@cli.command("planets")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_planets(json_mode) -> None:
+    """List every planet slug + creature count + generation count."""
+    if not PLANETS_DIR.exists():
+        emit([], json_mode, "(no planets dir)")
+        return
+    rows = []
+    for d in sorted(PLANETS_DIR.iterdir()):
+        if not d.is_dir() or d.name.startswith("."):
+            continue
+        creatures = list((d / "creatures").glob("*.md")) if (d / "creatures").is_dir() else []
+        gens = list((d / "generations").glob("*.md")) if (d / "generations").is_dir() else []
+        rows.append({
+            "slug": d.name,
+            "has_planet_md": (d / "planet.md").exists(),
+            "creatures": len(creatures),
+            "generations": len(gens),
+        })
+
+    def human(data):
+        if not data:
+            click.echo("(no planets)")
+            return
+        click.echo(f"{'slug':<30}  {'creatures':>9}  {'gens':>4}  planet.md")
+        click.echo("-" * 60)
+        for r in data:
+            click.echo(f"{r['slug']:<30}  {r['creatures']:>9}  "
+                       f"{r['generations']:>4}  "
+                       f"{'yes' if r['has_planet_md'] else 'NO'}")
+
+    emit(rows, json_mode, human)
+
+
+@cli.command("creatures")
+@click.option("--planet", default=None, help="Filter by planet slug.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_creatures(planet, json_mode) -> None:
+    """List creatures across all planets (or one planet)."""
+    if not PLANETS_DIR.exists():
+        emit([], json_mode, "(no planets dir)")
+        return
+    rows = []
+    planet_dirs = [PLANETS_DIR / planet] if planet else [
+        d for d in sorted(PLANETS_DIR.iterdir()) if d.is_dir()
+    ]
+    for pd in planet_dirs:
+        if not pd.is_dir():
+            continue
+        cdir = pd / "creatures"
+        if not cdir.is_dir():
+            continue
+        for cf in sorted(cdir.glob("*.md")):
+            rows.append({
+                "planet": pd.name,
+                "creature": cf.stem,
+                "path": str(cf.relative_to(UNIVERSE)),
+            })
+
+    def human(data):
+        if not data:
+            click.echo("(no creatures found)")
+            return
+        click.echo(f"{'planet':<30}  creature")
+        click.echo("-" * 60)
+        for r in data:
+            click.echo(f"{r['planet']:<30}  {r['creature']}")
+
+    emit(rows, json_mode, human)
+
+
+@cli.command("glossary")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_glossary(json_mode) -> None:
+    """Print enigma/glossary.md (the session-start routing table)."""
+    if not GLOSSARY.exists():
+        emit({"ok": False, "error": "no glossary.md"}, json_mode,
+             "(no glossary.md yet)")
+        sys.exit(1)
+    text = GLOSSARY.read_text()
+    emit({"ok": True, "path": str(GLOSSARY), "content": text},
+         json_mode, lambda d: click.echo(d["content"]))
+
+
+@cli.command("index")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_index(json_mode) -> None:
+    """Print enigma/index.md (derived keyword index rebuilt by Enigma's tick)."""
+    if not INDEX.exists():
+        emit({"ok": False, "error": "no index.md yet — Enigma hasn't ticked"},
+             json_mode, "(no index.md yet — Enigma's cron hasn't run)")
+        sys.exit(1)
+    text = INDEX.read_text()
+    emit({"ok": True, "path": str(INDEX), "content": text},
+         json_mode, lambda d: click.echo(d["content"]))
+
+
+@cli.command("stats")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def cmd_stats(json_mode) -> None:
+    """Print counts: planets, creatures, generations, md files, on-disk bytes."""
+    n_planets = 0
+    n_creatures = 0
+    n_gens = 0
+    if PLANETS_DIR.exists():
+        for d in PLANETS_DIR.iterdir():
+            if not d.is_dir() or d.name.startswith("."):
+                continue
+            n_planets += 1
+            if (d / "creatures").is_dir():
+                n_creatures += sum(1 for _ in (d / "creatures").glob("*.md"))
+            if (d / "generations").is_dir():
+                n_gens += sum(1 for _ in (d / "generations").glob("*.md"))
+
+    total_md = 0
+    total_bytes = 0
+    for p in UNIVERSE.rglob("*.md"):
+        parts = p.relative_to(UNIVERSE).parts
+        if parts and (parts[0] in {".git", ".system"} or parts[0].startswith(".")):
+            continue
+        total_md += 1
+        try:
+            total_bytes += p.stat().st_size
+        except OSError:
+            pass
+
+    payload = {
+        "planets": n_planets,
+        "creatures": n_creatures,
+        "generations": n_gens,
+        "markdown_files": total_md,
+        "markdown_bytes": total_bytes,
+        "glossary_bytes": GLOSSARY.stat().st_size if GLOSSARY.exists() else 0,
+        "has_index_md": INDEX.exists(),
+    }
+
+    def human(d):
+        click.echo(f"planets:          {d['planets']}")
+        click.echo(f"creatures:        {d['creatures']}")
+        click.echo(f"generations:      {d['generations']}")
+        click.echo(f"markdown files:   {d['markdown_files']} "
+                   f"({d['markdown_bytes'] / 1024:.1f} KB)")
+        click.echo(f"glossary size:    {d['glossary_bytes']} bytes")
+        click.echo(f"enigma/index.md:  "
+                   f"{'present' if d['has_index_md'] else 'not yet built'}")
+
+    emit(payload, json_mode, human)
+
+
+if __name__ == "__main__":
+    cli()
