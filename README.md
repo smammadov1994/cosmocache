@@ -22,7 +22,9 @@ Figures are in [`./docs/paper/figures/`](./docs/paper/figures/); the
 headline run that backs the numbers is at
 [`./.system/eval/results/20260414T042330Z-4d6f06/report.md`](./.system/eval/results/20260414T042330Z-4d6f06/report.md).
 
-Landing page source lives in [`./site/`](./site/) (live URL: TBD).
+Landing page source lives in [`./site/`](./site/) and deploys to
+[smammadov1994.github.io/cosmocache](https://smammadov1994.github.io/cosmocache/)
+via the workflow in `.github/workflows/pages.yml` on every push to `main`.
 
 ---
 
