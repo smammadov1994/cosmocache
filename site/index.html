@@ -442,8 +442,13 @@
       <p>Clone the repo into your home and drop the hook into Claude Code:</p>
       <pre class="terminal"><code><span class="prompt">$</span> git clone https://github.com/smammadov1994/cosmocache.git ~/universe
 <span class="prompt">$</span> cd ~/universe
-<span class="prompt">$</span> ./install.sh     <span class="comment"># wires SessionStart hook + slash commands</span>
+<span class="prompt">$</span> ./install.sh     <span class="comment"># hooks · /universe skill · (opt-in) evolve cron</span>
 <span class="prompt">$</span> claude            <span class="comment"># start a session; Enigma's glossary loads automatically</span></code></pre>
+      <p class="muted small">
+        The installer is idempotent and opt-in for the evolve loop — it
+        asks before registering launchd plists, and disabling later is a
+        single <code>cosmo evolve uninstall</code>.
+      </p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/smammadov1994/cosmocache.git" target="_blank" rel="noopener">github.com/smammadov1994/cosmocache →</a>
       </div>

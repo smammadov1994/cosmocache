@@ -164,6 +164,26 @@ You don't. Claude does — automatically.
 
 Your only job is to work as normal. The universe grows around you.
 
+### Install
+
+```bash
+git clone https://github.com/smammadov1994/cosmocache.git ~/universe
+cd ~/universe
+./install.sh
+```
+
+The installer is idempotent (safe to re-run) and does three things:
+
+1. Wires SessionStart + Stop hooks into `~/.claude/settings.json` (merges
+   non-destructively — existing hooks are preserved).
+2. Registers the `/universe` skill at `~/.claude/skills/universe`.
+3. Asks whether to enable the **autonomous evolve loop** (opt-in, macOS
+   launchd). Say yes and every planet ticks every 6h; say no and you can
+   enable it later with `scripts/cosmo evolve install`.
+
+Requires macOS (launchd), `python3`, and the `claude` CLI on `PATH`. The
+evolve loop no-ops without `ANTHROPIC_API_KEY`.
+
 ### Seed a fresh universe
 
 A brand new `planets/` directory is empty. If you want a canonical set of
