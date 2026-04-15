@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>cosmocache — universe dashboard</title>
+<meta name="description" content="Visual dashboard for the cosmocache universe: Enigma the One, planets of knowledge, and the creatures who live on them." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<meta name="theme-color" content="#0a0715" />
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three/three.module.min.js",
+    "three/addons/": "/vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+  <!-- The three.js scene lives here — deep dark canvas. -->
+  <div id="stage" aria-label="universe canvas">
+    <canvas id="scene"></canvas>
+  </div>
+
+  <!-- Cream-palette chrome overlaid on top of the dark canvas. -->
+  <header class="topbar">
+    <a class="brand" href="/">cosmocache<span class="brand-dot">·</span> dashboard</a>
+    <div class="topbar-right">
+      <ul class="legend" id="legend" aria-label="legend">
+        <li><span class="sw sw-enigma" aria-hidden="true"></span> Enigma</li>
+        <li><span class="sw sw-violet" aria-hidden="true"></span> React</li>
+        <li><span class="sw sw-moss" aria-hidden="true"></span> SQL</li>
+        <li><span class="sw sw-coral" aria-hidden="true"></span> DevOps</li>
+      </ul>
+      <button class="topbar-btn" id="btn-explore" type="button">explore ↗</button>
+      <span class="hint-esc" id="hint-esc">press <kbd>ESC</kbd> to return</span>
+    </div>
+  </header>
+
+  <div class="hint" id="hint">drag to orbit · scroll to zoom · click a planet</div>
+
+  <div class="focus" id="focus" aria-hidden="true">
+    <span class="focus-name" id="focus-name"></span>
+    <span class="focus-meta" id="focus-meta"></span>
+  </div>
+
+  <aside class="panel" id="panel" aria-hidden="true">
+    <button class="panel-close" id="panel-close" aria-label="close">close</button>
+    <div class="panel-body" id="panel-body"></div>
+  </aside>
+
+  <!-- DOM label layer: planet + creature labels positioned each frame. -->
+  <div id="labels" aria-hidden="true"></div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

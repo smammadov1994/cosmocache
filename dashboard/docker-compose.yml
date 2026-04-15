@@ -1,0 +1,26 @@
+# cosmocache dashboard
+#
+# Usage:
+#   cd /Users/bot/universe/dashboard
+#   docker compose up --build
+#   open http://localhost:8765
+#
+# To visualize a different universe, override UNIVERSE_PATH:
+#   UNIVERSE_PATH=/path/to/other/universe docker compose up --build
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cosmocache-dashboard:latest
+    container_name: cosmocache-dashboard
+    ports:
+      - "8765:80"
+    volumes:
+      # Read-only bind mount of the universe markdown. Compiled into
+      # universe.json at container start (see docker/entrypoint.sh).
+      - "${UNIVERSE_PATH:-..}:/data:ro"
+    environment:
+      UNIVERSE_ROOT: /data
+    restart: unless-stopped
