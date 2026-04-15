@@ -394,7 +394,10 @@ def evolve_kick(slug, force, json_mode) -> None:
 
     Skips the launchd schedule and bypasses the 1h activity guard by default,
     so you get instant feedback after birthing a planet. Judge + autoresearch
-    still run; output file still lands in planets/<slug>/generations/.
+    still run; output file lands in planets/<slug>/generations/ and any
+    new_keywords the subagent surfaces are merged into the planet's keywords:
+    line. Run `cosmo evolve rebuild-index` afterwards to refresh Enigma's
+    index immediately instead of waiting for the daily cron.
     """
     tick = SCRIPTS_DIR / "evolution_tick.py"
     if not tick.exists():
@@ -419,6 +422,39 @@ def evolve_kick(slug, force, json_mode) -> None:
              f"{'✓' if d['ok'] else '✗'} tick finished for {d['slug']} "
              f"(exit={d['exit_code']}); "
              f"tail: cosmo evolve logs {d['slug']}"))
+    if r.returncode != 0:
+        sys.exit(r.returncode)
+
+
+@evolve.command("rebuild-index")
+@click.option("--force", is_flag=True,
+              help="Delete enigma/index.md first so the tick can't short-circuit.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_rebuild_index(force, json_mode) -> None:
+    """Run Enigma's tick NOW to regenerate enigma/index.md.
+
+    The tick normally runs daily and short-circuits if neither glossary.md nor
+    any planet's planet.md/generations/creatures have changed. Use this after
+    `cosmo evolve kick` so a freshly-landed generation's keywords reach the
+    index without a 24h wait. --force deletes index.md first, bypassing the
+    mtime guard entirely.
+    """
+    tick = SCRIPTS_DIR / "enigma_tick.py"
+    if not tick.exists():
+        emit({"ok": False, "error": f"missing {tick}"}, json_mode,
+             f"error: {tick} not found")
+        sys.exit(1)
+    if force and INDEX.exists():
+        INDEX.unlink()
+        if not json_mode:
+            click.echo(f"→ removed {INDEX.relative_to(UNIVERSE)}")
+    click.echo(f"→ {sys.executable} {tick}")
+    r = subprocess.run([sys.executable, str(tick)], capture_output=False)
+    emit({"ok": r.returncode == 0, "exit_code": r.returncode,
+          "index_path": str(INDEX), "index_exists": INDEX.exists()}, json_mode,
+         lambda d: click.echo(
+             f"{'✓' if d['ok'] else '✗'} enigma tick finished "
+             f"(exit={d['exit_code']}); index present: {d['index_exists']}"))
     if r.returncode != 0:
         sys.exit(r.returncode)
 
@@ -567,10 +603,34 @@ def cmd_tree(planet, depth, json_mode) -> None:
     emit(nodes, json_mode, human)
 
 
+def _planet_keywords(planet_md: Path) -> list[str]:
+    """Return the comma-separated `keywords:` tokens from planet.md frontmatter."""
+    if not planet_md.exists():
+        return []
+    try:
+        lines = planet_md.read_text(errors="replace").splitlines()
+    except OSError:
+        return []
+    if not lines or lines[0].strip() != "---":
+        return []
+    raw = None
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if line.startswith("keywords:"):
+            raw = line.split(":", 1)[1].strip()
+            break
+    if not raw:
+        return []
+    raw = raw.strip("[]")
+    return [tok.strip().strip('"').strip("'")
+            for tok in raw.split(",") if tok.strip()]
+
+
 @cli.command("planets")
 @click.option("--json", "json_mode", is_flag=True, help="JSON output.")
 def cmd_planets(json_mode) -> None:
-    """List every planet slug + creature count + generation count."""
+    """List every planet: creature count, generations, current keywords."""
     if not PLANETS_DIR.exists():
         emit([], json_mode, "(no planets dir)")
         return
@@ -585,18 +645,21 @@ def cmd_planets(json_mode) -> None:
             "has_planet_md": (d / "planet.md").exists(),
             "creatures": len(creatures),
             "generations": len(gens),
+            "keywords": _planet_keywords(d / "planet.md"),
         })
 
     def human(data):
         if not data:
             click.echo("(no planets)")
             return
-        click.echo(f"{'slug':<30}  {'creatures':>9}  {'gens':>4}  planet.md")
-        click.echo("-" * 60)
+        click.echo(f"{'slug':<30}  {'cr':>3}  {'gen':>3}  keywords")
+        click.echo("-" * 80)
         for r in data:
-            click.echo(f"{r['slug']:<30}  {r['creatures']:>9}  "
-                       f"{r['generations']:>4}  "
-                       f"{'yes' if r['has_planet_md'] else 'NO'}")
+            kws = ", ".join(r["keywords"][:6]) or "-"
+            if len(r["keywords"]) > 6:
+                kws += f" (+{len(r['keywords']) - 6})"
+            click.echo(f"{r['slug']:<30}  {r['creatures']:>3}  "
+                       f"{r['generations']:>3}  {kws}")
 
     emit(rows, json_mode, human)
 
