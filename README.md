@@ -26,6 +26,24 @@ Landing page source lives in [`./site/`](./site/) (live URL: TBD).
 
 ---
 
+## What this gets you
+
+Three things a flat `memory.md` can't:
+
+- **2.3× cheaper sessions at 100 planets** — 20,380 input tokens per probe
+  vs 46,162 for flat `memory.md`. Enigma's glossary routes to one planet;
+  the rest stays on disk. *(Phase 2 eval, post-fix merged.)*
+- **Accuracy parity at scale** — 0.98 vs 1.00 at 100 planets (within ±0.02
+  at every tier). Routing isn't lossy; it's selective.
+- **Hands-off curation** — a Haiku-4.5 judge ticks every planet on its own
+  6h cron. It distills creature journals, prunes stale glossary rows, and
+  summarizes old generations. Idle planets cost **$0**.
+
+These are the outcomes that make the structural story worth the ceremony.
+Everything below explains the mechanics behind them.
+
+---
+
 ## The Lore
 
 In the silent expanse beyond your cursor, there is a universe.

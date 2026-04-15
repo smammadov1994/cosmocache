@@ -71,6 +71,33 @@ python3 -c "import json,pathlib; p=pathlib.Path('/Users/bot/universe/.universe-m
 # disable: same but False
 ```
 
+## Operator CLI (`cosmo`)
+
+A Click-based CLI lives at `/Users/bot/universe/scripts/cosmo` and is the
+fastest way to inspect the universe without grepping the filesystem by
+hand. Every subcommand supports `--json` for structured output. Prefer
+these over ad-hoc `ls`/`grep` when they fit:
+
+- `cosmo search <query> [--scope all|planets|glossary|docs] [--json]` —
+  ripgrep across the universe's markdown. First-line answer for "does
+  anything here mention X?"
+- `cosmo planets [--json]` — list every planet with creature and
+  generation counts.
+- `cosmo creatures [--planet <slug>] [--json]` — roster across all
+  planets, or one planet.
+- `cosmo glossary [--json]` — re-print Enigma's glossary (same thing the
+  SessionStart hook injected; handy if it's been truncated out of context).
+- `cosmo index [--json]` — Enigma's derived keyword index, if built.
+- `cosmo tree [--depth N] [--json]` — directory layout of the universe.
+- `cosmo stats [--json]` — counts: planets, creatures, generations, total
+  markdown bytes.
+- `cosmo evolve status [--json]` — running / last-completed evolutions.
+- `cosmo evolve logs <slug>` — tail of a planet's evolution-tick log.
+
+**Operator-only** (don't run autonomously; these mutate state or launch
+docker / launchd): `cosmo sim *`, `cosmo evolve install|uninstall|kick`,
+`cosmo seed`. Mention them to the user if relevant; don't run them.
+
 ## Rules
 
 - **Never** write memory to a flat `memory.md` file or to `~/.claude/projects/*/memory/`. The universe is the single source of truth.
