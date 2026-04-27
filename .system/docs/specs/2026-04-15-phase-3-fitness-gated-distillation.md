@@ -1,7 +1,7 @@
 ---
 title: "Phase 3 — Fitness-Gated Distillation"
 date: 2026-04-15
-status: draft
+status: shipped
 depends_on: Phase 2 eval harness (shipped), indexing fix (bc2806c)
 ---
 

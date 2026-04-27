@@ -37,9 +37,10 @@ Three things a flat `memory.md` can't:
   the rest stays on disk. *(Phase 2 eval, post-fix merged.)*
 - **Accuracy parity at scale** — 0.98 vs 1.00 at 100 planets (within ±0.02
   at every tier). Routing isn't lossy; it's selective.
-- **Hands-off curation** — a Haiku-4.5 judge ticks every planet on its own
-  6h cron. It distills creature journals, prunes stale glossary rows, and
-  summarizes old generations. Idle planets cost **$0**.
+- **Self-distilling planets** — every autoresearch cycle, an agent
+  proposes a tighter version of the most bloated creature. The edit
+  only lands if `score_planet()` proves accuracy held and tokens
+  dropped. Bloated knowledge bases stop being a thing.
 
 These are the outcomes that make the structural story worth the ceremony.
 Everything below explains the mechanics behind them.
@@ -304,60 +305,48 @@ Design: [`2026-04-13-phase-2-eval-harness-design.md`](.system/docs/specs/2026-04
 
 ---
 
-## Phase 3 — The Evolve Loop *(design stub)*
+## Phase 3 — Fitness-Gated Distillation *(shipped)*
 
 Planets don't just remember. **They get smarter.**
 
-Cosmocache's next phase is an autonomous evolution loop, inspired by
-Andrej Karpathy's [autoresearch](https://github.com/karpathy/autoresearch).
-In autoresearch, an agent proposes code changes, trains a tiny model,
-measures `val_bpb`, and keeps the edit only if the metric improves. The
-fitness function is what makes the loop work. Cosmocache has a fitness
-function now: `score_planet()`.
-
-### How a civilization evolves
+Once per autoresearch cycle, an agent reads a planet, picks the
+creature with the most bloated journal, and proposes a tighter
+"Distilled Wisdom" version via Haiku. Before anything is written,
+`score_planet()` runs the planet's probes against a staged copy of
+the change. The original is only overwritten if accuracy holds and
+input tokens drop. Otherwise the edit is thrown away and the planet
+stays exactly as it was.
 
 ```mermaid
 flowchart LR
-    Idle[Planet idle] --> Spawn[Background agent<br/>spawns]
-    Spawn --> Read[Reads planet.md,<br/>creatures, generations]
-    Read --> Propose[Proposes a mutation]
-    Propose --> Apply[Applies to a branch]
-    Apply --> Score[score_planet#40;#41;<br/>measures accuracy + tokens]
-    Score --> Better{Better than<br/>prior gen?}
-    Better -->|yes| Promote[Promote:<br/>new generation]
-    Better -->|no| Revert[Discard mutation,<br/>log why]
-    Promote --> Idle
-    Revert --> Idle
+    Auto[Autoresearch wrote<br/>a generation note] --> Pick[Pick the bloated<br/>creature]
+    Pick --> Propose[Haiku proposes<br/>distilled version]
+    Propose --> Stage[Stage in temp<br/>universe copy]
+    Stage --> Score[score_planet#40;#41;<br/>baseline vs mutant]
+    Score --> Gate{accuracy held<br/>AND tokens dropped?}
+    Gate -->|yes| Promote[Overwrite original.<br/>Log promotion + delta.]
+    Gate -->|no| Revert[Discard temp copy.<br/>Log rejection + reason.]
 ```
 
-A **mutation** is any structural edit a small agent can reason about in
-isolation: distilling a creature's rambling journal into a tighter Wisdom
-block, merging two redundant creatures into one, pruning stale glossary
-keywords, consolidating an archived generation's summary, or rewriting
-`planet.md` for clarity. The agent proposes, applies on a branch, runs
-`score_planet()` over a probe subset relevant to that planet, and only
-promotes the mutation if accuracy holds or rises and token cost doesn't
-balloon. Otherwise the branch dies quietly, and the planet continues
-as it was. Over time, high-traffic planets converge toward their own
-distilled best version without anyone tending them.
+**Observability:**
 
-### Why this is the right shape
+```bash
+cosmo evolve mutations          # promote/reject history with deltas
+cosmo evolve mutations --planet planet-react
+```
 
-- **Local objective.** Evolution optimizes per-planet, so cross-planet
-  dynamics don't need to be solved in v1.
-- **No ungrounded edits.** Every mutation is gated by a measured metric,
-  not the agent's self-assessment.
-- **Safety floor.** A mutation that would drop accuracy below the prior
-  generation's score is discarded by construction.
-- **Narrative fit.** A planet's civilization actually *evolves* — new
-  generations are born when the world measurably got wiser. The lore
-  stops being metaphor and starts being the log format.
+**Safety properties:**
 
-**Status:** contract frozen, five open design questions captured in
-[the design stub](.system/docs/specs/2026-04-13-phase-3-civilization-evolution-design-stub.md).
-Full design will be brainstormed once Phase 2's first live numbers are in
-hand — so evolution can target whichever gap the harness actually finds.
+- Original creature files are never touched until the gate passes.
+- Promote writes are atomic (write-tmp + rename), so a crash mid-write can't corrupt the original.
+- A mutation that drops accuracy is rejected by construction.
+- A mutation that doesn't strictly reduce input tokens is rejected.
+- Errors in the mutation tick are logged but never fail the
+  autoresearch tick — knowledge accumulation always wins over cleanup.
+
+Future mutation types (creature merges, generation consolidation,
+planet.md rewrites) plug into the same harness as new proposer classes.
+Design: [`2026-04-15-phase-3-fitness-gated-distillation.md`](.system/docs/specs/2026-04-15-phase-3-fitness-gated-distillation.md).
 
 ---
 
