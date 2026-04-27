@@ -9,6 +9,8 @@ if the gate passes.
 Original creature files are never modified until the gate passes.
 """
 from __future__ import annotations
+import shutil
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -122,6 +124,30 @@ def find_candidate(planet_dir: Path) -> Path | None:
         if best is None or j_len > best[0]:
             best = (j_len, md)
     return best[1] if best else None
+
+
+def stage_mutation(
+    *,
+    universe_dir: Path,
+    creature_path: Path,
+    new_content: str,
+) -> tuple[Path, Path]:
+    """Copy `universe_dir` to a temp location and swap in `new_content`
+    at the creature's relative position.
+
+    Returns (staged_root, staged_creature_path). Caller is responsible
+    for shutil.rmtree(staged_root) when done.
+
+    The original creature file is NEVER modified by this function.
+    """
+    rel = creature_path.resolve().relative_to(universe_dir.resolve())
+    staged_root = Path(tempfile.mkdtemp(prefix="cosmocache-mutation-"))
+    # copytree into a child dir so we own the whole tree cleanly
+    staged_universe = staged_root / "universe"
+    shutil.copytree(universe_dir, staged_universe, symlinks=False)
+    staged_creature = staged_universe / rel
+    staged_creature.write_text(new_content)
+    return staged_universe, staged_creature
 
 
 if __name__ == "__main__":
