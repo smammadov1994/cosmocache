@@ -259,6 +259,67 @@ def evolve(cmd: str, slug: str, msg: str | None = None) -> None:
     subprocess.run(args, check=False)
 
 
+def _run_mutation_tick(slug: str, planet_dir: Path) -> None:
+    """Phase 3: propose a distilled creature, score, promote or reject.
+
+    Wrapped in this helper so it stays a single non-fatal call site in main().
+    """
+    sys.path.insert(0, str(SCRIPTS))
+    sys.path.insert(0, str(UNIVERSE / ".system" / "eval"))
+    import mutation_tick
+    from lib.anthropic_client import AnthropicClient
+
+    # Probe subset: pick up to 3 probes from probes.yaml whose ids contain any
+    # of this planet's keywords. Falls back to first 3 probes if none match.
+    import yaml
+    probes_yaml = UNIVERSE / ".system" / "eval" / "scenarios" / "probes.yaml"
+    if not probes_yaml.exists():
+        log(slug, "mutation tick skipped: no probes.yaml")
+        return
+    probes = yaml.safe_load(probes_yaml.read_text()).get("probes", [])
+    kws = read_planet_keywords(planet_dir)
+    matching = [p["id"] for p in probes
+                if any(kw in p["id"] for kw in kws)] or [p["id"] for p in probes[:3]]
+    probe_subset = matching[:3]
+
+    client = AnthropicClient()
+    res = mutation_tick.run(
+        planet_slug=slug,
+        planet_dir=planet_dir,
+        universe_dir=UNIVERSE,
+        probe_subset=probe_subset,
+        client=client,
+        proposer_model="claude-haiku-4-5-20251001",
+        sut_model="claude-opus-4-6",
+        judge_model="claude-opus-4-6",
+    )
+    log(slug, f"mutation: outcome={res.outcome} creature={res.creature} "
+              f"reason={res.reason}")
+
+    # Record the outcome in evolutions.db so `cosmo evolve mutations` can show it.
+    if res.outcome in ("promoted", "rejected"):
+        status = "mutation_promoted" if res.outcome == "promoted" else "mutation_rejected"
+        msg = f"{res.creature}: {res.reason}"[:200]
+        import sqlite3
+        db = UNIVERSE / "enigma" / "evolutions.db"
+        # Always write a fresh row keyed by slug (the schema is single-state-per-slug).
+        # We create the table via mutation_tick imports if needed; here we just upsert.
+        with sqlite3.connect(str(db)) as conn:
+            now = conn.execute(
+                "SELECT strftime('%Y-%m-%dT%H:%M:%SZ', 'now')"
+            ).fetchone()[0]
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO evolutions
+                  (planet_slug, status, message, started_at, updated_at,
+                   completed_at, session_id)
+                VALUES (?, ?, ?, ?, ?, ?, NULL)
+                """,
+                (slug, status, msg, now, now, now),
+            )
+            conn.commit()
+
+
 def main() -> int:
     args = sys.argv[1:]
     force = False
@@ -314,6 +375,14 @@ def main() -> int:
         added = merge_keywords_into_planet(planet_dir, new_kws)
         if added:
             log(slug, f"keywords merged into planet.md: {added}")
+
+        # Phase 3: fitness-gated distillation. Only runs if a creature
+        # qualifies; failures are logged but don't fail the tick.
+        try:
+            _run_mutation_tick(slug, planet_dir)
+        except Exception as e:
+            log(slug, f"mutation tick error (non-fatal): {e!r}")
+
     evolve("complete" if ok else "fail",
            slug,
            msg=("autoresearch ok" if ok else f"autoresearch failed: {tail[:80]}"))
