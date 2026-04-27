@@ -488,13 +488,15 @@ def evolve_logs(slug, tail, json_mode) -> None:
 
 @evolve.command("mutations")
 @click.option("--planet", default=None, help="Filter to one planet slug.")
+@click.option("--limit", default=50, show_default=True,
+              help="Max rows.")
 @click.option("--json", "json_mode", is_flag=True, help="JSON output.")
-def evolve_mutations(planet, json_mode) -> None:
-    """List mutation outcomes recorded in evolutions.db.
+def evolve_mutations(planet, limit, json_mode) -> None:
+    """List mutation outcomes recorded in evolutions.db (mutations table).
 
-    Shows every row whose status is mutation_promoted or mutation_rejected.
-    Use this after `cosmo evolve kick` to see whether a distillation was
-    accepted or thrown away, and the accuracy/token delta in the message.
+    Shows every distillation attempt — promoted or rejected — most recent
+    first. Use this after `cosmo evolve kick` to see whether the proposer's
+    edit was accepted, and the accuracy/token delta for each attempt.
     """
     import sqlite3 as _sqlite3
     db = UNIVERSE / "enigma" / "evolutions.db"
@@ -502,28 +504,49 @@ def evolve_mutations(planet, json_mode) -> None:
         emit({"ok": False, "error": "no evolutions.db"}, json_mode,
              "(no evolutions.db yet — has any tick run?)")
         return
-    q = ("SELECT planet_slug, status, message, completed_at FROM evolutions "
-         "WHERE status IN ('mutation_promoted', 'mutation_rejected')")
-    args: tuple = ()
-    if planet:
-        q += " AND planet_slug = ?"
-        args = (planet,)
-    q += " ORDER BY completed_at DESC NULLS LAST, planet_slug"
+
+    # The mutations table may not exist on a clone that hasn't run any
+    # mutation tick yet. Treat that case the same as "no rows".
     with _sqlite3.connect(str(db)) as conn:
         conn.row_factory = _sqlite3.Row
+        cur = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='mutations'"
+        ).fetchone()
+        if not cur:
+            emit([], json_mode, "(no mutations recorded yet)")
+            return
+
+        q = ("SELECT planet_slug, creature, outcome, reason, "
+             "accuracy_delta, tokens_delta, completed_at FROM mutations")
+        args: tuple = ()
+        if planet:
+            q += " WHERE planet_slug = ?"
+            args = (planet,)
+        q += " ORDER BY completed_at DESC, id DESC LIMIT ?"
+        args = args + (limit,)
         rows = [dict(r) for r in conn.execute(q, args).fetchall()]
 
     def human(data):
         if not data:
             click.echo("(no mutations recorded yet)")
             return
-        click.echo(f"{'planet':<25}  {'outcome':<20}  {'when':<20}  message")
-        click.echo("-" * 100)
+        click.echo(
+            f"{'planet':<22}  {'creature':<22}  {'outcome':<9}  "
+            f"{'when':<20}  Δacc      Δtokens   reason"
+        )
+        click.echo("-" * 120)
         for r in data:
-            outcome = r["status"].replace("mutation_", "")
             when = (r["completed_at"] or "")[:19]
-            msg = (r["message"] or "")[:50]
-            click.echo(f"{r['planet_slug']:<25}  {outcome:<20}  {when:<20}  {msg}")
+            d_acc = f"{r['accuracy_delta']:+.3f}" if r["accuracy_delta"] is not None else "  -  "
+            d_tok = f"{r['tokens_delta']:+.0f}" if r["tokens_delta"] is not None else "  -  "
+            click.echo(
+                f"{r['planet_slug']:<22}  "
+                f"{(r['creature'] or '')[:22]:<22}  "
+                f"{r['outcome']:<9}  "
+                f"{when:<20}  "
+                f"{d_acc:<9} {d_tok:<9} "
+                f"{(r['reason'] or '')[:40]}"
+            )
 
     emit(rows, json_mode, human)
 

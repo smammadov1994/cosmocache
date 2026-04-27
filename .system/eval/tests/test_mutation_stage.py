@@ -43,7 +43,8 @@ def test_stage_creates_temp_universe_with_replacement(tmp_path):
         assert creature.read_text() == "original alice\n"
     finally:
         import shutil
-        shutil.rmtree(staged_root, ignore_errors=True)
+        # staged_root is tmpdir/universe; the actual tempdir is its parent.
+        shutil.rmtree(staged_root.parent, ignore_errors=True)
 
 
 def test_stage_returns_creature_under_staged_root(tmp_path):
@@ -61,4 +62,5 @@ def test_stage_returns_creature_under_staged_root(tmp_path):
         assert rel_orig == rel_staged
     finally:
         import shutil
-        shutil.rmtree(staged_root, ignore_errors=True)
+        # staged_root is tmpdir/universe; the actual tempdir is its parent.
+        shutil.rmtree(staged_root.parent, ignore_errors=True)

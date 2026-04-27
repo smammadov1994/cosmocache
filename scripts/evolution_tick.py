@@ -264,8 +264,12 @@ def _run_mutation_tick(slug: str, planet_dir: Path) -> None:
 
     Wrapped in this helper so it stays a single non-fatal call site in main().
     """
-    sys.path.insert(0, str(SCRIPTS))
-    sys.path.insert(0, str(UNIVERSE / ".system" / "eval"))
+    # Dedup sys.path so repeated ticks in a long-lived process don't grow it.
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    eval_dir = str(UNIVERSE / ".system" / "eval")
+    if eval_dir not in sys.path:
+        sys.path.insert(0, eval_dir)
     import mutation_tick
     from lib.anthropic_client import AnthropicClient
 
@@ -296,26 +300,47 @@ def _run_mutation_tick(slug: str, planet_dir: Path) -> None:
     log(slug, f"mutation: outcome={res.outcome} creature={res.creature} "
               f"reason={res.reason}")
 
-    # Record the outcome in evolutions.db so `cosmo evolve mutations` can show it.
+    # Record the outcome in the mutations history table so
+    # `cosmo evolve mutations` can show it. (We do NOT touch the
+    # evolutions table — that table is single-state-per-slug and is
+    # about to be finalized by evolve("complete", ...).)
     if res.outcome in ("promoted", "rejected"):
-        status = "mutation_promoted" if res.outcome == "promoted" else "mutation_rejected"
-        msg = f"{res.creature}: {res.reason}"[:200]
         import sqlite3
         db = UNIVERSE / "enigma" / "evolutions.db"
-        # Always write a fresh row keyed by slug (the schema is single-state-per-slug).
-        # We create the table via mutation_tick imports if needed; here we just upsert.
         with sqlite3.connect(str(db)) as conn:
+            # Ensure the mutations table exists. (evolve.py creates it on
+            # _connect(), but if mutation_tick is called from a process
+            # that hasn't called evolve.py first, we still want it present.)
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS mutations (
+                  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                  planet_slug   TEXT NOT NULL,
+                  creature      TEXT,
+                  outcome       TEXT NOT NULL CHECK (outcome IN ('promoted', 'rejected')),
+                  reason        TEXT,
+                  accuracy_delta REAL,
+                  tokens_delta   REAL,
+                  completed_at  TEXT NOT NULL
+                )
+                """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_mutations_planet_time "
+                "ON mutations (planet_slug, completed_at DESC)"
+            )
             now = conn.execute(
                 "SELECT strftime('%Y-%m-%dT%H:%M:%SZ', 'now')"
             ).fetchone()[0]
             conn.execute(
                 """
-                INSERT OR REPLACE INTO evolutions
-                  (planet_slug, status, message, started_at, updated_at,
-                   completed_at, session_id)
-                VALUES (?, ?, ?, ?, ?, ?, NULL)
+                INSERT INTO mutations
+                  (planet_slug, creature, outcome, reason,
+                   accuracy_delta, tokens_delta, completed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (slug, status, msg, now, now, now),
+                (slug, res.creature, res.outcome, res.reason,
+                 res.accuracy_delta, res.tokens_delta, now),
             )
             conn.commit()
 

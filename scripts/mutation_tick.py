@@ -212,6 +212,16 @@ def run(
         return MutationResult(outcome="skipped",
                               reason="no creature qualifies for distillation")
 
+    # An empty probe_subset means score_planet would run zero probes and
+    # return all-zero metrics — which would falsely fail the gate as
+    # "no token savings". Skip cleanly instead, with an honest reason.
+    if not probe_subset:
+        return MutationResult(
+            outcome="skipped",
+            reason="no probes match this planet's keywords",
+            creature=candidate.name,
+        )
+
     from propose_distillation import propose_distillation
     try:
         distilled = propose_distillation(

@@ -158,6 +158,29 @@ def test_cleanup_runs_even_when_mutant_scoring_raises(tmp_path, monkeypatch):
             f"staged tempdir leaked: {seen['staged'].parent}"
 
 
+def test_run_skips_when_probe_subset_empty(tmp_path, monkeypatch):
+    """An empty probe_subset deterministically yields skipped, not rejected."""
+    u = _build_universe(tmp_path)  # has a candidate
+    stub = StubClient(default=CompletionResult(
+        text=DISTILLED, input_tokens=10, output_tokens=10,
+    ))
+    # _score must not be called when there are no probes
+    monkeypatch.setattr(mutation_tick, "_score",
+                        lambda **kw: (_ for _ in ()).throw(AssertionError("scorer called")))
+    result = mutation_tick.run(
+        planet_slug="planet-test",
+        planet_dir=u / "planets" / "planet-test",
+        universe_dir=u,
+        probe_subset=[],
+        client=stub,
+        proposer_model="claude-haiku-4-5-20251001",
+        sut_model="claude-opus-4-6",
+        judge_model="claude-opus-4-6",
+    )
+    assert result.outcome == "skipped"
+    assert "probe" in result.reason.lower()
+
+
 def test_proposer_error_returns_rejected(tmp_path, monkeypatch):
     """If propose_distillation raises ValueError (e.g. missing frontmatter),
     the orchestrator returns rejected — it does not bubble."""

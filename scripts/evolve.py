@@ -116,6 +116,30 @@ def _connect() -> sqlite3.Connection:
         except Exception:
             conn.execute("ROLLBACK")
             raise
+    # Phase 3 (post-review): a separate history table for mutation outcomes.
+    # `evolutions` is single-state-per-slug (PRIMARY KEY planet_slug) and is
+    # finalized by evolve("complete", ...) at the end of each tick — so it
+    # cannot also hold per-mutation history. The `mutations` table accumulates
+    # one row per propose-stage-score-gate attempt, keyed by an autoincrement
+    # id with a (planet_slug, completed_at) index for fast per-planet listing.
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS mutations (
+          id            INTEGER PRIMARY KEY AUTOINCREMENT,
+          planet_slug   TEXT NOT NULL,
+          creature      TEXT,
+          outcome       TEXT NOT NULL CHECK (outcome IN ('promoted', 'rejected')),
+          reason        TEXT,
+          accuracy_delta REAL,
+          tokens_delta   REAL,
+          completed_at  TEXT NOT NULL
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mutations_planet_time "
+        "ON mutations (planet_slug, completed_at DESC)"
+    )
     conn.commit()
     return conn
 

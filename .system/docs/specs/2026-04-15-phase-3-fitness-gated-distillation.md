@@ -94,17 +94,22 @@ evolution_tick fires (existing 6h launchd cron)
 
 ### `scripts/mutation_tick.py`
 The orchestrator. Entry point called from evolution_tick.py after
-autoresearch succeeds. Responsibilities:
+autoresearch succeeds. Public surface:
+- `run(...)` — the full propose-stage-score-gate-promote/reject loop.
+  Returns a `MutationResult` describing the outcome.
 - `find_candidate(planet_dir)` — scan creatures/, pick the one with the
-  longest journal that lacks a current Distilled Wisdom block.
-- `snapshot_score(planet_slug, universe_dir, probes)` — run score_planet()
-  and return the PlanetScore.
-- `stage_mutation(planet_dir, creature_path, distilled_content)` — create
-  a temp copy of the universe with the creature file replaced.
-- `gate(baseline, mutant)` — compare PlanetScores, return pass/fail +
-  reason string.
-- `promote(creature_path, distilled_content)` — overwrite original.
-- `main(slug, planet_dir, probes)` — orchestrate the full loop.
+  longest journal that lacks a current Distilled Wisdom block (or whose
+  journal has outgrown the existing wisdom block).
+- `stage_mutation(universe_dir, creature_path, new_content)` — copy the
+  universe to a temp dir and swap in the new creature. Original is
+  never touched.
+- `gate(baseline, mutant) -> GateResult` — the safety floor. Returns
+  passed=True only when accuracy holds (within epsilon) AND tokens
+  strictly drop.
+- `MutationResult` and `GateResult` dataclasses describe loop outputs.
+
+The score_planet call is wrapped in a private `_score()` helper so tests
+can monkeypatch it without touching the eval lib.
 
 ### `scripts/propose_distillation.py`
 The proposer. Takes a creature markdown file, calls Haiku with a tightly
