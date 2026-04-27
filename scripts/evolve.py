@@ -11,7 +11,8 @@ Schema (current-state-only, keyed by slug):
     CREATE TABLE evolutions (
       planet_slug   TEXT PRIMARY KEY,
       status        TEXT NOT NULL CHECK (status IN
-                       ('pending','running','complete','failed')),
+                       ('pending','running','complete','failed',
+                        'mutation_promoted','mutation_rejected')),
       message       TEXT,
       started_at    TEXT,        -- ISO8601 UTC, e.g. 2026-04-14T02:14:01Z
       updated_at    TEXT NOT NULL,
@@ -66,28 +67,55 @@ def _connect() -> sqlite3.Connection:
     )
     # Phase 3: extend the CHECK constraint on existing DBs by recreating the
     # table. SQLite cannot ALTER TABLE a CHECK constraint, so we copy.
+    #
+    # Concurrency: multiple processes may call _connect() at once. We grab
+    # an exclusive write lock with BEGIN IMMEDIATE, then re-read the live
+    # DDL *inside* the transaction. The first writer rebuilds the table;
+    # any process that was waiting on the lock then sees the new DDL and
+    # skips the rebuild — so no two processes ever try to RENAME the same
+    # table.
     cur = conn.execute(
         "SELECT sql FROM sqlite_master WHERE type='table' AND name='evolutions'"
     ).fetchone()
     if cur and "mutation_promoted" not in cur[0]:
-        conn.executescript("""
-            BEGIN;
-            ALTER TABLE evolutions RENAME TO evolutions_v1;
-            CREATE TABLE evolutions (
-              planet_slug   TEXT PRIMARY KEY,
-              status        TEXT NOT NULL CHECK (status IN
-                               ('pending','running','complete','failed',
-                                'mutation_promoted','mutation_rejected')),
-              message       TEXT,
-              started_at    TEXT,
-              updated_at    TEXT NOT NULL,
-              completed_at  TEXT,
-              session_id    TEXT
-            );
-            INSERT INTO evolutions SELECT * FROM evolutions_v1;
-            DROP TABLE evolutions_v1;
-            COMMIT;
-        """)
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            cur2 = conn.execute(
+                "SELECT sql FROM sqlite_master "
+                "WHERE type='table' AND name='evolutions'"
+            ).fetchone()
+            if cur2 and "mutation_promoted" not in cur2[0]:
+                conn.execute("ALTER TABLE evolutions RENAME TO evolutions_v1")
+                conn.execute(
+                    """
+                    CREATE TABLE evolutions (
+                      planet_slug   TEXT PRIMARY KEY,
+                      status        TEXT NOT NULL CHECK (status IN
+                                       ('pending','running','complete','failed',
+                                        'mutation_promoted','mutation_rejected')),
+                      message       TEXT,
+                      started_at    TEXT,
+                      updated_at    TEXT NOT NULL,
+                      completed_at  TEXT,
+                      session_id    TEXT
+                    )
+                    """
+                )
+                conn.execute(
+                    """
+                    INSERT INTO evolutions
+                      (planet_slug, status, message, started_at, updated_at,
+                       completed_at, session_id)
+                    SELECT planet_slug, status, message, started_at, updated_at,
+                           completed_at, session_id
+                    FROM evolutions_v1
+                    """
+                )
+                conn.execute("DROP TABLE evolutions_v1")
+            conn.execute("COMMIT")
+        except Exception:
+            conn.execute("ROLLBACK")
+            raise
     conn.commit()
     return conn
 
