@@ -54,7 +54,8 @@ def _connect() -> sqlite3.Connection:
         CREATE TABLE IF NOT EXISTS evolutions (
           planet_slug   TEXT PRIMARY KEY,
           status        TEXT NOT NULL CHECK (status IN
-                           ('pending','running','complete','failed')),
+                           ('pending','running','complete','failed',
+                            'mutation_promoted','mutation_rejected')),
           message       TEXT,
           started_at    TEXT,
           updated_at    TEXT NOT NULL,
@@ -63,6 +64,30 @@ def _connect() -> sqlite3.Connection:
         )
         """
     )
+    # Phase 3: extend the CHECK constraint on existing DBs by recreating the
+    # table. SQLite cannot ALTER TABLE a CHECK constraint, so we copy.
+    cur = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='evolutions'"
+    ).fetchone()
+    if cur and "mutation_promoted" not in cur[0]:
+        conn.executescript("""
+            BEGIN;
+            ALTER TABLE evolutions RENAME TO evolutions_v1;
+            CREATE TABLE evolutions (
+              planet_slug   TEXT PRIMARY KEY,
+              status        TEXT NOT NULL CHECK (status IN
+                               ('pending','running','complete','failed',
+                                'mutation_promoted','mutation_rejected')),
+              message       TEXT,
+              started_at    TEXT,
+              updated_at    TEXT NOT NULL,
+              completed_at  TEXT,
+              session_id    TEXT
+            );
+            INSERT INTO evolutions SELECT * FROM evolutions_v1;
+            DROP TABLE evolutions_v1;
+            COMMIT;
+        """)
     conn.commit()
     return conn
 
