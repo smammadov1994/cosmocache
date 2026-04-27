@@ -10,6 +10,7 @@ Original creature files are never modified until the gate passes.
 """
 from __future__ import annotations
 from dataclasses import dataclass
+from pathlib import Path
 
 
 # Floating-point slop tolerance for the accuracy comparison. Aggregating
@@ -61,6 +62,66 @@ def gate(baseline, mutant) -> GateResult:
         accuracy_delta=acc_delta,
         tokens_delta=tok_delta,
     )
+
+
+# Don't bother distilling creatures whose journal is already short.
+MIN_JOURNAL_CHARS = 1500
+# A redistillation is worthwhile when the journal has grown to at least
+# this multiple of the existing Distilled Wisdom block.
+JOURNAL_OUTGROWTH_RATIO = 2.0
+
+
+def _split_sections(text: str) -> dict[str, str]:
+    """Return {heading_lowered: body} for every '## Heading' section."""
+    sections: dict[str, str] = {}
+    current: str | None = None
+    buf: list[str] = []
+    for line in text.splitlines():
+        if line.startswith("## "):
+            if current is not None:
+                sections[current.strip().lower()] = "\n".join(buf).strip()
+            current = line[3:]
+            buf = []
+        else:
+            buf.append(line)
+    if current is not None:
+        sections[current.strip().lower()] = "\n".join(buf).strip()
+    return sections
+
+
+def find_candidate(planet_dir: Path) -> Path | None:
+    """Return the creature file most worth distilling, or None.
+
+    Selection rule:
+      1. Read every creatures/*.md.
+      2. Compute (journal_chars, wisdom_chars) per file.
+      3. Eligible if:
+         - journal_chars >= MIN_JOURNAL_CHARS, AND
+         - (no wisdom block) OR (journal_chars >= ratio * wisdom_chars)
+      4. Among eligible files, return the one with the longest journal.
+    """
+    cdir = planet_dir / "creatures"
+    if not cdir.is_dir():
+        return None
+
+    best: tuple[int, Path] | None = None
+    for md in sorted(cdir.glob("*.md")):
+        try:
+            text = md.read_text(errors="replace")
+        except OSError:
+            continue
+        sections = _split_sections(text)
+        journal = sections.get("journal", "")
+        wisdom = sections.get("distilled wisdom", "")
+        j_len = len(journal)
+        w_len = len(wisdom)
+        if j_len < MIN_JOURNAL_CHARS:
+            continue
+        if w_len > 0 and j_len < JOURNAL_OUTGROWTH_RATIO * w_len:
+            continue
+        if best is None or j_len > best[0]:
+            best = (j_len, md)
+    return best[1] if best else None
 
 
 if __name__ == "__main__":
