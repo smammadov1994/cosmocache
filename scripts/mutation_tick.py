@@ -163,21 +163,79 @@ class MutationResult:
 
 def _score(*, planet_slug, universe_dir, probe_subset, client, judge_model,
            sut_model):
-    """Wrapper around lib.planet_scope.score_planet — separate function so
-    tests can monkeypatch it without touching the real eval lib."""
-    # Lazy import: avoids paying the eval-lib import cost when find_candidate
-    # finds nothing.
+    """Phase 3 scorer: load the planet's content into the SUT context so
+    the gate can actually see the difference a mutation made.
+
+    score_planet (Phase 2) only injects glossary.md, which doesn't change
+    when a creature file changes — the gate would always see equal tokens
+    and reject. Here we inject glossary + planet.md + every creature file
+    so a smaller creature => smaller input_tokens => meaningful gate.
+
+    Tests monkeypatch this whole function, so the implementation can be
+    swapped without breaking the existing 54 unit tests.
+    """
     eval_lib = Path(__file__).resolve().parents[1] / ".system" / "eval"
     if str(eval_lib) not in sys.path:
         sys.path.insert(0, str(eval_lib))
-    from lib.planet_scope import score_planet  # noqa: E402
-    return score_planet(
+    from lib.planet_scope import PlanetScore  # noqa: E402
+    from lib.scoring import parse_judge_response, aggregate  # noqa: E402
+    import yaml  # noqa: E402
+
+    probes_yaml = eval_lib / "scenarios" / "probes.yaml"
+    probes_all = yaml.safe_load(probes_yaml.read_text())["probes"]
+    selected = [p for p in probes_all if p["id"] in set(probe_subset)]
+
+    planet_dir = universe_dir / "planets" / planet_slug
+    planet_md = ""
+    pmd = planet_dir / "planet.md"
+    if pmd.exists():
+        planet_md = pmd.read_text()
+    creatures_blocks: list[str] = []
+    cdir = planet_dir / "creatures"
+    if cdir.is_dir():
+        for cf in sorted(cdir.glob("*.md")):
+            creatures_blocks.append(f"### {cf.name}\n\n{cf.read_text()}")
+    creatures_blob = "\n\n".join(creatures_blocks)
+
+    glossary_path = universe_dir / "enigma" / "glossary.md"
+    gloss = glossary_path.read_text() if glossary_path.exists() else ""
+
+    system = (
+        f"You are Claude. The cosmocache SessionStart hook injected:\n\n{gloss}\n\n"
+        f"Routing took us to planet '{planet_slug}'. Its full content:\n\n"
+        f"=== planet.md ===\n{planet_md}\n\n"
+        f"=== creatures ===\n{creatures_blob}\n\n"
+        "Answer the user's question from the planet content above. "
+        "If nothing matches, say so."
+    )
+    judge_tmpl = (eval_lib / "prompts" / "judge.txt").read_text()
+
+    scores: list[float] = []
+    tokens: list[int] = []
+    for probe in selected:
+        ans = client.complete(
+            system=system, user=probe["question"], model=sut_model,
+            temperature=0.0, max_tokens=1024,
+        )
+        j = client.complete(
+            system="",
+            user=judge_tmpl.format(
+                question=probe["question"],
+                expected_fact=probe["expected_fact"],
+                answer=ans.text,
+            ),
+            model=judge_model, temperature=0.0, max_tokens=256,
+        )
+        scores.append(parse_judge_response(j.text).score)
+        tokens.append(ans.input_tokens)
+
+    agg = aggregate(scores, tokens)
+    return PlanetScore(
         planet_slug=planet_slug,
-        universe_dir=universe_dir,
-        probe_subset=probe_subset,
-        client=client,
-        judge_model=judge_model,
-        sut_model=sut_model,
+        accuracy_mean=agg.accuracy_mean,
+        input_tokens_mean=agg.input_tokens_mean,
+        input_tokens_p95=agg.input_tokens_p95,
+        n_probes=len(selected),
     )
 
 

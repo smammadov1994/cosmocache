@@ -192,3 +192,26 @@ probes:
     scale_tier: small
     question: "What's our approach to SwiftUI navigation?"
     expected_fact: "No such knowledge exists in cosmocache — the correct response is 'I don't know' or that this isn't in scope."
+
+  # ---- planet-demo (Phase 3 distillation demo) ----
+
+  - id: planet-demo-vacuum
+    planet: planet-demo
+    kind: recall
+    scale_tier: small
+    question: "What does VACUUM do in SQLite?"
+    expected_fact: "VACUUM compacts the database file and frees space."
+
+  - id: planet-demo-wal-mode
+    planet: planet-demo
+    kind: recall
+    scale_tier: small
+    question: "What is WAL mode in SQLite and why use it?"
+    expected_fact: "WAL means write-ahead log; it allows concurrent readers while a writer is committing."
+
+  - id: planet-demo-explain-query-plan
+    planet: planet-demo
+    kind: recall
+    scale_tier: small
+    question: "How do you inspect SQLite's query plan?"
+    expected_fact: "EXPLAIN QUERY PLAN shows whether SQLite is doing a full scan or using an index."
