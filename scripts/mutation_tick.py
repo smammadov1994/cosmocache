@@ -9,7 +9,9 @@ if the gate passes.
 Original creature files are never modified until the gate passes.
 """
 from __future__ import annotations
+import os
 import shutil
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -148,6 +150,99 @@ def stage_mutation(
     staged_creature = staged_universe / rel
     staged_creature.write_text(new_content)
     return staged_universe, staged_creature
+
+
+@dataclass
+class MutationResult:
+    outcome: str   # "promoted" | "rejected" | "skipped"
+    reason: str
+    creature: str | None = None
+    accuracy_delta: float = 0.0
+    tokens_delta: float = 0.0
+
+
+def _score(*, planet_slug, universe_dir, probe_subset, client, judge_model,
+           sut_model):
+    """Wrapper around lib.planet_scope.score_planet — separate function so
+    tests can monkeypatch it without touching the real eval lib."""
+    # Lazy import: avoids paying the eval-lib import cost when find_candidate
+    # finds nothing.
+    eval_lib = Path(__file__).resolve().parents[1] / ".system" / "eval"
+    if str(eval_lib) not in sys.path:
+        sys.path.insert(0, str(eval_lib))
+    from lib.planet_scope import score_planet  # noqa: E402
+    return score_planet(
+        planet_slug=planet_slug,
+        universe_dir=universe_dir,
+        probe_subset=probe_subset,
+        client=client,
+        judge_model=judge_model,
+        sut_model=sut_model,
+    )
+
+
+def run(
+    *,
+    planet_slug: str,
+    planet_dir: Path,
+    universe_dir: Path,
+    probe_subset: list[str],
+    client,
+    proposer_model: str,
+    sut_model: str,
+    judge_model: str,
+) -> MutationResult:
+    """Run one mutation tick for a single planet.
+
+    Steps: find_candidate -> propose -> stage -> score -> gate -> promote/reject.
+    Original creature file is only overwritten if the gate passes.
+    """
+    candidate = find_candidate(planet_dir)
+    if candidate is None:
+        return MutationResult(outcome="skipped",
+                              reason="no creature qualifies for distillation")
+
+    from propose_distillation import propose_distillation
+    try:
+        distilled = propose_distillation(
+            creature_text=candidate.read_text(),
+            client=client,
+            model=proposer_model,
+        )
+    except (ValueError, OSError) as e:
+        return MutationResult(outcome="rejected",
+                              reason=f"proposer error: {e}",
+                              creature=candidate.name)
+
+    baseline = _score(planet_slug=planet_slug, universe_dir=universe_dir,
+                      probe_subset=probe_subset, client=client,
+                      judge_model=judge_model, sut_model=sut_model)
+
+    staged_root, staged_creature = stage_mutation(
+        universe_dir=universe_dir,
+        creature_path=candidate,
+        new_content=distilled,
+    )
+    try:
+        mutant = _score(planet_slug=planet_slug, universe_dir=staged_root,
+                        probe_subset=probe_subset, client=client,
+                        judge_model=judge_model, sut_model=sut_model)
+    finally:
+        shutil.rmtree(staged_root.parent, ignore_errors=True)
+
+    g = gate(baseline, mutant)
+    if not g.passed:
+        return MutationResult(outcome="rejected", reason=g.reason,
+                              creature=candidate.name,
+                              accuracy_delta=g.accuracy_delta,
+                              tokens_delta=g.tokens_delta)
+
+    # promote: overwrite the original
+    candidate.write_text(distilled)
+    return MutationResult(outcome="promoted", reason=g.reason,
+                          creature=candidate.name,
+                          accuracy_delta=g.accuracy_delta,
+                          tokens_delta=g.tokens_delta)
 
 
 if __name__ == "__main__":
