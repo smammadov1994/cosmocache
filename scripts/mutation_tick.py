@@ -181,6 +181,16 @@ def _score(*, planet_slug, universe_dir, probe_subset, client, judge_model,
     )
 
 
+def _cleanup_staged(tempdir: Path) -> None:
+    """Remove the staged tempdir; log on failure rather than silently leaking."""
+    try:
+        shutil.rmtree(tempdir)
+    except OSError as e:
+        sys.stderr.write(
+            f"warning: failed to clean staged tempdir {tempdir}: {e}\n"
+        )
+
+
 def run(
     *,
     planet_slug: str,
@@ -214,35 +224,56 @@ def run(
                               reason=f"proposer error: {e}",
                               creature=candidate.name)
 
-    baseline = _score(planet_slug=planet_slug, universe_dir=universe_dir,
-                      probe_subset=probe_subset, client=client,
-                      judge_model=judge_model, sut_model=sut_model)
-
-    staged_root, staged_creature = stage_mutation(
-        universe_dir=universe_dir,
-        creature_path=candidate,
-        new_content=distilled,
-    )
     try:
-        mutant = _score(planet_slug=planet_slug, universe_dir=staged_root,
-                        probe_subset=probe_subset, client=client,
-                        judge_model=judge_model, sut_model=sut_model)
-    finally:
-        shutil.rmtree(staged_root.parent, ignore_errors=True)
+        baseline = _score(planet_slug=planet_slug, universe_dir=universe_dir,
+                          probe_subset=probe_subset, client=client,
+                          judge_model=judge_model, sut_model=sut_model)
+    except Exception as e:
+        return MutationResult(outcome="rejected",
+                              reason=f"baseline scoring error: {e}",
+                              creature=candidate.name)
 
-    g = gate(baseline, mutant)
-    if not g.passed:
-        return MutationResult(outcome="rejected", reason=g.reason,
+    try:
+        staged_universe, staged_creature = stage_mutation(
+            universe_dir=universe_dir,
+            creature_path=candidate,
+            new_content=distilled,
+        )
+    except Exception as e:
+        return MutationResult(outcome="rejected",
+                              reason=f"stage error: {e}",
+                              creature=candidate.name)
+
+    tempdir = staged_universe.parent
+    try:
+        try:
+            mutant = _score(planet_slug=planet_slug,
+                            universe_dir=staged_universe,
+                            probe_subset=probe_subset, client=client,
+                            judge_model=judge_model, sut_model=sut_model)
+        except Exception as e:
+            return MutationResult(outcome="rejected",
+                                  reason=f"mutant scoring error: {e}",
+                                  creature=candidate.name)
+
+        g = gate(baseline, mutant)
+        if not g.passed:
+            return MutationResult(outcome="rejected", reason=g.reason,
+                                  creature=candidate.name,
+                                  accuracy_delta=g.accuracy_delta,
+                                  tokens_delta=g.tokens_delta)
+
+        # promote: atomic write to .tmp sibling then POSIX rename so a
+        # mid-write crash can never destroy the original.
+        tmp = candidate.with_suffix(candidate.suffix + ".tmp")
+        tmp.write_text(distilled)
+        tmp.replace(candidate)
+        return MutationResult(outcome="promoted", reason=g.reason,
                               creature=candidate.name,
                               accuracy_delta=g.accuracy_delta,
                               tokens_delta=g.tokens_delta)
-
-    # promote: overwrite the original
-    candidate.write_text(distilled)
-    return MutationResult(outcome="promoted", reason=g.reason,
-                          creature=candidate.name,
-                          accuracy_delta=g.accuracy_delta,
-                          tokens_delta=g.tokens_delta)
+    finally:
+        _cleanup_staged(tempdir)
 
 
 if __name__ == "__main__":
