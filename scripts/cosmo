@@ -486,6 +486,48 @@ def evolve_logs(slug, tail, json_mode) -> None:
          lambda d: click.echo("\n".join(d["lines"])))
 
 
+@evolve.command("mutations")
+@click.option("--planet", default=None, help="Filter to one planet slug.")
+@click.option("--json", "json_mode", is_flag=True, help="JSON output.")
+def evolve_mutations(planet, json_mode) -> None:
+    """List mutation outcomes recorded in evolutions.db.
+
+    Shows every row whose status is mutation_promoted or mutation_rejected.
+    Use this after `cosmo evolve kick` to see whether a distillation was
+    accepted or thrown away, and the accuracy/token delta in the message.
+    """
+    import sqlite3 as _sqlite3
+    db = UNIVERSE / "enigma" / "evolutions.db"
+    if not db.exists():
+        emit({"ok": False, "error": "no evolutions.db"}, json_mode,
+             "(no evolutions.db yet — has any tick run?)")
+        return
+    q = ("SELECT planet_slug, status, message, completed_at FROM evolutions "
+         "WHERE status IN ('mutation_promoted', 'mutation_rejected')")
+    args: tuple = ()
+    if planet:
+        q += " AND planet_slug = ?"
+        args = (planet,)
+    q += " ORDER BY completed_at DESC NULLS LAST, planet_slug"
+    with _sqlite3.connect(str(db)) as conn:
+        conn.row_factory = _sqlite3.Row
+        rows = [dict(r) for r in conn.execute(q, args).fetchall()]
+
+    def human(data):
+        if not data:
+            click.echo("(no mutations recorded yet)")
+            return
+        click.echo(f"{'planet':<25}  {'outcome':<20}  {'when':<20}  message")
+        click.echo("-" * 100)
+        for r in data:
+            outcome = r["status"].replace("mutation_", "")
+            when = (r["completed_at"] or "")[:19]
+            msg = (r["message"] or "")[:50]
+            click.echo(f"{r['planet_slug']:<25}  {outcome:<20}  {when:<20}  {msg}")
+
+    emit(rows, json_mode, human)
+
+
 # ===========================================================================
 # flat commands — search, tree, planets, creatures, glossary, index, stats
 # ===========================================================================
